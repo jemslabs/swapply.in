@@ -1,13 +1,20 @@
-
+import { Toaster } from "sonner"
+import Navbar from "./components/Navbar"
+import {Route, Routes} from 'react-router-dom'
+import Login from "./pages/Login"
+import Signup from "./pages/Signup"
 
 function App() {
 
 
   return (
     <>
-
-      <h1>Vite + React</h1>
-
+      <Navbar />
+      <Routes>
+        <Route  path="/login" element={<Login />}/>
+        <Route path="/signup" element={<Signup />} />
+      </Routes>
+      <Toaster position="top-center"/>
     </>
   )
 }

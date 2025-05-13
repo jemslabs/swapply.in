@@ -4,3 +4,6 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+const isProduction = false;
+
+export const endpoint = isProduction ? "" : "http://localhost:8787"

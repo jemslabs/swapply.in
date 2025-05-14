@@ -5,6 +5,7 @@
 body {
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

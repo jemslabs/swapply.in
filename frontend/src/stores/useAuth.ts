@@ -17,7 +17,14 @@ export const useAuth = create<useAuthType>((set) => ({
         toast.success("Authenticated");
       }
     } catch (error) {
-      set({ user: null });
+      console.error(error)
+      if (axios.isAxiosError(error)) {
+
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
     }
   },
 }));

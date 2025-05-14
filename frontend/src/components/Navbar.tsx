@@ -5,7 +5,7 @@ import Logo from './Logo'
 
 function Navbar() {
   return (
-    <div className="bg-[#000000] border border-[#3a3a3a] rounded-xl my-3 py-2 px-3 w-[1200px] mx-auto">
+    <div className="bg-[#000000] border rounded-xl my-3 p-3 w-[1200px] mx-auto">
       <div className='flex justify-between items-center'>
 
 

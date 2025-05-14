@@ -13,7 +13,58 @@ model User {
   name      String
   image     String?
   email     String   @unique
-  password String
+  password  String
+  items     Item[]
   updateAt  DateTime @default(now())
   createdAt DateTime @updatedAt
+}
+
+model Item {
+  id            Int           @id @default(autoincrement())
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id])
+  title         String
+  description   String        @db.Text
+  image        String
+  currentPrice  Float         @default(1)
+  originalPrice Float         @default(1)
+  currencyType  CurrencyType  @default(INR)
+  company       String
+  category      Category
+  condition     ItemCondition
+  barterType    BarterType    @default(ONLINE)
+  location      String?
+  hasBill       Boolean       @default(false)
+  rating        Float?        @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum CurrencyType {
+  INR
+  USD
+}
+
+enum Category {
+  ELECTRONICS
+  CLOTHING
+  BOOKS
+  FURNITURE
+  TOYS
+  FOOTWEAR
+  BEAUTY
+  STATIONERY
+  OTHER
+}
+
+enum ItemCondition {
+  NEW
+  LIKE_NEW
+  USED
+  DAMAGED
+}
+
+enum BarterType {
+  INPERSON
+  ONLINE
 }

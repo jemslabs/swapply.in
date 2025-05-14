@@ -1,6 +1,7 @@
 import { Context, Hono, Next } from 'hono'
 import { cors } from "hono/cors";
 import authRoutes from './routes/auth'
+import itemRoutes from './routes/item';
 
 const app = new Hono();
 app.use("*", async (c: Context, next: Next) => {
@@ -17,6 +18,6 @@ app.use(
 );
 
 app.route("/api/auth", authRoutes);
-
+app.route("/api/item", itemRoutes);
 
 export default app

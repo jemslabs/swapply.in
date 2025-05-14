@@ -2,8 +2,7 @@ import { Context } from "hono";
 import { authSchema } from "../lib/zod";
 import { prismaClient } from "../lib/prisma";
 import bcrypt from "bcryptjs";
-import { generateTokenAndSetCookie } from "../lib/generateToken";
-
+import { generateTokenAndSetCookie, removeToken } from "../lib/generateToken";
 
 export async function handleAuth(c: Context) {
   const prisma = prismaClient(c);
@@ -31,6 +30,7 @@ export async function handleAuth(c: Context) {
       return c.json(existingUser, 200);
     }
 
+
     const hashedPassword = await bcrypt.hash(password, 10);
     if (!name) {
       return c.json({ msg: "Name is required" }, 400);
@@ -46,7 +46,31 @@ export async function handleAuth(c: Context) {
     await generateTokenAndSetCookie(newUser?.id, c);
 
     return c.json(newUser, 200);
-  } catch (error) {
+  } catch {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
+
+export async function handleGetUser(c: Context) {
+  const prisma = prismaClient(c);
+  try {
+    const { id } = c.get("user");
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) return c.json({ msg: "User doesn't exists" }, 400);
+    return c.json(user, 200);
+  } catch {
+    return c.json({ msg: "Success" }, 200);
+  }
+}
+export const handleUserLogout = async (c: Context) => {
+  try {
+    await removeToken(c);
+    return c.json({ msg: "Logged Out" }, 200);
+  } catch {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+};

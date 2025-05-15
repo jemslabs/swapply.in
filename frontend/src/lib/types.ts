@@ -28,7 +28,32 @@ export type AddItem = {
   hasBill: boolean;
   image: File | null;
 };
-
+export type ItemType = {
+  id: number;
+  userId: number;
+  title: string;
+  description: string;
+  currentPrice: number;
+  originalPrice: number;
+  currencyType: string;
+  company: string;
+  category: string;
+  condition: string;
+  barterType: string;
+  location: string;
+  hasBill: boolean;
+  image: string | undefined;
+};
+export type useAppType = {
+  addItem: (data: FormData) => void;
+  getBrowseItems: (data: {
+    category: string;
+    query: string;
+    fromPrice: string | number;
+    toPrice: string | number;
+    currencyType: string;
+  }) => Promise<{items: ItemType[]} | {items:  []}>;
+};
 export type useAuthType = {
   user: user | null;
   login: (data: loginData) => void;

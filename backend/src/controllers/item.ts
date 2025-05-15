@@ -34,10 +34,12 @@ export async function handleAddItem(c: Context) {
       image,
       location,
     } = validatedData.data;
-    
+
     let imageUrl;
     if (image) {
       imageUrl = await uploadToCloudinary(image, "swapply/image", c);
+    } else {
+      imageUrl = null;
     }
     const newItem = await prisma.item.create({
       data: {
@@ -53,7 +55,7 @@ export async function handleAddItem(c: Context) {
         location: barterType === "INPERSON" ? location : null,
         hasBill,
         condition,
-        image: imageUrl || "",
+        image: imageUrl || null,
       },
     });
 
@@ -63,6 +65,63 @@ export async function handleAddItem(c: Context) {
 
     return c.json({ msg: "New item added" }, 200);
   } catch {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleGetBrowseItems(c: Context) {
+  const prisma = prismaClient(c);
+  try {
+    const category = c.req.query("category");
+    const query = c.req.query("query")?.replace(/^"|"$/g, "");
+    const fromPrice = parseFloat(c.req.query("fromPrice") || "0");
+    const toPrice = parseFloat(c.req.query("toPrice") || "99999999");
+    const currencyType = c.req.query("currencyType");
+    
+    const { id } = c.get("user");
+    if (!id) {
+      return c.json({ msg: "Unauthorized" }, 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) return c.json({ msg: "User not found" }, 404);
+
+    const filters: any = {
+      userId: {
+        not: user?.id,
+      },
+      currentPrice: {
+        gte: fromPrice,
+        lte: toPrice,
+      },
+    };
+
+    if (query) {
+      filters.title = {
+        contains: query,
+        mode: "insensitive",
+      };
+    }
+
+    if (category) {
+      filters.category = category.toUpperCase();
+    }
+
+    if (currencyType) {
+      filters.currencyType = currencyType;
+    } else {
+      filters.currencyType = "INR";
+    }
+    const items = await prisma.item.findMany({
+      where: filters,
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 20,
+    });
+
+    return c.json({ items }, 200);
+  } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Underdog&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -120,5 +122,6 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Underdog', cursive;
   }
 }

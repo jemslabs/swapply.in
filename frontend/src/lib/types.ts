@@ -7,6 +7,8 @@ type user = {
   createdAt: Date;
   updatedAt: Date;
   items: ItemType[];
+  proposedSwaps: proposalType[];
+  receivedSwaps: proposalType[];
 };
 
 type loginData = {
@@ -55,6 +57,17 @@ export type SendPropsalType = {
   receiverItemId: string | number | undefined;
   message: string;
 };
+
+export type proposalType = {
+  id: number
+  receiver: user;
+  proposer: user;
+  proposedItem: ItemType;
+  receiverItem: ItemType;
+  status: string
+} & SendPropsalType;
+
+
 export type useAppType = {
   addItem: (data: FormData) => void;
   getBrowseItems: (data: {

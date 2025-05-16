@@ -30,7 +30,6 @@ export async function handleAuth(c: Context) {
       return c.json(existingUser, 200);
     }
 
-
     const hashedPassword = await bcrypt.hash(password, 10);
     if (!name) {
       return c.json({ msg: "Name is required" }, 400);
@@ -60,13 +59,30 @@ export async function handleGetUser(c: Context) {
         id,
       },
       include: {
-        items: true
-      }
+        items: true,
+        proposedSwaps: {
+          include: {
+            receiver: true,
+            proposer: true,
+            proposedItem: true,
+            receiverItem: true,
+          },
+        },
+        receivedSwaps: {
+          include: {
+            receiver: true,
+            proposer: true,
+            proposedItem: true,
+            receiverItem: true,
+          },
+        },
+
+      },
     });
     if (!user) return c.json({ msg: "User doesn't exists" }, 400);
     return c.json(user, 200);
   } catch {
-    return c.json({ msg: "Success" }, 200);
+    return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
 export const handleUserLogout = async (c: Context) => {

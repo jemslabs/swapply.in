@@ -6,6 +6,7 @@ type user = {
   image?: string;
   createdAt: Date;
   updatedAt: Date;
+  items: ItemType[];
 };
 
 type loginData = {
@@ -44,8 +45,15 @@ export type ItemType = {
   location: string;
   hasBill: boolean;
   image: string | undefined;
-  createdAt: Date
-  rating: number
+  createdAt: Date;
+  rating: number;
+};
+
+export type SendPropsalType = {
+  receiverId: string | number | undefined;
+  proposedItemId: string | number | undefined;
+  receiverItemId: string | number | undefined;
+  message: string;
 };
 export type useAppType = {
   addItem: (data: FormData) => void;
@@ -59,6 +67,7 @@ export type useAppType = {
 
   getMyItems: () => Promise<ItemType[] | []>;
   getItem: (id: string | undefined) => Promise<ItemType | null>;
+  sendSwapPropsal: (data: SendPropsalType) => void;
 };
 export type useAuthType = {
   user: user | null;

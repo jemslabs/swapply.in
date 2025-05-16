@@ -1,6 +1,6 @@
 import { Context } from "hono";
 import { prismaClient } from "../lib/prisma";
-import { addItemSchema } from "../lib/zod";
+import { addItemSchema, swapProposalSchema } from "../lib/zod";
 import { uploadToCloudinary } from "../lib/cloudinary";
 
 export async function handleAddItem(c: Context) {
@@ -148,27 +148,89 @@ export async function handleGetMyItems(c: Context) {
   }
 }
 
-export async function handleGetItem(c: Context){
-  const prisma = prismaClient(c)
+export async function handleGetItem(c: Context) {
+  const prisma = prismaClient(c);
   try {
     const id = c.req.query("id");
-    if(!id) return c.json({msg: "Id not provided"}, 400)
+    if (!id) return c.json({ msg: "Id not provided" }, 400);
     const parsedId = parseInt(id);
 
     const item = await prisma.item.findUnique({
       where: {
-        id: parsedId
+        id: parsedId,
       },
       include: {
-        user: true
+        user: true,
+      },
+    });
+
+    if (!item) return c.json({ msg: "Item not found" }, 200);
+
+    return c.json(item, 200);
+  } catch {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleSendSwapPropsal(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  const data = await c.req.json();
+  try {
+    if (!id) return c.json({ msg: "Unauthorized" }, 400);
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) return c.json({ msg: "User not found" }, 404);
+
+    const validatedData = swapProposalSchema.safeParse(data);
+    if (!validatedData.success) {
+      return c.json({ msg: "Invalid or missing fields" }, 400);
+    }
+
+    const { receiverId, receiverItemId, proposedItemId, message } =
+      validatedData.data;
+    const recieverItem = await prisma.item.findUnique({
+      where: {
+        id: receiverItemId,
+      },
+    });
+    if (recieverItem.isSwapped) {
+      return c.json({ msg: "This item is already swapped" });
+    }
+
+    if(recieverItem.userId !== receiverId){
+      return c.json({msg: "The reciever is not actual item owner"}, 400)
+    }
+
+    const proposedItem = await prisma.item.findUnique({
+      where: {
+        id: proposedItemId,
+      },
+    });
+    if (proposedItem.isSwapped) {
+      return c.json({ msg: "Your item is already swapped" });
+    }
+    
+    if(proposedItem.userId !== user?.id){
+      return c.json({msg: "Unauthorized to do this"}, 400)
+    }
+
+    await prisma.swapProposal.create({
+      data: {
+        receiverId,
+        proposerId: user?.id,
+        receiverItemId,
+        proposedItemId,
+        message
       }
     });
 
-    if(!item) return c.json({msg: "Item not found"}, 200);
-
-    return c.json(item, 200);
-
-  } catch {
-    return c.json({msg: "Internal Server Error"}, 500)
+    return c.json({msg: "Proposal Sent"}, 200)
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
   }
 }

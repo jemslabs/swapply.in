@@ -12,7 +12,7 @@ export const useAuth = create<useAuthType>((set) => ({
         withCredentials: true,
       });
       if (res.status === 200) {
-        set({ user: res.data });
+        await useAuth.getState().fetchUser();
         toast.success("Authenticated");
       }
     } catch (error) {

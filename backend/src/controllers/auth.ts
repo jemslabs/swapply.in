@@ -59,6 +59,9 @@ export async function handleGetUser(c: Context) {
       where: {
         id,
       },
+      include: {
+        items: true
+      }
     });
     if (!user) return c.json({ msg: "User doesn't exists" }, 400);
     return c.json(user, 200);

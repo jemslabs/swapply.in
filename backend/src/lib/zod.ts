@@ -34,3 +34,10 @@ export const addItemSchema = z.object({
       message: "Has Bill must be a valid boolean",
     }),
 });
+
+export const swapProposalSchema = z.object({
+  receiverId: z.preprocess(val => Number(val), z.number()),
+  proposedItemId: z.preprocess(val => Number(val), z.number()),
+  receiverItemId: z.preprocess(val => Number(val), z.number()),
+  message: z.string().optional(),
+});

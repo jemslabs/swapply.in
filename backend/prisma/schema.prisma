@@ -9,35 +9,71 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  image     String?
-  email     String   @unique
-  password  String
-  items     Item[]
+  id       Int     @id @default(autoincrement())
+  name     String
+  image    String?
+  email    String  @unique
+  password String
+  items    Item[]
+
+  proposedSwaps SwapProposal[] @relation("Proposer")
+  receivedSwaps SwapProposal[] @relation("Receiver")
+
   updateAt  DateTime @default(now())
   createdAt DateTime @updatedAt
 }
 
 model Item {
-  id            Int           @id @default(autoincrement())
-  userId        Int
-  user          User          @relation(fields: [userId], references: [id])
-  title         String
-  description   String        @db.Text
-  image        String
-  currentPrice  Float         @default(1)
-  originalPrice Float         @default(1)
-  currencyType  CurrencyType  @default(INR)
-  company       String
-  category      Category
-  condition     ItemCondition
-  barterType    BarterType    @default(ONLINE)
-  location      String?
-  hasBill       Boolean       @default(false)
-  rating        Float?        @default(0)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id              Int            @id @default(autoincrement())
+  userId          Int
+  user            User           @relation(fields: [userId], references: [id])
+  title           String
+  description     String         @db.Text
+  image           String
+  currentPrice    Float          @default(1)
+  originalPrice   Float          @default(1)
+  currencyType    CurrencyType   @default(INR)
+  company         String
+  category        Category
+  condition       ItemCondition
+  barterType      BarterType     @default(ONLINE)
+  location        String?
+  hasBill         Boolean        @default(false)
+  rating          Float?         @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  isSwapped       Boolean        @default(false)
+  proposerInSwaps SwapProposal[] @relation("ProposerItem")
+  receiverInSwaps SwapProposal[] @relation("ReceiverItem")
+}
+
+model SwapProposal {
+  id Int @id @default(autoincrement())
+
+  proposerId Int
+  proposer   User @relation("Proposer", fields: [proposerId], references: [id])
+
+  receiverId Int
+  receiver   User @relation("Receiver", fields: [receiverId], references: [id])
+
+  proposedItemId Int
+  proposedItem   Item @relation("ProposerItem", fields: [proposedItemId], references: [id])
+
+  receiverItemId Int
+  receiverItem   Item @relation("ReceiverItem", fields: [receiverItemId], references: [id])
+
+  message String?    @db.Text
+  status  SwapStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum SwapStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
 }
 
 enum CurrencyType {

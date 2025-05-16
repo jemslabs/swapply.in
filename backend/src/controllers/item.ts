@@ -77,7 +77,7 @@ export async function handleGetBrowseItems(c: Context) {
     const fromPrice = parseFloat(c.req.query("fromPrice") || "0");
     const toPrice = parseFloat(c.req.query("toPrice") || "99999999");
     const currencyType = c.req.query("currencyType");
-    
+
     const { id } = c.get("user");
     if (!id) {
       return c.json({ msg: "Unauthorized" }, 400);
@@ -117,11 +117,58 @@ export async function handleGetBrowseItems(c: Context) {
       orderBy: {
         createdAt: "desc",
       },
-      take: 20,
     });
 
     return c.json({ items }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+export async function handleGetMyItems(c: Context) {
+  const prisma = prismaClient(c);
+  try {
+    const { id } = c.get("user");
+    if (!id) {
+      return c.json({ msg: "Unauthorized" }, 400);
+    }
+
+    const items = await prisma.item.findMany({
+      where: {
+        userId: id,
+      },
+    });
+
+    if (items.length > 0) {
+      return c.json(items, 200);
+    } else {
+      return c.json([], 200);
+    }
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleGetItem(c: Context){
+  const prisma = prismaClient(c)
+  try {
+    const id = c.req.query("id");
+    if(!id) return c.json({msg: "Id not provided"}, 400)
+    const parsedId = parseInt(id);
+
+    const item = await prisma.item.findUnique({
+      where: {
+        id: parsedId
+      },
+      include: {
+        user: true
+      }
+    });
+
+    if(!item) return c.json({msg: "Item not found"}, 200);
+
+    return c.json(item, 200);
+
+  } catch {
+    return c.json({msg: "Internal Server Error"}, 500)
   }
 }

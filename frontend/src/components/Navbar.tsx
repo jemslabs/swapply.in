@@ -74,7 +74,7 @@ function Navbar() {
                     <Button variant="ghost" asChild className="w-full justify-start">
                       <Link to="/profile" className="flex items-center gap-2">
                         <User className="w-4 h-4" />
-                        <span>My Profile</span>
+                        <span>Profile</span>
                       </Link>
                     </Button>
                     <Button variant="ghost" asChild className="w-full justify-start">

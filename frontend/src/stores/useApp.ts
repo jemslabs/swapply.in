@@ -27,15 +27,39 @@ export const useApp = create<useAppType>((set) => ({
     try {
       const res = await axios.get(
         `${endpoint}/api/item/browse-items?category=${category}&query=${query}&fromPrice=${fromPrice}&toPrice=${toPrice}&currencyType=${currencyType}`,
-        {withCredentials: true}
+        { withCredentials: true }
       );
       if (res.status === 200) {
         return res.data;
       } else {
-        return []
+        return [];
       }
     } catch {
       return [];
     }
   },
+  getMyItems: async () => {
+    try {
+      const res = await axios.get(`${endpoint}/api/item/my-items`, {
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch {
+      return [];
+    }
+  },
+  getItem: async (id) => {
+    try {
+      const res = await axios.get(`${endpoint}/api/item/get-item?id=${id}`, {
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch {
+      return null;
+    }
+  }
 }));

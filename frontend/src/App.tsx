@@ -8,6 +8,9 @@ import FetchUser from "./components/FetchUser"
 import AddItem from "./pages/AddItem"
 import Browse from "./pages/Browse"
 import MyItems from "./pages/MyItems"
+import Item from "./pages/Item"
+import ItemSwap from "./pages/ItemSwap"
+
 
 function App() {
   return (
@@ -21,6 +24,8 @@ function App() {
           <Route path="/item/add" element={<AddItem />} />
           <Route path="/browse" element={<Browse />}/>
           <Route path="/my-items" element={<MyItems />} />
+          <Route path="/item/:id" element={<Item />}/>
+          <Route path="/item/:id/swap" element={<ItemSwap />}/>
         </Routes>
       </div>
       <Toaster position="top-center" />

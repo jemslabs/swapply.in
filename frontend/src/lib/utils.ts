@@ -22,3 +22,22 @@ export const categories = [
   { name: "Stationery", value:"STATIONERY" },
   { name: "Other", value: "OTHER" },
 ]
+
+export const conditions = [
+  {
+    name: "New",
+    value: "NEW"
+  },
+  {
+    name: "Like New",
+    value: "LIKE_NEW"
+  },
+  {
+    name: "Used",
+    value: "USED"
+  },
+  {
+    name: "Damaged",
+    value: "DAMAGED"
+  },
+]

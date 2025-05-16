@@ -31,6 +31,7 @@ export type AddItem = {
 export type ItemType = {
   id: number;
   userId: number;
+  user: user | null;
   title: string;
   description: string;
   currentPrice: number;
@@ -43,6 +44,8 @@ export type ItemType = {
   location: string;
   hasBill: boolean;
   image: string | undefined;
+  createdAt: Date
+  rating: number
 };
 export type useAppType = {
   addItem: (data: FormData) => void;
@@ -52,7 +55,10 @@ export type useAppType = {
     fromPrice: string | number;
     toPrice: string | number;
     currencyType: string;
-  }) => Promise<{items: ItemType[]} | {items:  []}>;
+  }) => Promise<{ items: ItemType[] } | { items: [] }>;
+
+  getMyItems: () => Promise<ItemType[] | []>;
+  getItem: (id: string | undefined) => Promise<ItemType | null>;
 };
 export type useAuthType = {
   user: user | null;

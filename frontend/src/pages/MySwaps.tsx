@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X, Clock, RefreshCw } from "lucide-react";
+import { Check, X, Clock, RefreshCw, Trash2 } from "lucide-react";
 import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,8 +17,9 @@ import { useState } from 'react';
 
 function MySwaps() {
     const { user, fetchUser } = useAuth();
-    const { acceptSwapProposal, rejectSwapProposal } = useApp();
+    const { acceptSwapProposal, rejectSwapProposal, cancelSwapProposal } = useApp();
     const [loadingSwapId, setLoadingSwapId] = useState<string | number | null>(null);
+
     const renderStatusBadge = (status: string) => {
         switch (status) {
             case "PENDING":
@@ -39,9 +40,9 @@ function MySwaps() {
                         <X className="w-3 h-3" /> Declined
                     </Badge>
                 );
-            case "CANCELED":
+            case "CANCELLED":
                 return (
-                    <Badge variant="secondary" className="flex items-center gap-1 text-xs">
+                    <Badge variant="destructive" className="flex items-center gap-1 text-xs">
                         <X className="w-3 h-3" /> Canceled
                     </Badge>
                 );
@@ -53,14 +54,21 @@ function MySwaps() {
     async function handleAcceptSwapProposal(id: string | number) {
         setLoadingSwapId(id);
         await acceptSwapProposal(id);
-        fetchUser()
+        fetchUser();
         setLoadingSwapId(null);
     }
 
     async function handleRejectSwapProposal(id: string | number) {
         setLoadingSwapId(id);
         await rejectSwapProposal(id);
-        fetchUser()
+        fetchUser();
+        setLoadingSwapId(null);
+    }
+
+    async function handleCancelSwapProposal(id: string | number) {
+        setLoadingSwapId(id);
+        await cancelSwapProposal(id);
+        fetchUser();
         setLoadingSwapId(null);
     }
 
@@ -72,25 +80,20 @@ function MySwaps() {
                     <TabsTrigger value="outgoing">Outgoing Offers</TabsTrigger>
                 </TabsList>
 
+                {/* Incoming Offers */}
                 <TabsContent value="incoming" className="mt-6">
                     {user?.receivedSwaps?.length === 0 ? (
                         <p className="text-center text-muted-foreground">No incoming offers</p>
                     ) : (
-                        <div className="space-y-10 ">
+                        <div className="space-y-10">
                             {user?.receivedSwaps.map((swap) => (
-                                <Card
-                                    key={swap.id}
-                                    className=" gap-2 p-3 border rounded-lg shadow-sm"
-                                >
-
+                                <Card key={swap.id} className="gap-2 p-3 border rounded-lg shadow-sm">
                                     <div className='flex justify-between w-full'>
                                         <div className="flex items-center gap-2 overflow-auto w-full sm:w-auto">
                                             <div className="flex items-center gap-2 w-full sm:w-[160px]">
                                                 <Avatar>
                                                     <AvatarImage src={swap.proposer.image || undefined} />
-                                                    <AvatarFallback>
-                                                        {swap.proposer.name?.charAt(0)?.toUpperCase() || "U"}
-                                                    </AvatarFallback>
+                                                    <AvatarFallback>{swap.proposer.name?.[0]?.toUpperCase() || "U"}</AvatarFallback>
                                                 </Avatar>
                                                 <div className="text-xs">
                                                     <p className="font-medium">{swap.proposer.name}</p>
@@ -98,44 +101,28 @@ function MySwaps() {
                                                 </div>
                                             </div>
                                             <div className='border rounded-lg p-3 w-[200px]'>
-                                                <Link
-                                                    to={`/item/${swap.proposedItem.id}`}
-                                                    className="flex items-center gap-2 text-sm hover:underline"
-                                                >
-                                                    <img
-                                                        src={swap.proposedItem.image}
-                                                        alt={swap.proposedItem.title}
-                                                        className="w-7 h-7 object-cover rounded"
-                                                    />
-                                                    <div className="flex flex-col">
-                                                        <span className="font-medium leading-none">{swap.proposedItem.title}</span>
-                                                    </div>
+                                                <Link to={`/item/${swap.proposedItem.id}`} className="flex items-center gap-2 text-sm hover:underline">
+                                                    <img src={swap.proposedItem.image} alt={swap.proposedItem.title} className="w-7 h-7 object-cover rounded" />
+                                                    <span className="font-medium leading-none">{swap.proposedItem.title}</span>
                                                 </Link>
                                             </div>
                                             <RefreshCw className="w-3 h-3 text-muted-foreground" />
                                             <div className='border rounded-lg p-3 w-[200px]'>
-                                                <Link
-                                                    to={`/item/${swap.receiverItem.id}`}
-                                                    className="flex items-center gap-2 text-sm hover:underline"
-                                                >
-                                                    <img
-                                                        src={swap.receiverItem.image}
-                                                        alt={swap.receiverItem.title}
-                                                        className="w-7 h-7 object-cover rounded"
-                                                    />
-                                                    <div className="flex flex-col">
-                                                        <span className="font-medium leading-none">{swap.receiverItem.title}</span>
-                                                    </div>
+                                                <Link to={`/item/${swap.receiverItem.id}`} className="flex items-center gap-2 text-sm hover:underline">
+                                                    <img src={swap.receiverItem.image} alt={swap.receiverItem.title} className="w-7 h-7 object-cover rounded" />
+                                                    <span className="font-medium leading-none">{swap.receiverItem.title}</span>
                                                 </Link>
                                             </div>
-
                                         </div>
 
-                                        <div className="flex flex-col sm:items-end gap-2 w-full sm:w-[130px]" >
+                                        <div className="flex flex-col sm:items-end gap-2 w-full sm:w-[130px]">
                                             {renderStatusBadge(swap.status)}
+                                            {swap.status === "ACCEPTED" && <Button size="sm" variant="outline" className="h-6 px-2 text-[10px]" onClick={() => handleCancelSwapProposal(swap.id)}>
+                                                <Trash2 className="h-3 w-3 mr-1" /> Cancel
+                                            </Button>}
 
                                             {swap.status === "PENDING" && (
-                                                <div className="flex gap-1">
+                                                <div className="flex flex-wrap gap-1">
                                                     {loadingSwapId === swap.id ? (
                                                         <Button disabled size="sm" className="h-6 px-2 text-[10px]">
                                                             <RefreshCw className="h-3 w-3 animate-spin mr-1" /> Processing
@@ -145,36 +132,27 @@ function MySwaps() {
                                                             <Button size="sm" className="h-6 px-2 text-[10px]" onClick={() => handleAcceptSwapProposal(swap.id)}>
                                                                 <Check className="h-3 w-3 mr-1" /> Accept
                                                             </Button>
-                                                            <Button
-                                                                size="sm"
-                                                                variant="destructive"
-                                                                className="h-6 px-2 text-[10px]"
-                                                                onClick={() => handleRejectSwapProposal(swap.id)}
-                                                            >
+                                                            <Button size="sm" variant="destructive" className="h-6 px-2 text-[10px]" onClick={() => handleRejectSwapProposal(swap.id)}>
                                                                 <X className="h-3 w-3 mr-1" /> Decline
                                                             </Button>
+
                                                         </>
                                                     )}
                                                 </div>
                                             )}
-
                                         </div>
-
                                     </div>
+
                                     <Separator />
                                     <div className="bg-muted p-3 rounded-md text-sm">
                                         <h1 className="font-medium mb-1">Message:</h1>
                                         <p className="text-muted-foreground">{swap?.message}</p>
                                     </div>
-
                                 </Card>
-
                             ))}
                         </div>
-                    )
-                    }
-                </TabsContent >
-
+                    )}
+                </TabsContent>
                 <TabsContent value="outgoing" className="mt-6">
                     {user?.proposedSwaps?.length === 0 ? (
                         <p className="text-center text-muted-foreground">No outgoing offers</p>
@@ -183,12 +161,10 @@ function MySwaps() {
                             {user?.proposedSwaps.map((swap) => (
                                 <Card key={swap.id} className="gap-2 p-3 border rounded-lg shadow-sm">
                                     <div className='flex justify-between items-center gap-4 flex-wrap'>
-
-                                        {/* YOU (Proposer) */}
                                         <div className="flex items-center gap-2 w-[160px] min-w-[140px]">
                                             <Avatar>
-                                                <AvatarImage src={user.image || undefined} />
-                                                <AvatarFallback>{user.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+                                                <AvatarImage src={user?.image || undefined} />
+                                                <AvatarFallback>{user.name?.[0]?.toUpperCase() || "U"}</AvatarFallback>
                                             </Avatar>
                                             <div className="text-xs">
                                                 <p className="font-medium">{user.name}</p>
@@ -196,43 +172,22 @@ function MySwaps() {
                                             </div>
                                         </div>
 
-                                        {/* Your Item */}
                                         <div className='border rounded-lg p-3 w-[200px]'>
-                                            <Link
-                                                to={`/item/${swap.proposedItem.id}`}
-                                                className="flex items-center gap-2 text-sm hover:underline"
-                                            >
-                                                <img
-                                                    src={swap.proposedItem.image}
-                                                    alt={swap.proposedItem.title}
-                                                    className="w-7 h-7 object-cover rounded"
-                                                />
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium leading-none">{swap.proposedItem.title}</span>
-                                                </div>
+                                            <Link to={`/item/${swap.proposedItem.id}`} className="flex items-center gap-2 text-sm hover:underline">
+                                                <img src={swap.proposedItem.image} alt={swap.proposedItem.title} className="w-7 h-7 object-cover rounded" />
+                                                <span className="font-medium leading-none">{swap.proposedItem.title}</span>
                                             </Link>
                                         </div>
 
                                         <RefreshCw className="w-3 h-3 text-muted-foreground" />
 
-                                        {/* Their Item */}
                                         <div className='border rounded-lg p-3 w-[200px]'>
-                                            <Link
-                                                to={`/item/${swap.receiverItem.id}`}
-                                                className="flex items-center gap-2 text-sm hover:underline"
-                                            >
-                                                <img
-                                                    src={swap.receiverItem.image}
-                                                    alt={swap.receiverItem.title}
-                                                    className="w-7 h-7 object-cover rounded"
-                                                />
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium leading-none">{swap.receiverItem.title}</span>
-                                                </div>
+                                            <Link to={`/item/${swap.receiverItem.id}`} className="flex items-center gap-2 text-sm hover:underline">
+                                                <img src={swap.receiverItem.image} alt={swap.receiverItem.title} className="w-7 h-7 object-cover rounded" />
+                                                <span className="font-medium leading-none">{swap.receiverItem.title}</span>
                                             </Link>
                                         </div>
 
-                                        {/* Receiver */}
                                         <div className="flex flex-col items-end sm:items-end gap-2 w-[160px] min-w-[140px]">
                                             <div className="flex items-center gap-2">
                                                 <div className="text-xs text-right">
@@ -241,10 +196,27 @@ function MySwaps() {
                                                 </div>
                                                 <Avatar>
                                                     <AvatarImage src={swap.receiver.image || undefined} />
-                                                    <AvatarFallback>{swap.receiver.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+                                                    <AvatarFallback>{swap.receiver.name?.[0]?.toUpperCase() || "U"}</AvatarFallback>
                                                 </Avatar>
                                             </div>
                                             {renderStatusBadge(swap.status)}
+
+                                            {swap.status === "PENDING" && (
+                                                loadingSwapId === swap.id ? (
+                                                    <Button disabled size="sm" className="h-6 px-2 text-[10px]">
+                                                        <RefreshCw className="h-3 w-3 animate-spin mr-1" /> Processing
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="h-6 px-2 text-[10px]"
+                                                        onClick={() => handleCancelSwapProposal(swap.id)}
+                                                    >
+                                                        <Trash2 className="h-3 w-3 mr-1" /> Cancel Swap
+                                                    </Button>
+                                                )
+                                            )}
                                         </div>
                                     </div>
 
@@ -259,12 +231,8 @@ function MySwaps() {
                         </div>
                     )}
                 </TabsContent>
-
-
-
-
-            </Tabs >
-        </div >
+            </Tabs>
+        </div>
     );
 }
 

@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { protectRoute } from "../middlewares/protectRoute";
-import { handleAcceptSwapProposal, handleAddItem, handleGetBrowseItems, handleGetItem, handleGetMyItems, handleRejectSwapProposal, handleSendSwapPropsal } from "../controllers/item";
+import { handleAcceptSwapProposal, handleAddItem, handleCancelSwapProposal, handleGetBrowseItems, handleGetItem, handleGetMyItems, handleRejectSwapProposal, handleSendSwapPropsal } from "../controllers/item";
 
 const itemRoutes = new Hono();
 
@@ -11,5 +11,6 @@ itemRoutes.get("/get-item",handleGetItem);
 itemRoutes.post("/swap-proposal", protectRoute,handleSendSwapPropsal);
 itemRoutes.put("/accept-swap-proposal", protectRoute, handleAcceptSwapProposal);
 itemRoutes.put("/reject-swap-proposal", protectRoute, handleRejectSwapProposal);
+itemRoutes.put("/cancel-swap-proposal", protectRoute, handleCancelSwapProposal);
 
 export default itemRoutes

@@ -299,6 +299,8 @@ export async function handleRejectSwapProposal(c: Context) {
 
     if (!proposalId) return c.json({ msg: "Missing proposal id" }, 400);
     const parsedProposalId = parseInt(proposalId);
+    if (isNaN(parsedProposalId))
+      return c.json({ msg: "Invalid proposal id" }, 400);
 
     const proposal = await prisma.swapProposal.findUnique({
       where: { id: parsedProposalId },
@@ -319,6 +321,61 @@ export async function handleRejectSwapProposal(c: Context) {
     });
 
     return c.json({ msg: "Rejected swap proposal" }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+export async function handleCancelSwapProposal(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  const proposalId = c.req.query("id");
+
+  try {
+    if (!id) return c.json({ msg: "Unauthorized" }, 400);
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) return c.json({ msg: "User not found" }, 404);
+    if (!proposalId) return c.json({ msg: "Missing proposal id" }, 400);
+    const parsedProposalId = parseInt(proposalId);
+    if (isNaN(parsedProposalId))
+      return c.json({ msg: "Invalid proposal id" }, 400);
+
+    const proposal = await prisma.swapProposal.findUnique({
+      where: { id: parsedProposalId },
+    });
+    if (!proposal) return c.json({ msg: "No swap proposal found" }, 404);
+
+    if (user.id !== proposal.proposerId && user.id !== proposal.receiverId) {
+      return c.json({ msg: "Unauthorized to cancel the swap proposal" }, 400);
+    }
+    if (
+      proposal.status === "REJECTED" ||
+      proposal.status === "CANCELLED"
+    ) {
+      return c.json(
+        { msg: `Cannot cancel a ${proposal.status.toLowerCase()} proposal.` },
+        400
+      );
+    }
+
+    await prisma.$transaction([
+      prisma.swapProposal.update({
+        where: { id: proposal.id },
+        data: { status: "CANCELLED" },
+      }),
+      prisma.item.update({
+        where: { id: proposal.proposedItemId },
+        data: { isSwapped: false },
+      }),
+      prisma.item.update({
+        where: { id: proposal.receiverItemId },
+        data: { isSwapped: false },
+      }),
+    ]);
+    return c.json({ msg: "Swap Proposal Cancelled" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

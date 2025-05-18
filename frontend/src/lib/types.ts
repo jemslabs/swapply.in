@@ -49,7 +49,7 @@ export type ItemType = {
   image: string | undefined;
   createdAt: Date;
   rating: number;
-  isSwapped: boolean
+  isSwapped: boolean;
 };
 
 export type SendPropsalType = {
@@ -60,14 +60,13 @@ export type SendPropsalType = {
 };
 
 export type proposalType = {
-  id: number
+  id: number;
   receiver: user;
   proposer: user;
   proposedItem: ItemType;
   receiverItem: ItemType;
-  status: string
+  status: string;
 } & SendPropsalType;
-
 
 export type useAppType = {
   addItem: (data: FormData) => void;
@@ -84,7 +83,7 @@ export type useAppType = {
   sendSwapPropsal: (data: SendPropsalType) => void;
   acceptSwapProposal: (id: string | number) => void;
   rejectSwapProposal: (id: string | number) => void;
-
+  cancelSwapProposal: (id: string | number) => void;
 };
 export type useAuthType = {
   user: user | null;

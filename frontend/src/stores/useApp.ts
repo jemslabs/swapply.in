@@ -122,4 +122,25 @@ export const useApp = create<useAppType>((set) => ({
       }
     }
   },
+  cancelSwapProposal: async (id) => {
+    try {
+      const res = await axios.put(
+        `${endpoint}/api/item/cancel-swap-proposal?id=${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
 }));

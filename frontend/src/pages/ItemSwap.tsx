@@ -22,7 +22,7 @@ import type { ItemType } from "@/lib/types";
 function ItemSwap() {
   const { id } = useParams();
   const { getItem, sendSwapPropsal } = useApp();
-  const { user } = useAuth();
+  const { user, fetchUser } = useAuth();
   const [isSending, setIsSending] = useState(false)
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [message, setMessage] = useState('')
@@ -55,7 +55,8 @@ function ItemSwap() {
       receiverId: data?.userId
     };
     setIsSending(true);
-    await sendSwapPropsal(proposalData)
+    await sendSwapPropsal(proposalData);
+    fetchUser();
     setIsSending(false)
   }
   return (

@@ -65,11 +65,11 @@ export const useApp = create<useAppType>((set) => ({
   sendSwapPropsal: async (data) => {
     try {
       const res = await axios.post(`${endpoint}/api/item/swap-proposal`, data, {
-        withCredentials: true
+        withCredentials: true,
       });
 
-      if(res.status === 200){
-        toast.success(res.data.msg)
+      if (res.status === 200) {
+        toast.success(res.data.msg);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -79,5 +79,47 @@ export const useApp = create<useAppType>((set) => ({
         toast.error(errorMsg);
       }
     }
-  }
+  },
+  acceptSwapProposal: async (id) => {
+    try {
+      const res = await axios.put(
+        `${endpoint}/api/item/accept-swap-proposal?id=${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
+  rejectSwapProposal: async (id) => {
+    try {
+      const res = await axios.put(
+        `${endpoint}/api/item/reject-swap-proposal?id=${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
 }));

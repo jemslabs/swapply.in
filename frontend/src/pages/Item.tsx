@@ -54,6 +54,7 @@ function Item() {
     location,
     createdAt,
     user,
+    isSwapped,
   } = data;
   const hasDiscount =
     originalPrice &&
@@ -63,7 +64,9 @@ function Item() {
     ? Math.round(
       ((originalPrice - currentPrice) / originalPrice) * 100
     )
-    : 0
+    : 0;
+
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className=" gap-6">
@@ -157,12 +160,19 @@ function Item() {
                 )}
               </div>
             </div>
-            <Link to={`/item/${id}/swap`} className="w-full">
-            <Button className="w-full">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Propose a Swap
-            </Button>
-            </Link>
+            {isSwapped ? (
+              <Button className="w-full" disabled variant="outline">
+                This item has already been swapped
+              </Button>
+            ) : (
+              <Link to={`/item/${id}/swap`} className="w-full">
+                <Button className="w-full">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Propose a Swap
+                </Button>
+              </Link>
+            )}
+
           </CardContent>
         </Card>
         <div className="w-full md:w-1/3 mt-5">

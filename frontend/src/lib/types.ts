@@ -49,6 +49,7 @@ export type ItemType = {
   image: string | undefined;
   createdAt: Date;
   rating: number;
+  isSwapped: boolean
 };
 
 export type SendPropsalType = {
@@ -81,6 +82,9 @@ export type useAppType = {
   getMyItems: () => Promise<ItemType[] | []>;
   getItem: (id: string | undefined) => Promise<ItemType | null>;
   sendSwapPropsal: (data: SendPropsalType) => void;
+  acceptSwapProposal: (id: string | number) => void;
+  rejectSwapProposal: (id: string | number) => void;
+
 };
 export type useAuthType = {
   user: user | null;

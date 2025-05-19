@@ -11,6 +11,7 @@ import MyItems from "./pages/MyItems"
 import Item from "./pages/Item"
 import ItemSwap from "./pages/ItemSwap"
 import MySwaps from "./pages/MySwaps"
+import CreateCircle from "./pages/CreateCircle"
 
 
 function App() {
@@ -23,11 +24,12 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/item/add" element={<AddItem />} />
-          <Route path="/browse" element={<Browse />}/>
+          <Route path="/browse" element={<Browse />} />
           <Route path="/my-items" element={<MyItems />} />
-          <Route path="/my-swaps" element={<MySwaps />}/>
-          <Route path="/item/:id" element={<Item />}/>
-          <Route path="/item/:id/swap" element={<ItemSwap />}/>
+          <Route path="/my-swaps" element={<MySwaps />} />
+          <Route path="/item/:id" element={<Item />} />
+          <Route path="/item/:id/swap" element={<ItemSwap />} />
+          <Route path="/circles/create" element={<CreateCircle />} />
         </Routes>
       </div>
       <Toaster position="top-center" />

@@ -41,3 +41,9 @@ export const swapProposalSchema = z.object({
   receiverItemId: z.preprocess(val => Number(val), z.number()),
   message: z.string().optional(),
 });
+
+export const createCircleSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  image: z.any(),
+})

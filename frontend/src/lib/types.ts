@@ -84,6 +84,7 @@ export type useAppType = {
   acceptSwapProposal: (id: string | number) => void;
   rejectSwapProposal: (id: string | number) => void;
   cancelSwapProposal: (id: string | number) => void;
+  createCircle: (data: FormData) => void;
 };
 export type useAuthType = {
   user: user | null;

@@ -9,40 +9,42 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  image    String?
-  email    String  @unique
-  password String
-  items    Item[]
-
+  id            Int            @id @default(autoincrement())
+  name          String
+  image         String?
+  email         String         @unique
+  password      String
+  items         Item[]
+  circles       CircleMember[]
   proposedSwaps SwapProposal[] @relation("Proposer")
   receivedSwaps SwapProposal[] @relation("Receiver")
-
-  updateAt  DateTime @default(now())
-  createdAt DateTime @updatedAt
+  addedItems    CircleItem[]
+  updateAt      DateTime       @default(now())
+  createdAt     DateTime       @updatedAt
 }
 
 model Item {
-  id              Int            @id @default(autoincrement())
-  userId          Int
-  user            User           @relation(fields: [userId], references: [id])
-  title           String
-  description     String         @db.Text
-  image           String
-  currentPrice    Float          @default(1)
-  originalPrice   Float          @default(1)
-  currencyType    CurrencyType   @default(INR)
-  company         String
-  category        Category
-  condition       ItemCondition
-  barterType      BarterType     @default(ONLINE)
-  location        String?
-  hasBill         Boolean        @default(false)
-  rating          Float?         @default(0)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  isSwapped       Boolean        @default(false)
+  id            Int           @id @default(autoincrement())
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id])
+  title         String
+  description   String        @db.Text
+  image         String
+  currentPrice  Float         @default(1)
+  originalPrice Float         @default(1)
+  currencyType  CurrencyType  @default(INR)
+  company       String
+  category      Category
+  condition     ItemCondition
+  barterType    BarterType    @default(ONLINE)
+  location      String?
+  hasBill       Boolean       @default(false)
+  rating        Float?        @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  isSwapped     Boolean       @default(false)
+
+  circles         CircleItem[]
   proposerInSwaps SwapProposal[] @relation("ProposerItem")
   receiverInSwaps SwapProposal[] @relation("ReceiverItem")
 }
@@ -67,6 +69,39 @@ model SwapProposal {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Circle {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String         @db.Text
+  image       String?
+  members     CircleMember[]
+  items       CircleItem[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model CircleMember {
+  id       Int        @id @default(autoincrement())
+  userId   Int
+  user     User       @relation(fields: [userId], references: [id])
+  circleId Int
+  circle   Circle     @relation(fields: [circleId], references: [id])
+  role     MemberRole @default(MEMBER)
+
+  @@unique([userId, circleId])
+}
+
+model CircleItem {
+  id         Int     @id @default(autoincrement())
+  itemId     Int
+  item       Item    @relation(fields: [itemId], references: [id])
+  circleId   Int
+  circle     Circle  @relation(fields: [circleId], references: [id])
+  userId     Int
+  user       User    @relation(fields: [userId], references: [id])
+  isApproved Boolean @default(false)
 }
 
 enum SwapStatus {
@@ -103,4 +138,9 @@ enum ItemCondition {
 enum BarterType {
   INPERSON
   ONLINE
+}
+
+enum MemberRole {
+  ADMIN
+  MEMBER
 }

@@ -143,4 +143,21 @@ export const useApp = create<useAppType>((set) => ({
       }
     }
   },
+  createCircle: async (data) => {
+    try {
+      const res = await axios.post(`${endpoint}/api/circle/create`, data, {
+        withCredentials: true
+      });
+      if(res.status === 200){
+        toast.success(res.data.msg)
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
 }));

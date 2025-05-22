@@ -146,6 +146,50 @@ export const useApp = create<useAppType>((set) => ({
   createCircle: async (data) => {
     try {
       const res = await axios.post(`${endpoint}/api/circle/create`, data, {
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
+  fetchMyCircles: async () => {
+    try {
+      const res = await axios.get(`${endpoint}/api/circle/get-my-circles`, {
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch (error) {
+      return [];
+    }
+  },
+  fetchCircle: async (id) => {
+    try {
+      const res = await axios.get(
+        `${endpoint}/api/circle/get-circle?circleId=${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch (error) {
+      return null;
+    }
+  },
+  joinCircle: async (id) => {
+    try {
+      const res = await axios.post(`${endpoint}/api/circle/join?circleId=${id}`,{}, {
         withCredentials: true
       });
       if(res.status === 200){
@@ -160,4 +204,22 @@ export const useApp = create<useAppType>((set) => ({
       }
     }
   },
+  addItemCircle: async (data) =>{
+    try {
+      const res = await axios.post(`${endpoint}/api/circle/add-item`, data, {
+        withCredentials: true
+      });
+
+      if(res.status === 200){
+        toast.success(res.data.msg)
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  } 
 }));

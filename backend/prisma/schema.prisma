@@ -94,14 +94,15 @@ model CircleMember {
 }
 
 model CircleItem {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   itemId     Int
-  item       Item    @relation(fields: [itemId], references: [id])
+  item       Item     @relation(fields: [itemId], references: [id])
   circleId   Int
-  circle     Circle  @relation(fields: [circleId], references: [id])
+  circle     Circle   @relation(fields: [circleId], references: [id])
   userId     Int
-  user       User    @relation(fields: [userId], references: [id])
-  isApproved Boolean @default(false)
+  user       User     @relation(fields: [userId], references: [id])
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }
 
 enum SwapStatus {

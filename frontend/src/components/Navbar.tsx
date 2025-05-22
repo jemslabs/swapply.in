@@ -9,6 +9,7 @@ import {
   User,
   Compass,
   Plus,
+  Users,
 } from "lucide-react";
 import {
   Popover,
@@ -26,8 +27,13 @@ function Navbar() {
     {
       name: "Browse",
       to: "/browse",
-      icon: <Compass className="w-4 h-4" />,
+      icon: <Compass className="w-3 h-3" />,
     },
+    {
+      name: "Circles",
+      to: "/circles",
+      icon: <Users className="w-3 h-3" />
+    }
   ];
 
   return (

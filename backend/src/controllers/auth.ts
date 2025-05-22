@@ -76,7 +76,11 @@ export async function handleGetUser(c: Context) {
             receiverItem: true,
           },
         },
-
+        circles: {
+          include: {
+            circle: true
+          }
+        }
       },
     });
     if (!user) return c.json({ msg: "User doesn't exists" }, 400);

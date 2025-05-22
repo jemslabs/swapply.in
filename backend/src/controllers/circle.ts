@@ -194,7 +194,8 @@ export async function handleApproveItem(c: Context) {
         },
       },
     });
-    if (!member) return c.json({ msg: "You are not a member of this circle" }, 400);
+    if (!member)
+      return c.json({ msg: "You are not a member of this circle" }, 400);
     if (member.role !== "ADMIN") {
       return c.json({ msg: "Only admin can approve items" }, 400);
     }
@@ -205,6 +206,77 @@ export async function handleApproveItem(c: Context) {
     });
 
     return c.json({ msg: "Item got approved" }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleGetMyCircles(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  try {
+    if (!id) return c.json({ msg: "Unauthorized" }, 400);
+
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) return c.json({ msg: "User not found" }, 404);
+
+    const myCircles = await prisma.circleMember.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        circle: {
+          include: {
+            members: true,
+          },
+        },
+      },
+    });
+    if (myCircles.length === 0) {
+      return c.json({ msg: "No circles found" }, 404);
+    }
+
+    return c.json(myCircles, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleGetCircle(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  const circleId = c.req.query("circleId");
+  try {
+    if (!id) return c.json({ msg: "Unauthorized" }, 400);
+
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) return c.json({ msg: "User not found" }, 404);
+    if (!circleId) return c.json({ msg: "Circle id not provided" }, 400);
+    const parsedCircleId = parseInt(circleId);
+
+    const circle = await prisma.circle.findUnique({
+      where: {
+        id: parsedCircleId,
+      },
+      include: {
+        members: {
+          include: {
+            user: true,
+          },
+        },
+        items: {
+          include: {
+            item: true,
+            user: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+    if (!circle) return c.json({ msg: "Circle Not found" }, 404);
+    return c.json(circle, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

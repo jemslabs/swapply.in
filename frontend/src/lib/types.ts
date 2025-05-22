@@ -9,6 +9,7 @@ type user = {
   items: ItemType[];
   proposedSwaps: proposalType[];
   receivedSwaps: proposalType[];
+  circles: memberType[]
 };
 
 type loginData = {
@@ -67,7 +68,34 @@ export type proposalType = {
   receiverItem: ItemType;
   status: string;
 } & SendPropsalType;
+export type memberType = {
+  id: number;
+  userId: number;
+  user: user;
+  circleId: number;
+  circle: circleType;
+  role: string;
+};
 
+export type circleItemType = {
+  id: number;
+  itemId: number;
+  item: ItemType;
+  circleId: number;
+  userId: number;
+  user: user;
+  isApproved: boolean;
+};
+export type circleType = {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  items: circleItemType[];
+  members: memberType[];
+  createdAt: Date;
+  updatedAt: Date;
+};
 export type useAppType = {
   addItem: (data: FormData) => void;
   getBrowseItems: (data: {
@@ -85,6 +113,13 @@ export type useAppType = {
   rejectSwapProposal: (id: string | number) => void;
   cancelSwapProposal: (id: string | number) => void;
   createCircle: (data: FormData) => void;
+  fetchMyCircles: () => Promise<memberType[] | []>;
+  fetchCircle: (id: string | undefined) => Promise<circleType | null>;
+  joinCircle: (id: string | number |undefined) => void;
+  addItemCircle: (data: {
+    itemId: string | number | undefined;
+    circleId: string | number | undefined;
+  }) => void;
 };
 export type useAuthType = {
   user: user | null;

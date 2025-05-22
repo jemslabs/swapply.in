@@ -9,7 +9,7 @@ type user = {
   items: ItemType[];
   proposedSwaps: proposalType[];
   receivedSwaps: proposalType[];
-  circles: memberType[]
+  circles: memberType[];
 };
 
 type loginData = {
@@ -115,11 +115,12 @@ export type useAppType = {
   createCircle: (data: FormData) => void;
   fetchMyCircles: () => Promise<memberType[] | []>;
   fetchCircle: (id: string | undefined) => Promise<circleType | null>;
-  joinCircle: (id: string | number |undefined) => void;
+  joinCircle: (id: string | number | undefined) => void;
   addItemCircle: (data: {
     itemId: string | number | undefined;
     circleId: string | number | undefined;
   }) => void;
+  leaveCircle: (id: string | number | undefined) => void;
 };
 export type useAuthType = {
   user: user | null;

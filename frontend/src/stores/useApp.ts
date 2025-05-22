@@ -221,5 +221,22 @@ export const useApp = create<useAppType>((set) => ({
         toast.error(errorMsg);
       }
     }
-  } 
+  } ,
+  leaveCircle: async (id) => {
+    try {
+      const res = await axios.delete(`${endpoint}/api/circle/leave?circleId=${id}`, {
+        withCredentials: true
+      });
+      if(res.status === 200){
+        toast.success(res.data.msg)
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
 }));

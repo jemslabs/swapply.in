@@ -281,3 +281,52 @@ export async function handleGetCircle(c: Context) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
+
+export async function handleLeaveCircle(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  const circleId = c.req.query("circleId");
+  try {
+    if (!id) return c.json({ msg: "Unauthorized" }, 400);
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) return c.json({ msg: "User not found" }, 404);
+    if (!circleId) return c.json({ msg: "Circle Id not provided" }, 400);
+    const parsedCircleId = parseInt(circleId);
+    const circle = await prisma.circle.findUnique({
+      where: {
+        id: parsedCircleId,
+      },
+    });
+
+    if (!circle) return c.json({ msg: "Circle not found" }, 404);
+
+    const isAlreadyIn = await prisma.circleMember.findUnique({
+      where: {
+        userId_circleId: {
+          userId: user.id,
+          circleId: parsedCircleId,
+        },
+      },
+    });
+
+    if (!isAlreadyIn)
+      return c.json({ msg: "You are not part of this circle" }, 400);
+    if(isAlreadyIn.role === "ADMIN") {
+      return c.json({msg: "Admins cannot leave this group"}, 400);
+    }
+
+    await prisma.circleMember.delete({
+      where: {
+        id: isAlreadyIn.id
+      }
+    });
+    
+    return c.json({ msg: "Leaved this circle" }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}

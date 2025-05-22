@@ -4,16 +4,18 @@ import { Separator } from "@/components/ui/separator";
 import type { memberType } from "@/lib/types";
 import { useApp } from "@/stores/useApp";
 import { useAuth } from "@/stores/useAuth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, LogOut, Users } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 function CirclePage() {
   const { id } = useParams();
-  const { fetchCircle, joinCircle } = useApp();
+  const { fetchCircle, joinCircle, leaveCircle } = useApp();
   const { user } = useAuth();
   const [isJoining, setIsJoining] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
+  const queryClient = useQueryClient();
   const { data } = useQuery({
     queryKey: ["circle", id],
     queryFn: async () => {
@@ -28,7 +30,14 @@ function CirclePage() {
   const handleJoinCircle = async (circleId: number | undefined | string) => {
     setIsJoining(true)
     await joinCircle(circleId)
+    await queryClient.invalidateQueries({ queryKey: ["circle", id] })
     setIsJoining(false)
+  }
+  const handleLeaveCircle = async (circleId: number | undefined | string) => {
+    setIsLeaving(true)
+    await leaveCircle(circleId)
+    await queryClient.invalidateQueries({ queryKey: ["circle", id] })
+    setIsLeaving(false)
   }
   return (
     <div className="px-8 py-10 max-w-7xl mx-auto">
@@ -50,7 +59,16 @@ function CirclePage() {
           </div>
         </div>
         {isJoined ?
-          <Button className="shrink-0" variant={"destructive"}><LogOut /> Leave</Button>
+          <Button className="shrink-0" disabled={isLeaving} variant={"destructive"} onClick={() => handleLeaveCircle(data?.id)}> {isLeaving ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </div>
+          ) : (
+            <>
+              <LogOut />
+              Leave
+            </>
+          )}</Button>
           :
           <Button className="shrink-0" disabled={isJoining} onClick={() => handleJoinCircle(data?.id)}> {isJoining ? (
             <div className="flex items-center gap-2">

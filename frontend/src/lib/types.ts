@@ -121,6 +121,7 @@ export type useAppType = {
     circleId: string | number | undefined;
   }) => void;
   leaveCircle: (id: string | number | undefined) => void;
+  approveItem: (id: string | number | undefined) => void
 };
 export type useAuthType = {
   user: user | null;

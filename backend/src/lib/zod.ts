@@ -11,13 +11,13 @@ export const addItemSchema = z.object({
   image: z.any(),
   currentPrice: z
     .string()
-    .transform((val) => parseFloat(val))  // Converts the string to number
+    .transform((val) => parseFloat(val)) // Converts the string to number
     .refine((val) => !isNaN(val), {
       message: "Current Price must be a valid number",
     }),
   originalPrice: z
     .string()
-    .transform((val) => parseFloat(val))  // Converts the string to number
+    .transform((val) => parseFloat(val)) // Converts the string to number
     .refine((val) => !isNaN(val), {
       message: "Original Price must be a valid number",
     }),
@@ -25,20 +25,18 @@ export const addItemSchema = z.object({
   company: z.string(),
   category: z.string(),
   condition: z.string(),
-  barterType: z.string(),
-  location: z.string().optional(),
   hasBill: z
     .string()
-    .transform((val) => val === "true")  // Converts "true"/"false" string to boolean
+    .transform((val) => val === "true") // Converts "true"/"false" string to boolean
     .refine((val) => typeof val === "boolean", {
       message: "Has Bill must be a valid boolean",
     }),
 });
 
 export const swapProposalSchema = z.object({
-  receiverId: z.preprocess(val => Number(val), z.number()),
-  proposedItemId: z.preprocess(val => Number(val), z.number()),
-  receiverItemId: z.preprocess(val => Number(val), z.number()),
+  receiverId: z.preprocess((val) => Number(val), z.number()),
+  proposedItemId: z.preprocess((val) => Number(val), z.number()),
+  receiverItemId: z.preprocess((val) => Number(val), z.number()),
   message: z.string().optional(),
 });
 
@@ -46,4 +44,12 @@ export const createCircleSchema = z.object({
   name: z.string(),
   description: z.string(),
   image: z.any(),
-})
+});
+
+export const scheduleProposalMeeting = z.object({
+  swapProposalId: z.number(),
+  meetingLocation: z.string(),
+  date: z.string(),
+  time: z.string(),
+  notes: z.string().optional(),
+});

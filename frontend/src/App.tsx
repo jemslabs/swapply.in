@@ -14,6 +14,7 @@ import MySwaps from "./pages/MySwaps"
 import CreateCircle from "./pages/CreateCircle"
 import Circles from "./pages/Circles"
 import CirclePage from "./pages/CirclePage"
+import SwapPage from "./pages/SwapPage"
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/circles" element={<Circles />} />
           <Route path="/circles/create" element={<CreateCircle />} />
           <Route path="/circles/:id" element={<CirclePage />} />
+          <Route path="/swap/:id" element={<SwapPage />}/>
         </Routes>
       </div>
       <Toaster position="top-center" />

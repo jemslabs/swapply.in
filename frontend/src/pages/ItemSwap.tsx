@@ -25,7 +25,7 @@ function ItemSwap() {
   const { user, fetchUser } = useAuth();
   const [isSending, setIsSending] = useState(false)
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('');;
   const { data, isLoading, isError } = useQuery({
     queryKey: ["swap-item", id],
     queryFn: async () => {
@@ -52,7 +52,7 @@ function ItemSwap() {
       proposedItemId: selectedItemId ?? undefined,
       receiverItemId: data?.id,
       message: message,
-      receiverId: data?.userId
+      receiverId: data?.userId,
     };
     setIsSending(true);
     await sendSwapPropsal(proposalData);

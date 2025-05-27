@@ -36,8 +36,6 @@ model Item {
   company       String
   category      Category
   condition     ItemCondition
-  barterType    BarterType    @default(ONLINE)
-  location      String?
   hasBill       Boolean       @default(false)
   rating        Float?        @default(0)
   createdAt     DateTime      @default(now())
@@ -64,11 +62,22 @@ model SwapProposal {
   receiverItemId Int
   receiverItem   Item @relation("ReceiverItem", fields: [receiverItemId], references: [id])
 
-  message String?    @db.Text
-  status  SwapStatus @default(PENDING)
+  message      String?       @db.Text
+  status       SwapStatus    @default(PENDING)
+  swapInperson SwapInperson?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model SwapInperson {
+  id              Int           @id @default(autoincrement())
+  swapProposalId  Int           @unique
+  swapProposal    SwapProposal  @relation(fields: [swapProposalId], references: [id])
+  meetingLocation String
+  date            DateTime
+  time            String?
+  meetingStatus   MeetingStatus @default(SCHEDULED)
+  notes           String?
 }
 
 model Circle {
@@ -136,12 +145,13 @@ enum ItemCondition {
   DAMAGED
 }
 
-enum BarterType {
-  INPERSON
-  ONLINE
-}
-
 enum MemberRole {
   ADMIN
   MEMBER
+}
+
+enum MeetingStatus {
+  CANCELLED
+  SCHEDULED
+  RESHEDULED
 }

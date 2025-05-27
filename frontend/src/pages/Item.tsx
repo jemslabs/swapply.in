@@ -53,9 +53,7 @@ function Item() {
     company,
     category,
     condition,
-    barterType,
     hasBill,
-    location,
     createdAt,
     user,
     isSwapped,
@@ -131,18 +129,9 @@ function Item() {
                 </Badge>
               </div>
               <div>
-                <span className="font-semibold">Barter Type:</span>{" "}
-                <Badge variant="outline">{barterType}</Badge>
-              </div>
-              <div>
                 <span className="font-semibold">Has Bill:</span>{" "}
                 {hasBill ? "Yes" : "No"}
               </div>
-              {barterType === "INPERSON" && (
-                <div>
-                  <span className="font-semibold">Location:</span> {location}
-                </div>
-              )}
             </div>
 
             <div className="pt-4">

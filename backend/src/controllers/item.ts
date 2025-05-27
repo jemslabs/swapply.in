@@ -1,6 +1,10 @@
 import { Context } from "hono";
 import { prismaClient } from "../lib/prisma";
-import { addItemSchema, swapProposalSchema } from "../lib/zod";
+import {
+  addItemSchema,
+  scheduleProposalMeeting,
+  swapProposalSchema,
+} from "../lib/zod";
 import { uploadToCloudinary } from "../lib/cloudinary";
 
 export async function handleAddItem(c: Context) {
@@ -28,11 +32,10 @@ export async function handleAddItem(c: Context) {
       currencyType,
       currentPrice,
       originalPrice,
-      barterType,
+
       condition,
       hasBill,
       image,
-      location,
     } = validatedData.data;
 
     let imageUrl;
@@ -51,8 +54,6 @@ export async function handleAddItem(c: Context) {
         currencyType,
         currentPrice,
         originalPrice,
-        barterType,
-        location: barterType === "INPERSON" ? location : null,
         hasBill,
         condition,
         image: imageUrl || null,
@@ -351,10 +352,7 @@ export async function handleCancelSwapProposal(c: Context) {
     if (user.id !== proposal.proposerId && user.id !== proposal.receiverId) {
       return c.json({ msg: "Unauthorized to cancel the swap proposal" }, 400);
     }
-    if (
-      proposal.status === "REJECTED" ||
-      proposal.status === "CANCELLED"
-    ) {
+    if (proposal.status === "REJECTED" || proposal.status === "CANCELLED") {
       return c.json(
         { msg: `Cannot cancel a ${proposal.status.toLowerCase()} proposal.` },
         400
@@ -376,6 +374,107 @@ export async function handleCancelSwapProposal(c: Context) {
       }),
     ]);
     return c.json({ msg: "Swap Proposal Cancelled" }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleGetSwap(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  const swapId = c.req.query("swapId");
+  try {
+    if (!id) return c.json({ msg: "Unauthorized" }, 400);
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) return c.json({ msg: "User not found" }, 404);
+    if (!swapId) return c.json({ msg: "Swap Id not provided" }, 400);
+    const parsedSwapId = parseInt(swapId);
+
+    const swapProposal = await prisma.swapProposal.findUnique({
+      where: {
+        id: parsedSwapId,
+      },
+      include: {
+        proposer: true,
+        receiver: true,
+        proposedItem: true,
+        receiverItem: true,
+        swapInperson: true,
+      },
+    });
+    if(!swapProposal) return c.json({msg: "No swap proposal found"}, 404)
+    if (
+      swapProposal.receiverId !== user?.id &&
+      swapProposal.proposerId !== user?.id
+    ) {
+      return c.json({ msg: "Unauthorized" }, 400);
+    }
+
+    return c.json(swapProposal, 200);
+  } catch (error) {
+    console.error(error)
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleScheduleMeeting(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  const data = await c.req.json();
+  try {
+    if (!id) return c.json({ msg: "Unauthorized" }, 400);
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) return c.json({ msg: "User not found" }, 404);
+    const validatedData = scheduleProposalMeeting.safeParse(data);
+    if (!validatedData.success) {
+      return c.json({ msg: "Invalid or missing fields" }, 400);
+    }
+    const { date, swapProposalId, meetingLocation, notes, time } =
+      validatedData.data;
+
+    const swapProposal = await prisma.swapProposal.findUnique({
+      where: {
+        id: swapProposalId,
+      },
+    });
+    if (!swapProposal) return c.json({ msg: "SwapProposal not found" }, 404);
+    if (
+      swapProposal.receiverId !== user?.id &&
+      swapProposal.proposerId !== user?.id
+    ) {
+      return c.json({ msg: "Unauthorized" }, 400);
+    }
+
+    await prisma.swapInperson.upsert({
+      where: {
+        swapProposalId,
+      },
+      update: {
+        date,
+        meetingLocation,
+        notes,
+        time,
+        meetingStatus: "RESHEDULED",
+      },
+      create: {
+        date,
+        meetingLocation,
+        notes,
+        time,
+        meetingStatus: "SCHEDULED",
+        swapProposalId,
+      },
+    });
+
+    return c.json({ msg: "Success" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

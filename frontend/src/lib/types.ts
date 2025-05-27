@@ -27,8 +27,6 @@ export type AddItem = {
   company: string;
   category: string;
   condition: string;
-  barterType: string;
-  location: string;
   hasBill: boolean;
   image: File | null;
 };
@@ -44,8 +42,6 @@ export type ItemType = {
   company: string;
   category: string;
   condition: string;
-  barterType: string;
-  location: string;
   hasBill: boolean;
   image: string | undefined;
   createdAt: Date;
@@ -67,7 +63,23 @@ export type proposalType = {
   proposedItem: ItemType;
   receiverItem: ItemType;
   status: string;
+  swapInperson: swapInpersonType;
 } & SendPropsalType;
+
+export type swapInpersonType = {
+  id: number;
+    meetingStatus: string;
+} & AddSwapInpersonType;
+
+export type AddSwapInpersonType = {
+  swapProposalId: number;
+  meetingLocation: string;
+  date: string;
+  time: string;
+
+  notes: string;
+};
+
 export type memberType = {
   id: number;
   userId: number;
@@ -121,7 +133,9 @@ export type useAppType = {
     circleId: string | number | undefined;
   }) => void;
   leaveCircle: (id: string | number | undefined) => void;
-  approveItem: (id: string | number | undefined) => void
+  approveItem: (id: string | number | undefined) => void;
+  getSwap: (id: string | number | undefined) => Promise<proposalType | null>;
+  scheduleSwapMeeting: (data: AddSwapInpersonType) => void;
 };
 export type useAuthType = {
   user: user | null;

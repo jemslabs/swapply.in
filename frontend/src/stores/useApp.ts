@@ -1,6 +1,7 @@
 import type { useAppType } from "@/lib/types";
 import { endpoint } from "@/lib/utils";
 import axios from "axios";
+import { redirect } from "react-router-dom";
 import { toast } from "sonner";
 import { create } from "zustand";
 
@@ -189,11 +190,15 @@ export const useApp = create<useAppType>((set) => ({
   },
   joinCircle: async (id) => {
     try {
-      const res = await axios.post(`${endpoint}/api/circle/join?circleId=${id}`,{}, {
-        withCredentials: true
-      });
-      if(res.status === 200){
-        toast.success(res.data.msg)
+      const res = await axios.post(
+        `${endpoint}/api/circle/join?circleId=${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -204,14 +209,14 @@ export const useApp = create<useAppType>((set) => ({
       }
     }
   },
-  addItemCircle: async (data) =>{
+  addItemCircle: async (data) => {
     try {
       const res = await axios.post(`${endpoint}/api/circle/add-item`, data, {
-        withCredentials: true
+        withCredentials: true,
       });
 
-      if(res.status === 200){
-        toast.success(res.data.msg)
+      if (res.status === 200) {
+        toast.success(res.data.msg);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -221,14 +226,17 @@ export const useApp = create<useAppType>((set) => ({
         toast.error(errorMsg);
       }
     }
-  } ,
+  },
   leaveCircle: async (id) => {
     try {
-      const res = await axios.delete(`${endpoint}/api/circle/leave?circleId=${id}`, {
-        withCredentials: true
-      });
-      if(res.status === 200){
-        toast.success(res.data.msg)
+      const res = await axios.delete(
+        `${endpoint}/api/circle/leave?circleId=${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -241,11 +249,52 @@ export const useApp = create<useAppType>((set) => ({
   },
   approveItem: async (id) => {
     try {
-      const res = await axios.put(`${endpoint}/api/circle/approve-item?circleItemId=${id}`,{}, {
-        withCredentials: true
-      });
-      if(res.status === 200){
-        toast.success(res.data.msg)
+      const res = await axios.put(
+        `${endpoint}/api/circle/approve-item?circleItemId=${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
+  getSwap: async (id) => {
+    try {
+      const res = await axios.get(
+        `${endpoint}/api/item/get-swap?swapId=${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch (error) {
+      return null;
+    }
+  },
+  scheduleSwapMeeting: async (data) => {
+    try {
+      const res = await axios.post(
+        `${endpoint}/api/item/schedule-swap-meeting`,
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.status === 200) {
+        toast.success(res.data.msg);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

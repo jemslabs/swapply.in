@@ -37,8 +37,6 @@ function AddItem() {
     company: "",
     category: "",
     condition: "NEW",
-    barterType: "ONLINE",
-    location: "",
     hasBill: true,
     image: null,
   });
@@ -84,12 +82,8 @@ function AddItem() {
     formData.append("company", data.company);
     formData.append("category", data.category);
     formData.append("condition", data.condition);
-    formData.append("barterType", data.barterType);
     formData.append("hasBill", data.hasBill.toString());
 
-    if (data.location) {
-      formData.append("location", data.location);
-    }
 
     if (data.image) {
       formData.append("image", data.image);
@@ -293,30 +287,6 @@ function AddItem() {
           </div>
         </div>
         <div className="flex  items-center justify-between">
-          <div className="space-y-2">
-            <Label htmlFor="barte">Barter Type</Label>
-            <Select
-              value={data?.barterType}
-              onValueChange={(value: string) =>
-                setData({ ...data, barterType: value })
-              }
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select a barter type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="ONLINE">Online</SelectItem>
-                  <SelectItem value="INPERSON">In-Person</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            {data?.barterType === "ONLINE" && (
-              <p className="text-xs text-muted-foreground mt-1 pl-1">
-                * For online barters, shipping and delivery are managed by the users.
-              </p>
-            )}
-          </div>
           <div className="flex items-center space-x-2 pt-2">
             <Switch
               id="hasBill"
@@ -330,17 +300,7 @@ function AddItem() {
           </div>
         </div>
 
-        {data?.barterType === "INPERSON" && (
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={data.location}
-              onChange={(e) => setData({ ...data, location: e.target.value })}
-              placeholder="Mumbai, Maharashtra"
-            />
-          </div>
-        )}
+
 
         <Button disabled={isLoading} onClick={handleAdd}>
           {isLoading ? (

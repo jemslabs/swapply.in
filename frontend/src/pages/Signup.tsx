@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/stores/useAuth";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import * as EmailValidator from 'email-validator';
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ function Signup() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [passwordError, setPasswordError] = useState("");
-
+    const navigate = useNavigate()
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!data.name || !data.email || !data.password) {
@@ -30,7 +30,7 @@ function Signup() {
             return;
         }
         setIsLoading(true);
-        await login(data);
+        await login(data, navigate);
         setIsLoading(false);
     };
 

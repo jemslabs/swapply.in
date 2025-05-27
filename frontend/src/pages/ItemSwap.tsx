@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useApp } from "@/stores/useApp";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Send, RefreshCw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,7 +25,8 @@ function ItemSwap() {
   const { user, fetchUser } = useAuth();
   const [isSending, setIsSending] = useState(false)
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [message, setMessage] = useState('');;
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate()
   const { data, isLoading, isError } = useQuery({
     queryKey: ["swap-item", id],
     queryFn: async () => {
@@ -61,14 +62,14 @@ function ItemSwap() {
   }
   return (
     <div className="container p-8">
-      <div className="mb-6">
-        <Link to={`/item/${id}`} className="flex items-center underline">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Item
-        </Link>
+      <div className="mb-5 flex items-center gap-3">
+        <Button variant={"outline"} onClick={() => navigate(`/item/${data?.id}`)}>
+          <ArrowLeft />
+        </Button>
+        <h1 className="text-3xl font-bold">Propose a Swap</h1>
       </div>
 
-      <h1 className="text-3xl font-bold mb-8">Propose a Swap</h1>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
@@ -115,7 +116,9 @@ function ItemSwap() {
                   )}
                 </div>
 
-                <RefreshCw className="text-muted-foreground h-6 w-6" />
+                <div className="flex items-center justify-center w-12 h-12">
+                  <RefreshCw className="text-muted-foreground h-6 w-6" />
+                </div>
 
                 <div className="w-full sm:w-1/2">
                   {data ? (
@@ -128,6 +131,7 @@ function ItemSwap() {
                 </div>
               </div>
             </CardContent>
+
           </Card>
 
           <Card className="mb-8">

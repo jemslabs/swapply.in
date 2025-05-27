@@ -15,6 +15,7 @@ import CreateCircle from "./pages/CreateCircle"
 import Circles from "./pages/Circles"
 import CirclePage from "./pages/CirclePage"
 import SwapPage from "./pages/SwapPage"
+import ClientProtect from "./components/ClientProtect"
 
 
 function App() {
@@ -28,14 +29,33 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/item/add" element={<AddItem />} />
           <Route path="/browse" element={<Browse />} />
-          <Route path="/my-items" element={<MyItems />} />
-          <Route path="/my-swaps" element={<MySwaps />} />
+          <Route path="/my-items" element={
+            <ClientProtect>
+              <MyItems />
+            </ClientProtect>
+          } />
+          <Route path="/my-swaps" element={
+            <ClientProtect>
+              <MySwaps />
+            </ClientProtect>} />
           <Route path="/item/:id" element={<Item />} />
-          <Route path="/item/:id/swap" element={<ItemSwap />} />
-          <Route path="/circles" element={<Circles />} />
+          <Route path="/item/:id/swap" element={
+            <ClientProtect>
+              <ItemSwap />
+            </ClientProtect>} />
+          <Route path="/circles" element={
+
+            <ClientProtect>
+              <Circles />
+            </ClientProtect>}
+          />
           <Route path="/circles/create" element={<CreateCircle />} />
           <Route path="/circles/:id" element={<CirclePage />} />
-          <Route path="/swap/:id" element={<SwapPage />}/>
+          <Route path="/swap/:id" element={
+
+            <ClientProtect>
+              <SwapPage />
+            </ClientProtect>} />
         </Routes>
       </div>
       <Toaster position="top-center" />

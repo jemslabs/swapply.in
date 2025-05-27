@@ -79,18 +79,7 @@ export async function handleGetBrowseItems(c: Context) {
     const toPrice = parseFloat(c.req.query("toPrice") || "99999999");
     const currencyType = c.req.query("currencyType");
 
-    const { id } = c.get("user");
-    if (!id) {
-      return c.json({ msg: "Unauthorized" }, 400);
-    }
-
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) return c.json({ msg: "User not found" }, 404);
-
     const filters: any = {
-      userId: {
-        not: user?.id,
-      },
       currentPrice: {
         gte: fromPrice,
         lte: toPrice,
@@ -126,29 +115,7 @@ export async function handleGetBrowseItems(c: Context) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
-export async function handleGetMyItems(c: Context) {
-  const prisma = prismaClient(c);
-  try {
-    const { id } = c.get("user");
-    if (!id) {
-      return c.json({ msg: "Unauthorized" }, 400);
-    }
 
-    const items = await prisma.item.findMany({
-      where: {
-        userId: id,
-      },
-    });
-
-    if (items.length > 0) {
-      return c.json(items, 200);
-    } else {
-      return c.json([], 200);
-    }
-  } catch (error) {
-    return c.json({ msg: "Internal Server Error" }, 500);
-  }
-}
 
 export async function handleGetItem(c: Context) {
   const prisma = prismaClient(c);

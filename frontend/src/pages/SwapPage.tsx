@@ -1,8 +1,8 @@
 import Item from "@/components/Item";
 import { useApp } from "@/stores/useApp";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, RefreshCw } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { cn, ISTtoUTC } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 function SwapPage() {
   const { getSwap, scheduleSwapMeeting, cancelSwapMeeting } = useApp();
@@ -22,7 +23,8 @@ function SwapPage() {
     queryFn: async () => await getSwap(id),
     staleTime: 12000,
   });
-
+  const queryClient = useQueryClient();
+  const navigate = useNavigate()
   const [meetingLocation, setMeetingLocation] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState(""); // e.g. "2:30 PM"
@@ -52,11 +54,13 @@ function SwapPage() {
       notes,
       swapProposalId: parseInt(id),
     });
+    await queryClient.invalidateQueries({ queryKey: ["swap", id] });
     setIsSending(false);
   };
   const handleCancelMeeting = async (id: string | number | undefined) => {
     setIsCanceling(true);
     await cancelSwapMeeting(id);
+    await queryClient.invalidateQueries({ queryKey: ["swap", id] });
     setIsCanceling(false)
   }
 
@@ -65,14 +69,19 @@ function SwapPage() {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
 
-  if (isLoading) return <div className="text-center p-4">Loading swap details...</div>;
+  if (isLoading) return <div className="text-center p-4 text-gray-500">Loading swap details...</div>;
   if (error || !data) return <div className="text-center p-4 text-red-500">Failed to load swap</div>;
 
   const swapStatus = data?.status;
 
   return (
     <div className="max-w-5xl mx-auto py-6 space-y-6">
-      <h2 className="text-2xl font-semibold text-center">Swap Details</h2>
+      <h1 className="text-2xl sm:text-2xl font-bold tracking-tight flex items-center gap-4 mx-10 mb-5">
+        <Button variant={"outline"} onClick={() => navigate(-1)}>
+          <ArrowLeft />
+        </Button>
+        Swap Details
+      </h1>
 
       <div className="flex justify-between items-center gap-6 p-4 rounded-2xl shadow-md">
         <div className="w-1/2">

@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Item from "@/components/Item";
+import ItemSkeleton from "@/components/ItemSkeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import type { ItemType } from "@/lib/types";
 import { categories } from "@/lib/utils";
 import { useApp } from "@/stores/useApp";
 import { Loader2, Search } from "lucide-react";
@@ -28,23 +29,25 @@ function Browse() {
     currencyType: "INR",
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [items, setItems] = useState<ItemType[]>([]);
+  const {
+    data,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useQuery({
+    queryKey: ["browse-items"],
+    queryFn: async () => {
+      const res = await getBrowseItems(filter)
+      return res
+    }
+    ,
+    staleTime: 5 * 60 * 1000,
+  });
 
-  const fetchItems = async (filters: typeof filter) => {
-    setIsLoading(true);
-    const res = await getBrowseItems(filters);
-    setItems(res.items);
-    setIsLoading(false);
-  };
-
-
-  useEffect(() => {
-    fetchItems(filter);
-  }, []);
+  const items = data?.items ?? [];
 
   const handleApply = () => {
-    fetchItems(filter);
+    refetch();
   };
 
   return (
@@ -57,14 +60,19 @@ function Browse() {
             onChange={(e) => setFilter({ ...filter, query: e.target.value })}
             value={filter.query}
           />
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+          <Search
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            size={18}
+          />
         </div>
 
         <div className="flex flex-wrap items-end justify-between gap-4 w-full">
           <div className="flex gap-3">
             <Select
               value={filter.category}
-              onValueChange={(value) => setFilter({ ...filter, category: value })}
+              onValueChange={(value) =>
+                setFilter({ ...filter, category: value })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a category" />
@@ -83,7 +91,9 @@ function Browse() {
 
             <Select
               value={filter.currencyType}
-              onValueChange={(value) => setFilter({ ...filter, currencyType: value })}
+              onValueChange={(value) =>
+                setFilter({ ...filter, currencyType: value })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a currency" />
@@ -100,7 +110,8 @@ function Browse() {
 
           <div className="flex flex-col gap-2 grow">
             <label className="text-sm font-medium">
-              Price Range: {filter.fromPrice} - {filter.toPrice} {filter.currencyType}
+              Price Range: {filter.fromPrice} - {filter.toPrice}{" "}
+              {filter.currencyType}
             </label>
             <Slider
               min={0}
@@ -114,8 +125,8 @@ function Browse() {
           </div>
 
           <div className="flex justify-end">
-            <Button disabled={isLoading} onClick={handleApply}>
-              {isLoading ? (
+            <Button disabled={isFetching} onClick={handleApply}>
+              {isFetching ? (
                 <div className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
@@ -127,17 +138,19 @@ function Browse() {
         </div>
       </div>
 
-      {items && items.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10 max-w-6xl mx-auto">
-          {items.map((item) => (
-            <Item key={item.id} item={item} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center text-muted-foreground mt-12 text-sm">
-          {isLoading ? "Loading items..." : "No items found for this filter."}
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10 max-w-6xl mx-auto">
+        {isLoading || isFetching
+          ? Array.from({ length: 8 }).map((_, idx) => (
+            <ItemSkeleton key={idx} />
+          ))
+          : items.length > 0
+            ? items.map((item) => <Item key={item.id} item={item} />)
+            : (
+              <div className="col-span-full text-center text-muted-foreground text-sm">
+                No items found for this filter.
+              </div>
+            )}
+      </div>
     </div>
   );
 }

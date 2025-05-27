@@ -6,7 +6,7 @@ import type { useAuthType } from "@/lib/types";
 
 export const useAuth = create<useAuthType>((set) => ({
   user: null,
-  login: async (data) => {
+  login: async (data, navigate) => {
     try {
       const res = await axios.post(`${endpoint}/api/auth/login`, data, {
         withCredentials: true,
@@ -14,6 +14,7 @@ export const useAuth = create<useAuthType>((set) => ({
       if (res.status === 200) {
         await useAuth.getState().fetchUser();
         toast.success("Authenticated");
+         navigate("/browse");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

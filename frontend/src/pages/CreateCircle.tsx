@@ -5,8 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/stores/useApp";
-import { CloudUpload, Loader2, X } from "lucide-react";
+import { ArrowLeft, CloudUpload, Loader2, X } from "lucide-react";
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 function CreateCircle() {
@@ -15,6 +16,7 @@ function CreateCircle() {
     description: "",
     image: null as File | null,
   });
+  const navigate = useNavigate()
   const { createCircle } = useApp();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -49,7 +51,11 @@ function CreateCircle() {
     setIsLoading(false);
   };
   return (
-    <div className="py-4 px-6">
+    <div className="py-4 px-10">
+      <Button variant={"outline"} onClick={() => navigate(-1)}>
+        <ArrowLeft />
+        Go Back
+      </Button>
       <Card className="p-6 w-1/2 space-y-4 bg-[#000000] border border-[#2a2a2a] mx-auto">
         <h1 className="text-3xl font-bold text-white text-center tracking-tight">
           Create New Circle

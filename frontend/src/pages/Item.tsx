@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useApp } from "@/stores/useApp";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, PlusCircle, RefreshCw, ArrowRight, Loader2 } from "lucide-react";
+import { PlusCircle, RefreshCw, Loader2, ArrowLeft } from "lucide-react";
 import { categories, conditions } from "@/lib/utils";
 import { useState } from "react";
 import {
@@ -22,14 +22,16 @@ function Item() {
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [selectedCircleId, setSelectedCircleId] = useState<string | null | number>(null);
   const { user: loggedUser } = useAuth();
-  const [isSending, setIsSending] = useState(false)
+  const [isSending, setIsSending] = useState(false);
+  const navigate = useNavigate();
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["item", id],
     queryFn: async () => {
       const res = await getItem(id);
       return res;
     },
-    staleTime: 12000,
+    staleTime: 5 * 60 * 1000,
     enabled: !!id,
   });
 
@@ -77,6 +79,10 @@ function Item() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="gap-6">
+          <Button variant={"outline"} onClick={() => navigate(-1)} className="my-3">
+            <ArrowLeft />
+            Go Back
+          </Button>
         <Card className="flex md:flex-row flex-1 px-5">
           <div className="md:w-1/2">
             <img
@@ -94,9 +100,6 @@ function Item() {
                   Listed on {new Date(createdAt).toLocaleDateString()}
                 </p>
               </div>
-              <Button variant="outline" size="icon">
-                <Heart className="w-5 h-5" />
-              </Button>
             </div>
 
             <div className="text-md">
@@ -138,14 +141,15 @@ function Item() {
               <span className="text-muted-foreground text-sm">Swap Value</span>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-2xl font-bold text-white">
-                  {currencyType} {currentPrice}
+                  {currencyType} {currentPrice ? currentPrice.toLocaleString() : ""}
                 </span>
 
                 {hasDiscount && (
                   <>
                     <span className="text-sm line-through text-gray-500">
-                      {currencyType} {originalPrice}
+                      {currencyType} {originalPrice ? originalPrice.toLocaleString() : ""}
                     </span>
+
                     <Badge
                       variant="outline"
                       className="text-xs text-green-600 border-green-500"
@@ -159,7 +163,7 @@ function Item() {
 
             {isSwapped ? (
               <Button className="w-full" disabled variant="outline">
-                This item has already been swapped
+                Swapped
               </Button>
             ) : (
               <div className="flex flex-col gap-2">

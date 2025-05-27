@@ -1,7 +1,6 @@
 import type { useAppType } from "@/lib/types";
 import { endpoint } from "@/lib/utils";
 import axios from "axios";
-import { redirect } from "react-router-dom";
 import { toast } from "sonner";
 import { create } from "zustand";
 

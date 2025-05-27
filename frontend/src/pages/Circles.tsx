@@ -1,14 +1,29 @@
 import Circle from "@/components/Circle";
 import { Button } from "@/components/ui/button";
-import { useApp } from "@/stores/useApp"
+import { useApp } from "@/stores/useApp";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+// Skeleton component inside the same file
+const CircleSkeleton = () => (
+  <div className="rounded-2xl shadow-sm animate-pulse border bg-muted p-6">
+    <div className="flex items-center gap-5">
+      <div className="h-24 w-24 rounded-xl border bg-[#1a1a1a]" />
+      <div className="flex flex-col gap-2 max-w-md flex-grow">
+        <div className="h-6 w-1/3 bg-[#1a1a1a] rounded" />
+        <div className="h-4 w-2/3 bg-[#1a1a1a] rounded" />
+        <div className="h-4 w-1/2 bg-[#1a1a1a] rounded mt-auto" />
+      </div>
+    </div>
+  </div>
+);
+
 function Circles() {
   const { fetchMyCircles } = useApp();
-  const navigate = useNavigate()
-  const { data } = useQuery({
+  const navigate = useNavigate();
+
+  const { data, isLoading } = useQuery({
     queryKey: ["my-circles"],
     queryFn: async () => {
       const res = await fetchMyCircles();
@@ -16,25 +31,35 @@ function Circles() {
     },
     staleTime: 20000,
   });
-  return (
-    <div className="py-5 px-10">
-      <div className="flex justify-end mb-5">
-        <Button onClick={()=>navigate("/circles/create")}><Plus />  Create Circle </Button>
+
+  if (isLoading) {
+    // Show 4 skeletons while loading
+    return (
+      <div className="py-20 px-10 max-w-4xl mx-auto flex flex-col gap-4">
+        {Array.from({ length: 4 }).map((_, idx) => (
+          <CircleSkeleton key={idx} />
+        ))}
       </div>
+    );
+  }
+
+  return (
+    <div className="py-5 px-10 max-w-4xl mx-auto">
+      <div className="flex justify-end mb-5">
+        <Button onClick={() => navigate("/circles/create")}>
+          <Plus /> Create Circle
+        </Button>
+      </div>
+
       <div className="grid grid-cols-1 gap-3">
         {data && data.length > 0 ? (
-          data.map((data, index) => (
-            <Circle key={index} circle={data.circle} />
-          ))
+          data.map((item, index) => <Circle key={index} circle={item.circle} />)
         ) : (
           <p className="text-center text-gray-500 mt-10">No circles found.</p>
         )}
       </div>
-
-
     </div>
-
-  )
+  );
 }
 
-export default Circles
+export default Circles;

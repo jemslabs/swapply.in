@@ -42,25 +42,25 @@ function Navbar() {
         <div className="flex items-center gap-6">
           <Logo />
 
-          {user && (
-            <div className="flex gap-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={clsx(
-                    "flex items-center gap-2 text-sm px-3 py-1 rounded-md hover:bg-[#1a1a1a] transition",
-                    location.pathname === link.to
-                      ? "bg-[#1a1a1a] text-white"
-                      : "text-white"
-                  )}
-                >
-                  {link.icon}
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-          )}
+
+          <div className="flex gap-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={clsx(
+                  "flex items-center gap-2 text-sm px-3 py-1 rounded-md hover:bg-[#1a1a1a] transition",
+                  location.pathname === link.to
+                    ? "bg-[#1a1a1a] text-white"
+                    : "text-white"
+                )}
+              >
+                {link.icon}
+                {link.name}
+              </Link>
+            ))}
+          </div>
+
         </div>
         <div className="flex items-center gap-2">
 

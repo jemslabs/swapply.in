@@ -2,7 +2,7 @@ import { useAuth } from "@/stores/useAuth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X, Clock, RefreshCw, Trash2, ChevronRight } from "lucide-react";
+import { Check, X, Clock, RefreshCw, Trash2, ChevronRight, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,7 +18,7 @@ function MySwaps() {
     null
   );
   const navigate = useNavigate();
-  
+
   function handleProceed(swapId: string | number) {
     navigate(`/swap/${swapId}`);
   }
@@ -80,12 +80,28 @@ function MySwaps() {
     setLoadingSwapId(null);
   }
   return (
-    <div className="px-4 py-4">
-      <Tabs defaultValue="incoming" className="w-full max-w-5xl mx-auto">
+    <div className="px-4 py-4 w-full max-w-5xl mx-auto">
+      <div className="flex items-center gap-2 sm:gap-4 mb-6">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => navigate(-1)}
+          className="h-9 w-9"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h1 className="text-2xl sm:text-2xl font-bold tracking-tight">
+          Your Swap Offers
+        </h1>
+      </div>
+
+
+      <Tabs defaultValue="incoming" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="incoming">Incoming Offers</TabsTrigger>
           <TabsTrigger value="outgoing">Outgoing Offers</TabsTrigger>
         </TabsList>
+
 
         {/* Incoming Offers */}
         <TabsContent value="incoming" className="mt-6">
@@ -217,7 +233,7 @@ function MySwaps() {
                       <p className="text-muted-foreground">{swap?.message}</p>
                     </div>
 
-                  
+
                   </div>
 
                 </Card>

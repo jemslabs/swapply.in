@@ -1,3 +1,5 @@
+import type { NavigateFunction } from "react-router-dom";
+
 type user = {
   id: number;
   name: string;
@@ -141,7 +143,7 @@ export type useAppType = {
 };
 export type useAuthType = {
   user: user | null;
-  login: (data: loginData) => void;
+  login: (data: loginData, navigate: NavigateFunction) => void;
   fetchUser: () => void;
   logout: () => void;
 };

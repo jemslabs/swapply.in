@@ -18,7 +18,7 @@ export default function CirclePage() {
   const [isApproving, setIsApproving] = useState(false)
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["circle", id],
     queryFn: () => fetchCircle(id),
     staleTime: 12000,
@@ -53,52 +53,68 @@ export default function CirclePage() {
   return (
     <div className="px-8 py-10 max-w-7xl mx-auto">
       <div className="flex justify-between flex-wrap gap-6 items-start mb-10">
-        <div className="flex gap-8 items-start">
-          <img
-            src={data?.image}
-            alt="circle-logo"
-            className="h-32 w-32 rounded-xl object-cover shadow-md"
-          />
-          <div className="space-y-3 max-w-2xl">
-            <h1 className="text-3xl font-bold">{data?.name}</h1>
-            <p className="text-muted-foreground text-base">{data?.description}</p>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Users className="w-4 h-4 mr-2" />
-              {data?.members.length}{" "}
-              {data?.members.length === 1 ? "member" : "members"}
+        {isLoading ? (
+          <div className="flex gap-8 items-start animate-pulse">
+            <div className="h-32 w-32 bg-muted rounded-xl" />
+            <div className="space-y-3 max-w-2xl">
+              <div className="h-6 w-48 bg-muted rounded-md" />
+              <div className="h-4 w-80 bg-muted rounded-md" />
+              <div className="h-4 w-32 bg-muted rounded-md" />
             </div>
           </div>
-        </div>
-        {isJoined ? (
-          <Button
-            className="shrink-0"
-            variant="destructive"
-            disabled={isLeaving}
-            onClick={handleLeave}
-          >
-            {isLeaving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <>
-                <LogOut />
-                Leave
-              </>
-            )}
-          </Button>
         ) : (
-          <Button
-            className="shrink-0"
-            disabled={isJoining}
-            onClick={handleJoin}
-          >
-            {isJoining ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+          <>
+            <div className="flex gap-8 items-start">
+              <img
+                src={data?.image}
+                alt="circle-logo"
+                className="h-32 w-32 rounded-xl object-cover shadow-md"
+              />
+              <div className="space-y-3 max-w-2xl">
+                <h1 className="text-3xl font-bold">{data?.name}</h1>
+                <p className="text-muted-foreground text-base">
+                  {data?.description}
+                </p>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Users className="w-4 h-4 mr-2" />
+                  {data?.members.length}{" "}
+                  {data?.members.length === 1 ? "member" : "members"}
+                </div>
+              </div>
+            </div>
+            {isJoined ? (
+              <Button
+                className="shrink-0"
+                variant="destructive"
+                disabled={isLeaving}
+                onClick={handleLeave}
+              >
+                {isLeaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <LogOut />
+                    Leave
+                  </>
+                )}
+              </Button>
             ) : (
-              "Join Circle"
+              <Button
+                className="shrink-0"
+                disabled={isJoining}
+                onClick={handleJoin}
+              >
+                {isJoining ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Join Circle"
+                )}
+              </Button>
             )}
-          </Button>
+          </>
         )}
       </div>
+
 
       <Separator className="mb-10" />
 

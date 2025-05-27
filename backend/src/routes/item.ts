@@ -1,12 +1,11 @@
 import { Hono } from "hono";
 import { protectRoute } from "../middlewares/protectRoute";
-import { handleAcceptSwapProposal, handleAddItem, handleCancelMeeting, handleCancelSwapProposal, handleGetBrowseItems, handleGetItem, handleGetMyItems, handleGetSwap, handleRejectSwapProposal, handleScheduleMeeting, handleSendSwapPropsal } from "../controllers/item";
+import { handleAcceptSwapProposal, handleAddItem, handleCancelMeeting, handleCancelSwapProposal, handleGetBrowseItems, handleGetItem, handleGetSwap, handleRejectSwapProposal, handleScheduleMeeting, handleSendSwapPropsal } from "../controllers/item";
 
 const itemRoutes = new Hono();
 
 itemRoutes.post("/add", protectRoute, handleAddItem);
-itemRoutes.get("/browse-items", protectRoute, handleGetBrowseItems);
-itemRoutes.get("/my-items", protectRoute, handleGetMyItems)
+itemRoutes.get("/browse-items", handleGetBrowseItems);
 itemRoutes.get("/get-item",handleGetItem);
 itemRoutes.post("/swap-proposal", protectRoute,handleSendSwapPropsal);
 itemRoutes.put("/accept-swap-proposal", protectRoute, handleAcceptSwapProposal);

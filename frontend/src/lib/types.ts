@@ -135,7 +135,9 @@ export type useAppType = {
   leaveCircle: (id: string | number | undefined) => void;
   approveItem: (id: string | number | undefined) => void;
   getSwap: (id: string | number | undefined) => Promise<proposalType | null>;
+  
   scheduleSwapMeeting: (data: AddSwapInpersonType) => void;
+  cancelSwapMeeting: (id: string | number | undefined) => void;
 };
 export type useAuthType = {
   user: user | null;

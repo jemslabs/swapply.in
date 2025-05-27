@@ -359,6 +359,20 @@ export async function handleCancelSwapProposal(c: Context) {
       );
     }
 
+    const swapInPersonRecord = await prisma.swapInperson.findUnique({
+      where: {
+        swapProposalId: proposal.id,
+      },
+    });
+
+    if (swapInPersonRecord) {
+      await prisma.swapInperson.delete({
+        where: {
+          swapProposalId: proposal.id,
+        },
+      });
+    }
+
     await prisma.$transaction([
       prisma.swapProposal.update({
         where: { id: proposal.id },
@@ -406,7 +420,7 @@ export async function handleGetSwap(c: Context) {
         swapInperson: true,
       },
     });
-    if(!swapProposal) return c.json({msg: "No swap proposal found"}, 404)
+    if (!swapProposal) return c.json({ msg: "No swap proposal found" }, 404);
     if (
       swapProposal.receiverId !== user?.id &&
       swapProposal.proposerId !== user?.id
@@ -416,7 +430,7 @@ export async function handleGetSwap(c: Context) {
 
     return c.json(swapProposal, 200);
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
@@ -475,6 +489,54 @@ export async function handleScheduleMeeting(c: Context) {
     });
 
     return c.json({ msg: "Success" }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleCancelMeeting(c: Context) {
+  const prisma = prismaClient(c);
+  const inpersonId = c.req.query("inpersonId");
+  const { id } = c.get("user");
+  try {
+    if (!id) return c.json({ msg: "Unauthorized" }, 400);
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) return c.json({ msg: "User not found" }, 404);
+    if (!inpersonId)
+      return c.json({ msg: "Missing in-person meeting id" }, 400);
+    const inpersonMeeting = await prisma.swapInperson.findUnique({
+      where: {
+        id: parseInt(inpersonId),
+      },
+      include: {
+        swapProposal: true,
+      },
+    });
+    if (!inpersonMeeting)
+      return c.json(
+        { msg: "No in-person meeting for this swap proposal" },
+        404
+      );
+    if (
+      user.id !== inpersonMeeting.swapProposal.proposerId &&
+      user.id !== inpersonMeeting.swapProposal.receiverId
+    ) {
+      return c.json({ msg: "Unauthorized to cancel the meeting" }, 400);
+    }
+
+    await prisma.swapInperson.update({
+      where: {
+        id: inpersonMeeting.id
+      },
+      data: {
+        meetingStatus: "CANCELLED"
+      }
+    })
+    return c.json({msg: "Canceled In-Person Meeting"}, 200)
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

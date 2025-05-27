@@ -1,6 +1,5 @@
 import Item from "@/components/Item";
 import { useApp } from "@/stores/useApp";
-import { useAuth } from "@/stores/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, RefreshCw } from "lucide-react";
 import { useParams } from "react-router-dom";
@@ -16,9 +15,8 @@ import { cn, ISTtoUTC } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 function SwapPage() {
-  const { getSwap, scheduleSwapMeeting } = useApp();
+  const { getSwap, scheduleSwapMeeting, cancelSwapMeeting } = useApp();
   const { id } = useParams();
-
   const { data, isLoading, error } = useQuery({
     queryKey: ["swap", id],
     queryFn: async () => await getSwap(id),
@@ -30,6 +28,7 @@ function SwapPage() {
   const [time, setTime] = useState(""); // e.g. "2:30 PM"
   const [notes, setNotes] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false)
   const existingMeeting = data?.swapInperson;
 
   useEffect(() => {
@@ -55,6 +54,11 @@ function SwapPage() {
     });
     setIsSending(false);
   };
+  const handleCancelMeeting = async (id: string | number | undefined) => {
+    setIsCanceling(true);
+    await cancelSwapMeeting(id);
+    setIsCanceling(false)
+  }
 
   function capitalizeFirstLetter(str: string) {
     if (!str) return "";
@@ -64,7 +68,7 @@ function SwapPage() {
   if (isLoading) return <div className="text-center p-4">Loading swap details...</div>;
   if (error || !data) return <div className="text-center p-4 text-red-500">Failed to load swap</div>;
 
-  const swapStatus = data.status;
+  const swapStatus = data?.status;
 
   return (
     <div className="max-w-5xl mx-auto py-6 space-y-6">
@@ -85,9 +89,30 @@ function SwapPage() {
         </div>
       </div>
 
+      {existingMeeting && (
+        <div className="p-4 border bg-muted rounded-lg mb-6 space-y-2">
+          <h4 className="font-semibold">
+            Current Meeting Status:
+            <Badge className="ml-2">
+              {capitalizeFirstLetter(existingMeeting.meetingStatus)}
+            </Badge>
+          </h4>
+          {existingMeeting.meetingStatus !== "CANCELLED" ? (
+            <ul className="text-sm text-green-300 list-disc list-inside space-y-1">
+              <li><strong>Date:</strong> {format(new Date(existingMeeting.date), "PPP")}</li>
+              <li><strong>Time:</strong> {existingMeeting.time}</li>
+              <li><strong>Location:</strong> {existingMeeting.meetingLocation}</li>
+              {existingMeeting.notes && <li><strong>Notes:</strong> {existingMeeting.notes}</li>}
+            </ul>
+          ) : (
+            <p className="text-sm text-red-600">This meeting has been cancelled. You can schedule a new one below.</p>
+          )}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4 p-6 border rounded-2xl shadow-md">
         <h3 className="text-xl font-medium mb-4">
-          Meeting Details - {capitalizeFirstLetter(data?.swapInperson.meetingStatus || "")}
+          {existingMeeting ? "Update Meeting Details" : "Schedule a New Meeting"}
         </h3>
 
         <div className="space-y-2">
@@ -107,10 +132,7 @@ function SwapPage() {
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !date && "text-muted-foreground"
-                )}
+                className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
               >
                 {date ? format(date, "PPP") : "Pick a date"}
               </Button>
@@ -143,17 +165,40 @@ function SwapPage() {
             onChange={(e) => setNotes(e.target.value)}
           />
         </div>
+        <div className="flex items-center gap-4">
+          <Button type="submit" className="flex-1" disabled={isSending}>
+            {isSending ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {existingMeeting ? "Updating..." : "Scheduling..."}
+              </div>
+            ) : (
+              <div>{existingMeeting ? "Update Meeting Details" : "Schedule Meeting"}</div>
+            )}
+          </Button>
 
-        <Button type="submit" className="w-full mt-4" disabled={isSending}>
-          {isSending ? (
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-            </div>
-          ) : (
-            <div>{existingMeeting ? "Update Meeting" : "Schedule Meeting"}</div>
+          {existingMeeting && existingMeeting.meetingStatus !== "CANCELLED" && (
+            <Button
+              className="flex-1"
+              variant="destructive"
+              type="button"
+              onClick={() => handleCancelMeeting(existingMeeting?.id)}
+              disabled={isCanceling}
+            >
+              {isCanceling ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Cancelling...
+                </div>
+              ) : (
+                "Cancel Meeting"
+              )}
+            </Button>
           )}
-        </Button>
+        </div>
+
       </form>
+
     </div>
   );
 }

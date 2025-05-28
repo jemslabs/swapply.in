@@ -10,6 +10,7 @@ import {
   Compass,
   Plus,
   Users,
+  Bell,
 } from "lucide-react";
 import {
   Popover,
@@ -69,6 +70,15 @@ function Navbar() {
               <Link to={'/item/add'}>
                 <Button variant={"outline"}><Plus /> List Item</Button>
               </Link>
+              <Link to="/notifications" className="relative inline-block">
+                <Bell className="h-6 w-6 hover:text-gray-300" />
+                {user?.notifications?.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                    {user?.notifications?.length}
+                  </span>
+                )}
+              </Link>
+
               <Popover>
                 <PopoverTrigger asChild>
                   <Button size="icon">

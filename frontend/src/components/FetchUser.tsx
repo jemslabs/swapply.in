@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 
 function FetchUser() {
   const { fetchUser, user } = useAuth();
-
   useQuery({
     queryKey: ["logged-user"],
     queryFn: async () => {

@@ -1,22 +1,22 @@
-import Navbar from "./components/Navbar"
-import { Route, Routes } from 'react-router-dom'
-import Login from "./pages/Login"
-import Signup from "./pages/Signup"
-import { Toaster } from "@/components/ui/sonner"
-import FetchUser from "./components/FetchUser"
+import Navbar from "./components/Navbar";
+import { Route, Routes } from "react-router-dom";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import { Toaster } from "@/components/ui/sonner";
+import FetchUser from "./components/FetchUser";
 //@ts-ignore
-import AddItem from "./pages/AddItem"
-import Browse from "./pages/Browse"
-import MyItems from "./pages/MyItems"
-import Item from "./pages/Item"
-import ItemSwap from "./pages/ItemSwap"
-import MySwaps from "./pages/MySwaps"
-import CreateCircle from "./pages/CreateCircle"
-import Circles from "./pages/Circles"
-import CirclePage from "./pages/CirclePage"
-import SwapPage from "./pages/SwapPage"
-import ClientProtect from "./components/ClientProtect"
-
+import AddItem from "./pages/AddItem";
+import Browse from "./pages/Browse";
+import MyItems from "./pages/MyItems";
+import Item from "./pages/Item";
+import ItemSwap from "./pages/ItemSwap";
+import MySwaps from "./pages/MySwaps";
+import CreateCircle from "./pages/CreateCircle";
+import Circles from "./pages/Circles";
+import CirclePage from "./pages/CirclePage";
+import SwapPage from "./pages/SwapPage";
+import ClientProtect from "./components/ClientProtect";
+import Notifications from "./pages/Notifications";
 
 function App() {
   return (
@@ -29,38 +29,63 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/item/add" element={<AddItem />} />
           <Route path="/browse" element={<Browse />} />
-          <Route path="/my-items" element={
-            <ClientProtect>
-              <MyItems />
-            </ClientProtect>
-          } />
-          <Route path="/my-swaps" element={
-            <ClientProtect>
-              <MySwaps />
-            </ClientProtect>} />
+          <Route
+            path="/my-items"
+            element={
+              <ClientProtect>
+                <MyItems />
+              </ClientProtect>
+            }
+          />
+          <Route
+            path="/my-swaps"
+            element={
+              <ClientProtect>
+                <MySwaps />
+              </ClientProtect>
+            }
+          />
           <Route path="/item/:id" element={<Item />} />
-          <Route path="/item/:id/swap" element={
-            <ClientProtect>
-              <ItemSwap />
-            </ClientProtect>} />
-          <Route path="/circles" element={
-
-            <ClientProtect>
-              <Circles />
-            </ClientProtect>}
+          <Route
+            path="/item/:id/swap"
+            element={
+              <ClientProtect>
+                <ItemSwap />
+              </ClientProtect>
+            }
+          />
+          <Route
+            path="/circles"
+            element={
+              <ClientProtect>
+                <Circles />
+              </ClientProtect>
+            }
           />
           <Route path="/circles/create" element={<CreateCircle />} />
           <Route path="/circles/:id" element={<CirclePage />} />
-          <Route path="/swap/:id" element={
+          <Route
+            path="/swap/:id"
+            element={
+              <ClientProtect>
+                <SwapPage />
+              </ClientProtect>
+            }
+          />
 
-            <ClientProtect>
-              <SwapPage />
-            </ClientProtect>} />
+          <Route
+            path="/notifications"
+            element={
+              <ClientProtect>
+                <Notifications />
+              </ClientProtect>
+            }
+          />
         </Routes>
       </div>
       <Toaster position="top-center" />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

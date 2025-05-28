@@ -12,6 +12,7 @@ type user = {
   proposedSwaps: proposalType[];
   receivedSwaps: proposalType[];
   circles: memberType[];
+  notifications: notification[]
 };
 
 type loginData = {
@@ -110,6 +111,19 @@ export type circleType = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type notification = {
+  id: number;
+  userId: number;
+  title: string;
+  body: string;
+  createdAt: string;
+  link: string;
+  type: string;
+  category: "SWAP" | "MEETING" | "CIRCLE" | string;
+}
+
+
 export type useAppType = {
   addItem: (data: FormData) => void;
   getBrowseItems: (data: {

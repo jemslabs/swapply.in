@@ -17,7 +17,7 @@ function Item({ item }: { item: ItemType | undefined }) {
     : 0
 
   return (
-    <Card className="p-2 flex flex-col max-w-sm">
+    <Card className="p-2 flex flex-col">
       <img
         src={item.image || ""}
         alt={item.title}

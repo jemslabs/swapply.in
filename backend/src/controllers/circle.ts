@@ -84,11 +84,28 @@ export async function handleJoinCircle(c: Context) {
     if (isAlreadyIn)
       return c.json({ msg: "You already are in this circle" }, 400);
 
-    await prisma.circleMember.create({
+    const circleMember = await prisma.circleMember.create({
       data: {
         userId: user.id,
         circleId: circle.id,
         role: "MEMBER",
+      },
+    });
+    if (!circleMember) return c.json({ msg: "Failed to join the circle" });
+    const circleAdmin = await prisma.circleMember.findFirst({
+      where: {
+        circleId: parsedCircleId,
+        role: "ADMIN",
+      },
+    });
+    await prisma.notification.create({
+      data: {
+        userId: circleAdmin.userId,
+        title: `New User Joined ${circle.name}`,
+        body: `${user?.name} joined ${circle.name} circle`,
+        type: "circle.joined",
+        category: "CIRCLE",
+        link: `/circles/${circle.id}`,
       },
     });
     return c.json({ msg: "Joined this circle" }, 200);
@@ -315,16 +332,16 @@ export async function handleLeaveCircle(c: Context) {
 
     if (!isAlreadyIn)
       return c.json({ msg: "You are not part of this circle" }, 400);
-    if(isAlreadyIn.role === "ADMIN") {
-      return c.json({msg: "Admins cannot leave this group"}, 400);
+    if (isAlreadyIn.role === "ADMIN") {
+      return c.json({ msg: "Admins cannot leave this group" }, 400);
     }
 
     await prisma.circleMember.delete({
       where: {
-        id: isAlreadyIn.id
-      }
+        id: isAlreadyIn.id,
+      },
     });
-    
+
     return c.json({ msg: "Leaved this circle" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);

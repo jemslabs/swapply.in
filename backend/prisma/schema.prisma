@@ -19,6 +19,7 @@ model User {
   proposedSwaps SwapProposal[] @relation("Proposer")
   receivedSwaps SwapProposal[] @relation("Receiver")
   addedItems    CircleItem[]
+  notifications Notification[]
   updateAt      DateTime       @default(now())
   createdAt     DateTime       @updatedAt
 }
@@ -112,6 +113,24 @@ model CircleItem {
   user       User     @relation(fields: [userId], references: [id])
   isApproved Boolean  @default(false)
   createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        Int                   @id @default(autoincrement())
+  userId    Int
+  user      User                  @relation(fields: [userId], references: [id])
+  title     String
+  body      String
+  createdAt DateTime              @default(now())
+  link      String?
+  type      String
+  category  NotificationCategory?
+}
+
+enum NotificationCategory {
+  SWAP
+  MEETING
+  CIRCLE
 }
 
 enum SwapStatus {

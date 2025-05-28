@@ -2,14 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/stores/useAuth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import * as EmailValidator from 'email-validator';
 import { toast } from "sonner";
 
 function Login() {
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const [data, setData] = useState({
         email: "",
         password: "",
@@ -32,6 +32,12 @@ function Login() {
         await login(data, navigate);
         setIsLoading(false);
     };
+
+    useEffect(() => {
+        if (user) {
+            navigate("/browse")
+        }
+    }, [user])
 
     return (
         <div className="flex flex-col min-h-screen justify-center items-center">

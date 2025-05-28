@@ -116,7 +116,6 @@ export async function handleGetBrowseItems(c: Context) {
   }
 }
 
-
 export async function handleGetItem(c: Context) {
   const prisma = prismaClient(c);
   try {
@@ -141,7 +140,7 @@ export async function handleGetItem(c: Context) {
   }
 }
 
-export async function handleSendSwapPropsal(c: Context) {
+export async function handleSendSwapProposal(c: Context) {
   const prisma = prismaClient(c);
   const { id } = c.get("user");
   const data = await c.req.json();
@@ -201,6 +200,16 @@ export async function handleSendSwapPropsal(c: Context) {
       },
     });
 
+    await prisma.notification.create({
+      data: {
+        userId: recieverItem.userId,
+        title: "Received an swap proposal",
+        body: `${user.name} has proposed a swap for your item "${recieverItem.title}".`,
+        type: "swap.proposal_received",
+        category: "SWAP",
+        link: `/my-swaps`,
+      },
+    });
     return c.json({ msg: "Proposal Sent" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
@@ -223,6 +232,10 @@ export async function handleAcceptSwapProposal(c: Context) {
     const proposal = await prisma.swapProposal.findUnique({
       where: {
         id: parsedProposalId,
+      },
+      include: {
+        receiver: true,
+        receiverItem: true,
       },
     });
 
@@ -249,6 +262,17 @@ export async function handleAcceptSwapProposal(c: Context) {
       }),
     ]);
 
+    await prisma.notification.create({
+      data: {
+        userId: proposal.proposerId,
+        title: "Your Swap Proposal Was Accepted",
+        body: `${proposal.receiver.name} accepted your swap proposal for the item "${proposal.receiverItem.title}".`,
+        type: "swap.proposal_accepted",
+        category: "SWAP",
+        link: `/swap/${proposal.id}`,
+      },
+    });
+
     return c.json({ msg: "Accepted swap proposal" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
@@ -272,6 +296,9 @@ export async function handleRejectSwapProposal(c: Context) {
 
     const proposal = await prisma.swapProposal.findUnique({
       where: { id: parsedProposalId },
+      include: {
+        receiverItem: true
+      }
     });
     if (!proposal) return c.json({ msg: "No swap proposal found" }, 404);
 
@@ -287,7 +314,16 @@ export async function handleRejectSwapProposal(c: Context) {
       where: { id: proposal.id },
       data: { status: "REJECTED" },
     });
-
+    await prisma.notification.create({
+      data: {
+        userId: proposal.proposerId,
+        title: "Your Swap Proposal Was Rejected",
+        body: `${proposal.receiver.name} rejected your swap proposal for the item "${proposal.receiverItem.title}".`,
+        type: "swap.proposal_rejected",
+        category: "SWAP",
+        link: `/swap/${proposal.id}`,
+      },
+    });
     return c.json({ msg: "Rejected swap proposal" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
@@ -313,6 +349,9 @@ export async function handleCancelSwapProposal(c: Context) {
 
     const proposal = await prisma.swapProposal.findUnique({
       where: { id: parsedProposalId },
+      include: {
+        receiverItem: true
+      }
     });
     if (!proposal) return c.json({ msg: "No swap proposal found" }, 404);
 
@@ -354,6 +393,22 @@ export async function handleCancelSwapProposal(c: Context) {
         data: { isSwapped: false },
       }),
     ]);
+
+    const targetUserId =
+      user.id === proposal.proposerId
+        ? proposal.receiverId
+        : proposal.proposerId;
+
+    await prisma.notification.create({
+      data: {
+        userId: targetUserId,
+        title: "Swap Proposal Was Cancelled",
+        body: `${user.name} cancelled the swap proposal for the item "${proposal.receiverItem.title}".`,
+        type: "swap.proposal_cancelled",
+        category: "SWAP",
+        link: `/swap/${proposal.id}`,
+      },
+    });
     return c.json({ msg: "Swap Proposal Cancelled" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
@@ -433,6 +488,10 @@ export async function handleScheduleMeeting(c: Context) {
     ) {
       return c.json({ msg: "Unauthorized" }, 400);
     }
+    const existingMeeting = await prisma.swapInperson.findUnique({
+      where: { swapProposalId },
+    });
+    const isReschedule = !!existingMeeting;
 
     await prisma.swapInperson.upsert({
       where: {
@@ -454,7 +513,23 @@ export async function handleScheduleMeeting(c: Context) {
         swapProposalId,
       },
     });
+    const otherUserId =
+      user.id === swapProposal.proposerId
+        ? swapProposal.receiverId
+        : swapProposal.proposerId;
 
+    await prisma.notification.create({
+      data: {
+        userId: otherUserId,
+        title: isReschedule ? "Meeting Rescheduled" : "Meeting Scheduled",
+        body: `A meeting for your swap has been ${
+          isReschedule ? "rescheduled" : "scheduled"
+        }.`,
+        type: "meeting.scheduled",
+        category: "MEETING",
+        link: `/swap/${swapProposal?.id}`,
+      },
+    });
     return c.json({ msg: "Success" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
@@ -488,6 +563,9 @@ export async function handleCancelMeeting(c: Context) {
         { msg: "No in-person meeting for this swap proposal" },
         404
       );
+    if (inpersonMeeting.status === "CANCELLED") {
+      return c.json({ msg: "Meeting is already cancelled" }, 400);
+    }
     if (
       user.id !== inpersonMeeting.swapProposal.proposerId &&
       user.id !== inpersonMeeting.swapProposal.receiverId
@@ -497,13 +575,26 @@ export async function handleCancelMeeting(c: Context) {
 
     await prisma.swapInperson.update({
       where: {
-        id: inpersonMeeting.id
+        id: inpersonMeeting.id,
       },
       data: {
-        meetingStatus: "CANCELLED"
-      }
-    })
-    return c.json({msg: "Canceled In-Person Meeting"}, 200)
+        meetingStatus: "CANCELLED",
+      },
+    });
+    const otherUserId =
+      user?.id === inpersonMeeting.swapProposal.proposerId
+        ? inpersonMeeting.swapProposal.recieverId
+        : inpersonMeeting.swapProposal.proposerId;
+
+    await prisma.notification.create({
+      userId: otherUserId,
+      title: "Meeting Canceled",
+      body: `A meeting for your swap has been Canceled.`,
+      type: "meeting.canceled",
+      category: "MEETING",
+      link: `/swap/${inpersonMeeting?.swapProposal?.id}`,
+    });
+    return c.json({ msg: "Canceled In-Person Meeting" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

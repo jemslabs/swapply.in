@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAuth } from "@/stores/useAuth";
+import ScoreBadge from "@/components/ScoreBadge";
 
 function Item() {
   const { id } = useParams();
@@ -59,6 +60,7 @@ function Item() {
     createdAt,
     user,
     isSwapped,
+    score, itemAge
   } = data;
 
   const hasDiscount =
@@ -79,19 +81,22 @@ function Item() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="gap-6">
-          <Button variant={"outline"} onClick={() => navigate(-1)} className="my-3">
-            <ArrowLeft />
-            Go Back
-          </Button>
-        <Card className="flex md:flex-row flex-1 px-5">
+        <Button variant={"outline"} onClick={() => navigate(-1)} className="my-3">
+          <ArrowLeft />
+          Go Back
+        </Button>
+        <Card className="flex md:flex-row flex-1 px-5 relative ">
           <div className="md:w-1/2">
             <img
               src={image}
               alt={title}
               className="object-cover w-full h-full rounded-l-xl max-h-[400px]"
             />
-          </div>
 
+          </div>
+          <div className="absolute top-4 right-4 z-10">
+            <ScoreBadge score={score ?? 0} />
+          </div>
           <CardContent className="p-6 md:w-1/2 space-y-4 ">
             <div className="flex justify-between items-start">
               <div>
@@ -99,6 +104,7 @@ function Item() {
                 <p className="text-sm text-muted-foreground">
                   Listed on {new Date(createdAt).toLocaleDateString()}
                 </p>
+
               </div>
             </div>
 
@@ -135,7 +141,12 @@ function Item() {
                 <span className="font-semibold">Has Bill:</span>{" "}
                 {hasBill ? "Yes" : "No"}
               </div>
+              <div className="whitespace-nowrap">
+                <span className="font-semibold mr-2">Product Age:</span>
+                {itemAge} {itemAge > 1 ? "Months" : "Month"}
+              </div>
             </div>
+
 
             <div className="pt-4">
               <span className="text-muted-foreground text-sm">Swap Value</span>

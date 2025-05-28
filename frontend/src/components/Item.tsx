@@ -1,8 +1,12 @@
+import React from 'react'
 import type { ItemType } from '@/lib/types'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { Badge } from './ui/badge'
 import { Link } from 'react-router-dom'
+import ScoreBadge from './ScoreBadge'
+
+
 
 function Item({ item }: { item: ItemType | undefined }) {
   if (!item) return null
@@ -17,7 +21,12 @@ function Item({ item }: { item: ItemType | undefined }) {
     : 0
 
   return (
-    <Card className="p-2 flex flex-col">
+    <Card className="p-2 flex flex-col relative">
+      <div className="absolute top-2 right-2 z-10 bg-white/80 backdrop-blur-sm rounded-md">
+        <ScoreBadge score={item.score ?? 0} />
+      </div>
+
+
       <img
         src={item.image || ""}
         alt={item.title}
@@ -74,8 +83,6 @@ function Item({ item }: { item: ItemType | undefined }) {
         </div>
       </div>
     </Card>
-
-
   )
 }
 

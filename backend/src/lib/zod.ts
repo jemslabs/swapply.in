@@ -31,6 +31,12 @@ export const addItemSchema = z.object({
     .refine((val) => typeof val === "boolean", {
       message: "Has Bill must be a valid boolean",
     }),
+  itemAge: z
+    .string()
+    .transform((val) => parseInt(val)) // Converts the string to number
+    .refine((val) => !isNaN(val), {
+      message: "Item age must be number",
+    }),
 });
 
 export const swapProposalSchema = z.object({

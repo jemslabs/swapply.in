@@ -32,6 +32,7 @@ export type AddItem = {
   condition: string;
   hasBill: boolean;
   image: File | null;
+  itemAge: number;
 };
 export type ItemType = {
   id: number;
@@ -50,6 +51,8 @@ export type ItemType = {
   createdAt: Date;
   rating: number;
   isSwapped: boolean;
+  itemAge: number;
+  score: number
 };
 
 export type SendPropsalType = {

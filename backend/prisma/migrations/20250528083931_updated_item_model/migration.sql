@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Item" ADD COLUMN     "itemAge" INTEGER,
+ADD COLUMN     "score" DOUBLE PRECISION DEFAULT 0;

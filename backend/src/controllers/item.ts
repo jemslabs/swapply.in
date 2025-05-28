@@ -6,6 +6,7 @@ import {
   swapProposalSchema,
 } from "../lib/zod";
 import { uploadToCloudinary } from "../lib/cloudinary";
+import { calculateItemScore } from "../lib/CalculateItemScore";
 
 export async function handleAddItem(c: Context) {
   const prisma = prismaClient(c);
@@ -32,7 +33,7 @@ export async function handleAddItem(c: Context) {
       currencyType,
       currentPrice,
       originalPrice,
-
+      itemAge,
       condition,
       hasBill,
       image,
@@ -44,6 +45,8 @@ export async function handleAddItem(c: Context) {
     } else {
       imageUrl = null;
     }
+    const item = {condition, hasBill, itemAge};
+    const score = calculateItemScore(item)
     const newItem = await prisma.item.create({
       data: {
         userId: user.id,
@@ -57,6 +60,8 @@ export async function handleAddItem(c: Context) {
         hasBill,
         condition,
         image: imageUrl || null,
+        itemAge,
+        score
       },
     });
 

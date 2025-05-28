@@ -25,24 +25,25 @@ model User {
 }
 
 model Item {
-  id            Int           @id @default(autoincrement())
-  userId        Int
-  user          User          @relation(fields: [userId], references: [id])
-  title         String
-  description   String        @db.Text
-  image         String
-  currentPrice  Float         @default(1)
-  originalPrice Float         @default(1)
-  currencyType  CurrencyType  @default(INR)
-  company       String
-  category      Category
-  condition     ItemCondition
-  hasBill       Boolean       @default(false)
-  rating        Float?        @default(0)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  isSwapped     Boolean       @default(false)
-
+  id              Int            @id @default(autoincrement())
+  userId          Int
+  user            User           @relation(fields: [userId], references: [id])
+  title           String
+  description     String         @db.Text
+  image           String
+  currentPrice    Float          @default(1)
+  originalPrice   Float          @default(1)
+  currencyType    CurrencyType   @default(INR)
+  company         String
+  category        Category
+  condition       ItemCondition
+  hasBill         Boolean        @default(false)
+  rating          Float?         @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  isSwapped       Boolean        @default(false)
+  itemAge         Int?
+  score           Float?         @default(0)
   circles         CircleItem[]
   proposerInSwaps SwapProposal[] @relation("ProposerItem")
   receiverInSwaps SwapProposal[] @relation("ReceiverItem")

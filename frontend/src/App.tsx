@@ -19,6 +19,7 @@ import ClientProtect from "./components/ClientProtect";
 import Notifications from "./pages/Notifications";
 import BrowseItems from "./pages/BrowseItems";
 import BrowseCircles from "./pages/BrowseCircles";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/item/add" element={<AddItem />} />
           <Route path="/browse/items" element={<BrowseItems />} />
           <Route path="/browse/circles" element={<BrowseCircles />} />
+
           <Route
             path="/my-items"
             element={
@@ -65,7 +67,7 @@ function App() {
               </ClientProtect>
             }
           />
-          <Route path="/circles/create" element={<CreateCircle />} />
+          <Route path="/circles/create" element={<ClientProtect><CreateCircle /></ClientProtect>} />
           <Route path="/circles/:id" element={<CirclePage />} />
           <Route
             path="/swap/:id"
@@ -84,6 +86,7 @@ function App() {
               </ClientProtect>
             }
           />
+          <Route path="/profile/:id" element={<Profile />}/>
 
         </Routes>
       </div>

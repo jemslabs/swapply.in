@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { protectRoute } from "../middlewares/protectRoute";
-import { handleAcceptSwapProposal, handleAddItem, handleCancelMeeting, handleCancelSwapProposal, handleGetBrowseItems, handleGetItem, handleGetSwap, handleRejectSwapProposal, handleScheduleMeeting, handleSendSwapProposal } from "../controllers/item";
+import { deleteExpiredBoostedItems, handleAcceptSwapProposal, handleAddItem, handleBoostItem, handleCancelMeeting, handleCancelSwapProposal, handleGetBrowseItems, handleGetItem, handleGetSwap, handleRejectSwapProposal, handleScheduleMeeting, handleSendSwapProposal } from "../controllers/item";
 
 const itemRoutes = new Hono();
 
@@ -15,4 +15,6 @@ itemRoutes.get("/get-swap", protectRoute, handleGetSwap);
 itemRoutes.post("/schedule-swap-meeting", protectRoute, handleScheduleMeeting);
 itemRoutes.put("/cancel-swap-meeting", protectRoute,handleCancelMeeting )
 
+itemRoutes.post("/boost", protectRoute, handleBoostItem)
+itemRoutes.get("/delete-boosts", deleteExpiredBoostedItems);
 export default itemRoutes

@@ -1,15 +1,16 @@
-import React from 'react'
 import type { ItemType } from '@/lib/types'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { Badge } from './ui/badge'
 import { Link } from 'react-router-dom'
 import ScoreBadge from './ScoreBadge'
+import { Rocket } from 'lucide-react'
+import { useApp } from '@/stores/useApp'
+import { useState } from 'react'
 
-
-
-function Item({ item }: { item: ItemType | undefined }) {
+function Item({ item, isBoost }: { item: ItemType | undefined, isBoost: boolean }) {
   if (!item) return null
+  const [isBoosting, setIsBoosting] = useState(false)
 
   const hasDiscount =
     item.originalPrice &&
@@ -20,15 +21,33 @@ function Item({ item }: { item: ItemType | undefined }) {
     ? Math.round(((item.originalPrice - item.currentPrice) / item.originalPrice) * 100)
     : 0
 
+  const { boostItem } = useApp()
+  const handleBoostItem = async () => {
+    setIsBoosting(true)
+    await boostItem(item?.id)
+    setIsBoosting(false)
+  }
+
+  const isBoosted = item?.boostedItem?.itemId === item?.id
+  console.log(item)
   return (
-    <Card className="p-2 flex flex-col relative">
+    <Card className={`p-2 flex flex-col relative ${isBoosted && 'border-orange-500 border-2'}`}>
+      {isBoosted && (
+        <div className="absolute top-2 left-2 z-10">
+          <Badge className="bg-orange-500 text-white text-xs px-2 py-1 shadow-md rounded-full flex items-center gap-1">
+            <Rocket className="h-3 w-3" />
+            Boosted
+          </Badge>
+        </div>
+      )}
+
       <div className="absolute top-2 right-2 z-10 bg-white/80 backdrop-blur-sm rounded-md">
         <ScoreBadge score={item.score ?? 0} />
       </div>
 
-
+      {/* Image */}
       <img
-        src={item.image || ""}
+        src={item.image || ''}
         alt={item.title}
         className="h-36 w-full rounded-lg object-cover mb-2"
       />
@@ -76,10 +95,32 @@ function Item({ item }: { item: ItemType | undefined }) {
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div>
           <Link to={`/item/${item.id}`} className="w-full">
             <Button className="w-full text-sm py-1">View Details</Button>
           </Link>
+
+          {isBoost && (
+            <div className="w-full my-2">
+              {isBoosting ? (
+                <div className="flex items-center justify-center gap-2 py-2 text-sm font-medium text-primary animate-pulse">
+                  <Rocket className="h-4 w-4 boosting" />
+                  Boosting...
+                </div>
+              ) : isBoosted ? (
+                <Button disabled className="w-full bg-orange-500 text-white">
+                  <Rocket className="h-4 w-4 mr-2" />
+                  Boosted
+                </Button>
+              ) : (
+                <Button className="w-full" variant="outline" onClick={handleBoostItem}>
+                  <Rocket className="h-4 w-4 mr-2" />
+                  Boost
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Card>

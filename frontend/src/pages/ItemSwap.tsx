@@ -108,7 +108,7 @@ function ItemSwap() {
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="w-full sm:w-1/2">
                   {selectedItem ? (
-                    <Item item={selectedItem} />
+                    <Item item={selectedItem} isBoost={false}/>
                   ) : (
                     <div className="border rounded p-4 text-center text-muted-foreground">
                       <p>Select one of your items to offer</p>
@@ -122,7 +122,7 @@ function ItemSwap() {
 
                 <div className="w-full sm:w-1/2">
                   {data ? (
-                    <Item item={data} />
+                    <Item item={data} isBoost={false}/>
                   ) : (
                     <div className="border rounded p-4 text-center text-muted-foreground">
                       <p>Loading requested item...</p>

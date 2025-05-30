@@ -20,8 +20,9 @@ model User {
   receivedSwaps SwapProposal[] @relation("Receiver")
   addedItems    CircleItem[]
   notifications Notification[]
-  updateAt      DateTime       @default(now())
-  createdAt     DateTime       @updatedAt
+  boostedItems  BoostedItem[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?       @updatedAt
 }
 
 model Item {
@@ -47,6 +48,19 @@ model Item {
   circles         CircleItem[]
   proposerInSwaps SwapProposal[] @relation("ProposerItem")
   receiverInSwaps SwapProposal[] @relation("ReceiverItem")
+  boostedItem     BoostedItem?
+}
+
+model BoostedItem {
+  id        Int      @id @default(autoincrement())
+  itemId    Int      @unique
+  item      Item     @relation(fields: [itemId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  boostedAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
 }
 
 model SwapProposal {

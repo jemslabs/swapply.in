@@ -13,6 +13,7 @@ type user = {
   receivedSwaps: proposalType[];
   circles: memberType[];
   notifications: notification[];
+
 };
 
 type loginData = {
@@ -53,6 +54,14 @@ export type ItemType = {
   isSwapped: boolean;
   itemAge: number;
   score: number;
+  boostedItem: boostedItemType;
+};
+export type boostedItemType = {
+  id: number;
+  itemId: number;
+  userId: number;
+  boostedAt: Date;
+  expiresAt: Date;
 };
 
 export type SendPropsalType = {
@@ -158,10 +167,12 @@ export type useAppType = {
 
   scheduleSwapMeeting: (data: AddSwapInpersonType) => void;
   cancelSwapMeeting: (id: string | number | undefined) => void;
+  boostItem: (id: number) => void;
 };
 export type useAuthType = {
   user: user | null;
   login: (data: loginData, navigate: NavigateFunction) => void;
   fetchUser: () => void;
   logout: () => void;
+  fetchPublicUser: (id: number | string| undefined) => Promise<user | null>;
 };

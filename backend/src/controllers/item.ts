@@ -117,9 +117,20 @@ export async function handleGetBrowseItems(c: Context) {
     }
     const items = await prisma.item.findMany({
       where: filters,
-      orderBy: {
-        createdAt: "desc",
+      include: {
+        boostedItem: true,
       },
+      orderBy: [
+        {
+          boostedItem: {
+            // This ensures items with a boostedItem (i.e., NOT NULL) come first
+            id: "desc",
+          },
+        },
+        {
+          createdAt: "desc",
+        },
+      ],
     });
 
     return c.json({ items }, 200);
@@ -141,6 +152,7 @@ export async function handleGetItem(c: Context) {
       },
       include: {
         user: true,
+        boostedItem: true
       },
     });
 
@@ -611,3 +623,62 @@ export async function handleCancelMeeting(c: Context) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
+
+export async function handleBoostItem(c: Context) {
+  const prisma = prismaClient(c);
+  const itemId = c.req.query("itemId");
+  const { id } = c.get("user");
+  try {
+    if (!id) return c.json({ msg: "Unauthorized" }, 400);
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+    if (!user) return c.json({ msg: "User not found" }, 400);
+    if (!itemId) return c.json({ msg: "Item id not provided" }, 400);
+
+    const item = await prisma.item.findUnique({
+      where: {
+        id: parseInt(itemId),
+      },
+    });
+    if (!item) return c.json({ msg: "Item not found for this id" }, 404);
+    if (item.userId !== user?.id) return c.json({ msg: "Unauthorized" }, 400);
+
+    const alreadyBoosted = await prisma.boostedItem.findUnique({
+      where: {
+        itemId: item.id,
+      },
+    });
+
+    if (alreadyBoosted) return c.json({ msg: "Item is already boosted" }, 400);
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    await prisma.boostedItem.create({
+      data: {
+        itemId: item.id,
+        userId: user.id,
+        boostedAt: now,
+        expiresAt,
+      },
+    });
+    return c.json({ msg: "Item successfully boosted" }, 200);
+  } catch (error) {
+    console.error(error);
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export const deleteExpiredBoostedItems = async (c: Context) => {
+  const prisma = prismaClient(c);
+  const now = new Date();
+  await prisma.boostedItem.deleteMany({
+    where: {
+      expiresAt: {
+        lt: now,
+      },
+    },
+  });
+
+  return c.json({ message: `Deleted Expired Boosts.` }, 200);
+};

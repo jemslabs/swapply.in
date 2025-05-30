@@ -137,7 +137,7 @@ function Navbar() {
                 <PopoverContent className="w-44 p-2">
                   <div className="flex flex-col gap-1">
                     <Button variant="ghost" asChild className="w-full justify-start">
-                      <Link to="/profile" className="flex items-center gap-2">
+                      <Link to={`/profile/${user?.id}`} className="flex items-center gap-2">
                         <User className="w-4 h-4" />
                         <span>Profile</span>
                       </Link>

@@ -59,7 +59,11 @@ export async function handleGetUser(c: Context) {
         id,
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            boostedItem: true,
+          },
+        },
         proposedSwaps: {
           include: {
             receiver: true,
@@ -78,10 +82,10 @@ export async function handleGetUser(c: Context) {
         },
         circles: {
           include: {
-            circle: true
-          }
+            circle: true,
+          },
         },
-        notifications: true
+        notifications: true,
       },
     });
     if (!user) return c.json({ msg: "User doesn't exists" }, 400);
@@ -98,3 +102,31 @@ export const handleUserLogout = async (c: Context) => {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 };
+
+export async function handleGetPublicUser(c: Context) {
+  const prisma = prismaClient(c);
+  const id = c.req.query("id");
+  try {
+    if (!id) return c.json({ msg: "User Id not provided" }, 400);
+    const user = await prisma.user.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+      include: {
+        items: {
+          include: {
+            boostedItem: true
+          }
+        },
+        circles: true
+      }
+    });
+    if (!user) {
+      return c.json({ msg: "User not found" }, 404);
+    }
+
+    return c.json(user, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}

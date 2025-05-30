@@ -337,4 +337,21 @@ export const useApp = create<useAppType>((set) => ({
       }
     }
   },
+  boostItem: async (id) => {
+    try {
+      const res = await axios.post(`${endpoint}/api/item/boost?itemId=${id}`,{}, {
+        withCredentials: true
+      });
+      if(res.status === 200) {
+        toast.success(res.data.msg)
+      }
+    } catch (error) {
+       if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  }
 }));

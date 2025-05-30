@@ -60,7 +60,8 @@ function Item() {
     createdAt,
     user,
     isSwapped,
-    score, itemAge
+    score, itemAge,
+    boostedItem
   } = data;
 
   const hasDiscount =

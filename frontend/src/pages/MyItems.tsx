@@ -27,7 +27,7 @@ function MyItems() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5 mx-10">
             {user?.items?.map((item: ItemType, index) => (
-              <Item item={item} key={index} />
+              <Item item={item} key={index} isBoost={true}/>
             ))}
           </div>
         </div>

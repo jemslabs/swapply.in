@@ -14,7 +14,7 @@ export const useAuth = create<useAuthType>((set) => ({
       if (res.status === 200) {
         await useAuth.getState().fetchUser();
         toast.success("Authenticated");
-         navigate("/browse");
+        navigate("/browse");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -57,6 +57,18 @@ export const useAuth = create<useAuthType>((set) => ({
           "Something went wrong. Please try again.";
         toast.error(errorMsg);
       }
+    }
+  },
+  fetchPublicUser: async (id) => {
+    try {
+      const res = await axios.get(`${endpoint}/api/auth/get-user?id=${id}`, {
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch (error) {
+      return null;
     }
   },
 }));

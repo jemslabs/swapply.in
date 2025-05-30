@@ -159,8 +159,8 @@ function BrowseItems() {
           ? Array.from({ length: 8 }).map((_, idx) => (
               <ItemSkeleton key={idx} />
             ))
-          : items.length > 0 ? (
-              items.map((item) => <Item key={item.id} item={item} />)
+          : items && items?.length > 0 ? (
+              items?.map((item) => <Item key={item.id} item={item} isBoost={false}/>)
             ) : (
               <div className="col-span-full text-center text-muted-foreground text-sm">
                 No items found for this filter.

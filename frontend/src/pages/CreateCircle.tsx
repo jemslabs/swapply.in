@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/stores/useApp";
 import { ArrowLeft, CloudUpload, Loader2, X } from "lucide-react";
@@ -15,6 +15,7 @@ function CreateCircle() {
     name: "",
     description: "",
     image: null as File | null,
+    isPrivate: false
   });
   const navigate = useNavigate()
   const { createCircle } = useApp();
@@ -47,90 +48,112 @@ function CreateCircle() {
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("image", data.image);
+    formData.append("isPrivate", String(data.isPrivate));
+
     await createCircle(formData);
     setIsLoading(false);
   };
   return (
     <div className="py-4 px-10">
-      <Button variant={"outline"} onClick={() => navigate(-1)}>
-        <ArrowLeft />
-        Go Back
-      </Button>
-      <Card className="p-6 w-1/2 space-y-4 bg-[#000000] border border-[#2a2a2a] mx-auto">
-        <h1 className="text-3xl font-bold text-white text-center tracking-tight">
-          Create New Circle
-        </h1>
-        <Separator />
-        <div className="space-y-2">
-          <Label htmlFor="image">Logo</Label>
-          <input
-            type="file"
-            ref={imageInputRef}
-            className="hidden"
-            accept="image/png, image/jpeg"
-            onChange={handleImageUpload}
-          />
-          <div className="flex items-center gap-4">
-            <Button
-              type="button"
-              onClick={() => imageInputRef.current?.click()}
-              variant={"outline"}
-            >
-              <CloudUpload size={16} className="mr-2" />
-              <span>Upload Image</span>
-            </Button>
-            {imagePreview && (
-              <div className="relative">
-                <img
-                  src={imagePreview}
-                  alt="Circle Preview"
-                  className="w-16 h-16 rounded-md object-cover border"
-                />
-                <button
-                  className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full"
-                  onClick={clearImagePreview}
-                  type="button"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground mt-1 pl-1">
-            * Upload a clear, well-lit logo or image for your circle (PNG or
-            JPEG only).
-          </p>
-        </div>
+      <div className="w-1/2 space-y-4 mx-auto">
 
-        <div className="space-y-2">
-          <Label htmlFor="name">Circle Name</Label>
-          <Input
-            id="name"
-            value={data.name}
-            onChange={(e) => setData({ ...data, name: e.target.value })}
-            placeholder="e.g. Indie Hackers India"
-          />
-        </div>
+        <div className="flex items-center justify-center gap-5">
 
-        <div className="space-y-2">
-          <Label htmlFor="description">Circle Description</Label>
-          <Textarea
-            id="description"
-            value={data.description}
-            onChange={(e) => setData({ ...data, description: e.target.value })}
-            placeholder="Describe what this circle is about, who it's for, and what members can expect."
-          />
+
+          <Button variant={"outline"} onClick={() => navigate(-1)}>
+            <ArrowLeft />
+          </Button>
+          <h1 className="text-3xl font-bold text-white text-center tracking-tight">
+            Create New Circle
+          </h1>
         </div>
-        <Button disabled={isLoading} onClick={handleSubmit}>
-          {isLoading ? (
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
+        <Card className="p-6  bg-[#000000] border border-[#2a2a2a] mx-auto">
+          <div className="space-y-2">
+            <Label htmlFor="image">Logo</Label>
+            <input
+              type="file"
+              ref={imageInputRef}
+              className="hidden"
+              accept="image/png, image/jpeg"
+              onChange={handleImageUpload}
+            />
+            <div className="flex items-center gap-4">
+              <Button
+                type="button"
+                onClick={() => imageInputRef.current?.click()}
+                variant={"outline"}
+              >
+                <CloudUpload size={16} className="mr-2" />
+                <span>Upload Image</span>
+              </Button>
+              {imagePreview && (
+                <div className="relative">
+                  <img
+                    src={imagePreview}
+                    alt="Circle Preview"
+                    className="w-16 h-16 rounded-md object-cover border"
+                  />
+                  <button
+                    className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full"
+                    onClick={clearImagePreview}
+                    type="button"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
             </div>
-          ) : (
-            "Create"
-          )}
-        </Button>
-      </Card>
+            <p className="text-xs text-muted-foreground mt-1 pl-1">
+              * Upload a clear, well-lit logo or image for your circle (PNG or
+              JPEG only).
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="name">Circle Name</Label>
+            <Input
+              id="name"
+              value={data.name}
+              onChange={(e) => setData({ ...data, name: e.target.value })}
+              placeholder="e.g. Indie Hackers India"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Circle Description</Label>
+            <Textarea
+              id="description"
+              value={data.description}
+              onChange={(e) => setData({ ...data, description: e.target.value })}
+              placeholder="Describe what this circle is about, who it's for, and what members can expect."
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <Label htmlFor="isPrivate">
+              {data.isPrivate ? "Private" : "Public"}
+            </Label>
+            <Switch
+              id="isPrivate"
+              checked={data.isPrivate}
+              onCheckedChange={(value) =>
+                setData({ ...data, isPrivate: value })
+              }
+              className="cursor-pointer"
+            />
+          </div>
+
+
+          <Button disabled={isLoading} onClick={handleSubmit}>
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </div>
+            ) : (
+              "Create"
+            )}
+          </Button>
+        </Card>
+      </div>
     </div>
   );
 }

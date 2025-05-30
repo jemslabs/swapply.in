@@ -23,10 +23,10 @@ export const useApp = create<useAppType>((set) => ({
     }
   },
   getBrowseItems: async (data) => {
-    const { category, query, fromPrice, toPrice, currencyType } = data;
+    const { category, query, fromPrice, toPrice, score, condition } = data;
     try {
       const res = await axios.get(
-        `${endpoint}/api/item/browse-items?category=${category}&query=${query}&fromPrice=${fromPrice}&toPrice=${toPrice}&currencyType=${currencyType}`,
+        `${endpoint}/api/item/browse-items?category=${category}&query=${query}&fromPrice=${fromPrice}&toPrice=${toPrice}&score=${score}&condition=${condition}`,
         { withCredentials: true }
       );
       if (res.status === 200) {
@@ -36,6 +36,17 @@ export const useApp = create<useAppType>((set) => ({
       }
     } catch {
       return [];
+    }
+  },
+  getBrowseCircles: async (data) => {
+    const {query} = data;
+    const res = await axios.get(`${endpoint}/api/circle/get-public-circles?query=${query}`, {
+      withCredentials: true
+    });
+    if(res.status === 200) {
+      return res.data;
+    } else{
+      return []
     }
   },
   getMyItems: async () => {

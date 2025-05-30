@@ -19,7 +19,7 @@ export async function handleCreateCircle(c: Context) {
     if (!validatedData.success) {
       return c.json({ msg: "Invalid Fields" }, 400);
     }
-    const { name, description, image } = validatedData.data;
+    const { name, description, image, isPrivate } = validatedData.data;
     let imageUrl;
     if (image) {
       imageUrl = await uploadToCloudinary(image, "swapply/image", c);
@@ -32,6 +32,7 @@ export async function handleCreateCircle(c: Context) {
         name,
         description,
         image: imageUrl,
+        isPrivate,
       },
     });
     if (!newCircle) return c.json({ msg: "Failed to create new circle" }, 400);
@@ -343,6 +344,31 @@ export async function handleLeaveCircle(c: Context) {
     });
 
     return c.json({ msg: "Leaved this circle" }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleGetPublicCircles(c: Context) {
+  const prisma = prismaClient(c);
+  const queryParam = c.req.query("query")?.trim();
+  const query = queryParam?.replace(/^"|"$/g, "") || undefined;
+  try {
+    const circles = await prisma.circle.findMany({
+      where: {
+        isPrivate: false,
+        name: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+      include: {
+        members: true,
+      },
+    });
+    if (circles.length === 0) return c.json([], 200);
+
+    return c.json(circles, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

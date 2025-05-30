@@ -12,7 +12,7 @@ type user = {
   proposedSwaps: proposalType[];
   receivedSwaps: proposalType[];
   circles: memberType[];
-  notifications: notification[]
+  notifications: notification[];
 };
 
 type loginData = {
@@ -52,7 +52,7 @@ export type ItemType = {
   rating: number;
   isSwapped: boolean;
   itemAge: number;
-  score: number
+  score: number;
 };
 
 export type SendPropsalType = {
@@ -74,7 +74,7 @@ export type proposalType = {
 
 export type swapInpersonType = {
   id: number;
-    meetingStatus: string;
+  meetingStatus: string;
 } & AddSwapInpersonType;
 
 export type AddSwapInpersonType = {
@@ -113,6 +113,7 @@ export type circleType = {
   members: memberType[];
   createdAt: Date;
   updatedAt: Date;
+  isPrivate: boolean;
 };
 
 export type notification = {
@@ -124,8 +125,7 @@ export type notification = {
   link: string;
   type: string;
   category: "SWAP" | "MEETING" | "CIRCLE" | string;
-}
-
+};
 
 export type useAppType = {
   addItem: (data: FormData) => void;
@@ -134,9 +134,10 @@ export type useAppType = {
     query: string;
     fromPrice: string | number;
     toPrice: string | number;
-    currencyType: string;
+    condition: string;
+    score: number;
   }) => Promise<{ items: ItemType[] } | { items: [] }>;
-
+  getBrowseCircles: (data: { query: string }) => Promise<circleType[]>;
   getMyItems: () => Promise<ItemType[] | []>;
   getItem: (id: string | undefined) => Promise<ItemType | null>;
   sendSwapPropsal: (data: SendPropsalType) => void;
@@ -154,7 +155,7 @@ export type useAppType = {
   leaveCircle: (id: string | number | undefined) => void;
   approveItem: (id: string | number | undefined) => void;
   getSwap: (id: string | number | undefined) => Promise<proposalType | null>;
-  
+
   scheduleSwapMeeting: (data: AddSwapInpersonType) => void;
   cancelSwapMeeting: (id: string | number | undefined) => void;
 };

@@ -1,7 +1,7 @@
 import type { circleType } from "@/lib/types";
 import { Card, CardContent } from "./ui/card";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { Users, Share2, ChevronRight } from "lucide-react";
+import { Users, Share2, ChevronRight, Lock } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -9,7 +9,6 @@ import { toast } from "sonner";
 
 const Circle = ({ circle }: { circle: circleType }) => {
   const [copied, setCopied] = useState(false);
-
   const shareLink = async () => {
     const url = `${window.location.origin}/circles/${circle.id}`;
     try {
@@ -20,9 +19,9 @@ const Circle = ({ circle }: { circle: circleType }) => {
       toast.error("Failed to copy link!")
     }
   };
-
   return (
     <Card className="rounded-2xl shadow-sm">
+      
       <CardContent className="px-6 flex items-center justify-between">
         <div className="flex items-start gap-5">
           <Avatar className="h-24 w-24 rounded-xl border">
@@ -35,7 +34,13 @@ const Circle = ({ circle }: { circle: circleType }) => {
               className="group underline flex items-center gap-1"
             >
               <h2 className="text-xl font-semibold">{circle.name}</h2>
+              {circle.isPrivate && ( 
+                <span className="text-xs flex items-center rounded-full text-red-500">
+                  <Lock className="h-3 w-3 mx-2" />
+                </span>
+              )}
               <ChevronRight className="text-gray-300 transition-all duration-200 group-hover:ml-2" />
+
             </Link>
             <p className="text-muted-foreground text-sm line-clamp-2">
               {circle.description}

@@ -91,6 +91,7 @@ model Circle {
   items       CircleItem[]
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+  isPrivate   Boolean        @default(false)
 }
 
 model CircleMember {

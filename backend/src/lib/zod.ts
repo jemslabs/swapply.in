@@ -50,6 +50,11 @@ export const createCircleSchema = z.object({
   name: z.string(),
   description: z.string(),
   image: z.any(),
+  isPrivate: z.string()
+    .transform((val) => val === "true")
+    .refine((val) => typeof val === "boolean", {
+      message: "Is Private must be a valid boolean",
+    }),
 });
 
 export const scheduleProposalMeeting = z.object({

@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import FetchUser from "./components/FetchUser";
 //@ts-ignore
 import AddItem from "./pages/AddItem";
-import Browse from "./pages/Browse";
+
 import MyItems from "./pages/MyItems";
 import Item from "./pages/Item";
 import ItemSwap from "./pages/ItemSwap";
@@ -17,6 +17,8 @@ import CirclePage from "./pages/CirclePage";
 import SwapPage from "./pages/SwapPage";
 import ClientProtect from "./components/ClientProtect";
 import Notifications from "./pages/Notifications";
+import BrowseItems from "./pages/BrowseItems";
+import BrowseCircles from "./pages/BrowseCircles";
 
 function App() {
   return (
@@ -28,7 +30,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/item/add" element={<AddItem />} />
-          <Route path="/browse" element={<Browse />} />
+          <Route path="/browse/items" element={<BrowseItems />} />
+          <Route path="/browse/circles" element={<BrowseCircles />} />
           <Route
             path="/my-items"
             element={
@@ -81,6 +84,7 @@ function App() {
               </ClientProtect>
             }
           />
+
         </Routes>
       </div>
       <Toaster position="top-center" />

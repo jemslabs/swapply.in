@@ -5,9 +5,9 @@ import type { memberType } from "@/lib/types";
 import { useApp } from "@/stores/useApp";
 import { useAuth } from "@/stores/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle, Loader2, LogOut, Users } from "lucide-react";
+import { ArrowLeft, CheckCircle, Loader2, LogOut, Users, Lock } from "lucide-react";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function CirclePage() {
   const { id } = useParams();
@@ -17,11 +17,11 @@ export default function CirclePage() {
   const [isLeaving, setIsLeaving] = useState(false);
   const [isApproving, setIsApproving] = useState(false)
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate()
   const { data, isLoading } = useQuery({
     queryKey: ["circle", id],
     queryFn: () => fetchCircle(id),
-    staleTime: 12000,
+    staleTime: 300000,
     enabled: !!id,
   });
 
@@ -52,6 +52,20 @@ export default function CirclePage() {
   ) ?? [];
   return (
     <div className="px-8 py-10 max-w-7xl mx-auto">
+      <div className="mb-3">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Go Back
+        </Button>
+
+
+      </div>
+
       <div className="flex justify-between flex-wrap gap-6 items-start mb-10">
         {isLoading ? (
           <div className="flex gap-8 items-start animate-pulse">
@@ -121,33 +135,43 @@ export default function CirclePage() {
       <div className="grid grid-cols-12 gap-10">
         <div className="col-span-3 border-r pr-6">
           <h2 className="text-lg font-semibold mb-4">Members</h2>
-          <div className="grid gap-4">
-            {data?.members.map((member: memberType) => (
-              <Link
-                key={member.id}
-                to={`/profile/${member.user.id}`}
-                className="flex items-start gap-3 p-2 rounded-md hover:bg-muted transition"
-              >
-                <div className="rounded-full bg-muted h-9 w-9 flex items-center justify-center text-sm font-bold uppercase">
-                  {member.user.name?.[0]}
-                </div>
-                <div>
-                  <p className="text-sm font-medium">
-                    {member.user.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {member.user.email}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {data?.isPrivate && !isJoined ? (
+            <div className="text-muted-foreground text-sm flex flex-col items-center gap-2 text-center">
+              <Lock className="w-6 h-6" />
+              <span>This circle is private. Join to view members.</span>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {data?.members.map((member: memberType) => (
+                <Link
+                  key={member.id}
+                  to={`/profile/${member.user.id}`}
+                  className="flex items-start gap-3 p-2 rounded-md hover:bg-muted transition"
+                >
+                  <div className="rounded-full bg-muted h-9 w-9 flex items-center justify-center text-sm font-bold uppercase">
+                    {member.user.name?.[0]}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{member.user.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {member.user.email}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="col-span-9">
           <h2 className="text-lg font-semibold mb-6">Shared Items</h2>
 
-          {allVisibleItems.length === 0 ? (
+          {data?.isPrivate && !isJoined ? (
+            <div className="text-center text-muted-foreground text-sm flex flex-col items-center gap-2">
+              <Lock className="w-6 h-6" />
+              <span>This circle is private. Join to view shared items.</span>
+            </div>
+          ) : allVisibleItems.length === 0 ? (
             <p className="text-muted-foreground">No shared items yet.</p>
           ) : (
             <div className="grid grid-cols-2 gap-6">
@@ -175,11 +199,8 @@ export default function CirclePage() {
                         className="hover:text-green-500 transition cursor-pointer"
                         disabled={isApproving}
                       >
-
                         {isApproving ? (
-                          <div className="flex items-center gap-2">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          </div>
+                          <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           <CheckCircle className="w-5 h-5 text-muted-foreground hover:text-green-500" />
                         )}

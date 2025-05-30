@@ -18,7 +18,7 @@ import { categories } from "@/lib/utils";
 import { useApp } from "@/stores/useApp";
 import { Loader2, Search } from "lucide-react";
 
-function Browse() {
+function BrowseItems() {
   const { getBrowseItems } = useApp();
 
   const [filter, setFilter] = useState({
@@ -26,7 +26,8 @@ function Browse() {
     query: "",
     fromPrice: 0,
     toPrice: 10000,
-    currencyType: "INR",
+    score: 100,
+    condition: "NEW",
   });
 
   const {
@@ -37,10 +38,9 @@ function Browse() {
   } = useQuery({
     queryKey: ["browse-items"],
     queryFn: async () => {
-      const res = await getBrowseItems(filter)
-      return res
-    }
-    ,
+      const res = await getBrowseItems(filter);
+      return res;
+    },
     staleTime: 5 * 60 * 1000,
   });
 
@@ -67,7 +67,7 @@ function Browse() {
         </div>
 
         <div className="flex flex-wrap items-end justify-between gap-4 w-full">
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <Select
               value={filter.category}
               onValueChange={(value) =>
@@ -90,19 +90,21 @@ function Browse() {
             </Select>
 
             <Select
-              value={filter.currencyType}
+              value={filter.condition}
               onValueChange={(value) =>
-                setFilter({ ...filter, currencyType: value })
+                setFilter({ ...filter, condition: value })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a currency" />
+                <SelectValue placeholder="Condition" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Currency</SelectLabel>
-                  <SelectItem value="INR">INR</SelectItem>
-                  <SelectItem value="USD">USD</SelectItem>
+                  <SelectLabel>Condition</SelectLabel>
+                  <SelectItem value="NEW">New</SelectItem>
+                  <SelectItem value="LIKE_NEW">Like New</SelectItem>
+                  <SelectItem value="USED">Used</SelectItem>
+                  <SelectItem value="DAMAGED">Damaged</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -110,8 +112,7 @@ function Browse() {
 
           <div className="flex flex-col gap-2 grow">
             <label className="text-sm font-medium">
-              Price Range: {filter.fromPrice} - {filter.toPrice}{" "}
-              {filter.currencyType}
+              Price Range: {filter.fromPrice} - {filter.toPrice}
             </label>
             <Slider
               min={0}
@@ -124,6 +125,21 @@ function Browse() {
             />
           </div>
 
+          <div className="flex flex-col gap-2 w-48">
+            <label className="text-sm font-medium">
+              Score: 0 - {filter.score}
+            </label>
+            <Slider
+              min={0}
+              max={100}
+              step={1}
+              value={[filter.score]}
+              onValueChange={([score]) =>
+                setFilter({ ...filter, score })
+              }
+            />
+          </div>
+
           <div className="flex justify-end">
             <Button disabled={isFetching} onClick={handleApply}>
               {isFetching ? (
@@ -131,7 +147,7 @@ function Browse() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
               ) : (
-                "Apply Filters"
+                "Search & Filter"
               )}
             </Button>
           </div>
@@ -141,11 +157,11 @@ function Browse() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10 max-w-6xl mx-auto">
         {isLoading || isFetching
           ? Array.from({ length: 8 }).map((_, idx) => (
-            <ItemSkeleton key={idx} />
-          ))
-          : items.length > 0
-            ? items.map((item) => <Item key={item.id} item={item} />)
-            : (
+              <ItemSkeleton key={idx} />
+            ))
+          : items.length > 0 ? (
+              items.map((item) => <Item key={item.id} item={item} />)
+            ) : (
               <div className="col-span-full text-center text-muted-foreground text-sm">
                 No items found for this filter.
               </div>
@@ -155,4 +171,4 @@ function Browse() {
   );
 }
 
-export default Browse;
+export default BrowseItems;

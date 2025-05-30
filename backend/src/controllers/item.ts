@@ -45,8 +45,8 @@ export async function handleAddItem(c: Context) {
     } else {
       imageUrl = null;
     }
-    const item = {condition, hasBill, itemAge};
-    const score = calculateItemScore(item)
+    const item = { condition, hasBill, itemAge };
+    const score = calculateItemScore(item);
     const newItem = await prisma.item.create({
       data: {
         userId: user.id,
@@ -61,7 +61,7 @@ export async function handleAddItem(c: Context) {
         condition,
         image: imageUrl || null,
         itemAge,
-        score
+        score,
       },
     });
 
@@ -82,14 +82,15 @@ export async function handleGetBrowseItems(c: Context) {
     const query = c.req.query("query")?.replace(/^"|"$/g, "");
     const fromPrice = parseFloat(c.req.query("fromPrice") || "0");
     const toPrice = parseFloat(c.req.query("toPrice") || "99999999");
-    const currencyType = c.req.query("currencyType");
+    const score = parseFloat(c.req.query("score") || "100");
+    const condition = c.req.query("condition");
 
     const filters: any = {
       currentPrice: {
         gte: fromPrice,
         lte: toPrice,
       },
-      isSwapped: false,
+      condition: condition,
     };
 
     if (query) {
@@ -103,10 +104,16 @@ export async function handleGetBrowseItems(c: Context) {
       filters.category = category.toUpperCase();
     }
 
-    if (currencyType) {
-      filters.currencyType = currencyType;
+    if (score) {
+      filters.score = {
+        gte: 0,
+        lte: score,
+      };
     } else {
-      filters.currencyType = "INR";
+      filters.score = {
+        gte: 0,
+        lte: 100,
+      };
     }
     const items = await prisma.item.findMany({
       where: filters,
@@ -302,8 +309,8 @@ export async function handleRejectSwapProposal(c: Context) {
     const proposal = await prisma.swapProposal.findUnique({
       where: { id: parsedProposalId },
       include: {
-        receiverItem: true
-      }
+        receiverItem: true,
+      },
     });
     if (!proposal) return c.json({ msg: "No swap proposal found" }, 404);
 
@@ -355,8 +362,8 @@ export async function handleCancelSwapProposal(c: Context) {
     const proposal = await prisma.swapProposal.findUnique({
       where: { id: parsedProposalId },
       include: {
-        receiverItem: true
-      }
+        receiverItem: true,
+      },
     });
     if (!proposal) return c.json({ msg: "No swap proposal found" }, 404);
 

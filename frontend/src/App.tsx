@@ -20,6 +20,7 @@ import Notifications from "./pages/Notifications";
 import BrowseItems from "./pages/BrowseItems";
 import BrowseCircles from "./pages/BrowseCircles";
 import Profile from "./pages/Profile";
+import PricingPlans from "./components/PricingPlans";
 
 function App() {
   return (
@@ -87,7 +88,7 @@ function App() {
             }
           />
           <Route path="/profile/:id" element={<Profile />}/>
-
+          <Route path="/pricing" element={<PricingPlans />}/>
         </Routes>
       </div>
       <Toaster position="top-center" />

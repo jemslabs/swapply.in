@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PlusCircle, RefreshCw, Loader2, ArrowLeft } from "lucide-react";
+import { PlusCircle, RefreshCw, Loader2, ArrowLeft, Rocket } from "lucide-react";
 import { categories, conditions } from "@/lib/utils";
 import { useState } from "react";
 import {
@@ -47,6 +47,7 @@ function Item() {
   }
 
   const {
+    id: itemId,
     title,
     description,
     image,
@@ -63,7 +64,6 @@ function Item() {
     score, itemAge,
     boostedItem
   } = data;
-
   const hasDiscount =
     originalPrice &&
     originalPrice !== currentPrice &&
@@ -72,6 +72,8 @@ function Item() {
   const discountPercent = hasDiscount
     ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
     : 0;
+
+  const isBoosted = boostedItem?.itemId === itemId;
 
   const handleItemInCircle = async (circleId: string | number) => {
     const addItemdata = { circleId: circleId, itemId: data?.id };
@@ -86,7 +88,7 @@ function Item() {
           <ArrowLeft />
           Go Back
         </Button>
-        <Card className="flex md:flex-row flex-1 px-5 relative ">
+        <Card className={`flex md:flex-row flex-1 px-5 relative ${isBoosted && 'border-[#c084fc] border-2'}`}>
           <div className="md:w-1/2">
             <img
               src={image}
@@ -95,6 +97,14 @@ function Item() {
             />
 
           </div>
+          {isBoosted && (
+            <div className="absolute top-2 left-2 z-10">
+              <Badge className="bg-[#c084fc] text-black text-xs px-2 py-1 shadow-md rounded-full flex items-center gap-1">
+                <Rocket className="h-3 w-3" />
+                Boosted
+              </Badge>
+            </div>
+          )}
           <div className="absolute top-4 right-4 z-10">
             <ScoreBadge score={score ?? 0} />
           </div>

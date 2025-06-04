@@ -1,32 +1,20 @@
 import { cn } from '@/lib/utils'
 
+function getScoreColor(score: number) {
+  if (score >= 80) return 'bg-green-100 text-green-800'
+  if (score >= 50) return 'bg-yellow-100 text-yellow-800'
+  return 'bg-red-100 text-red-800'
+}
+
 function ScoreBadge({ score }: { score: number }) {
-  const getStyles = () => {
-    if (score < 50) {
-      return {
-        bg: 'bg-red-100 text-red-700 border border-red-300',
-      }
-    } else if (score < 75) {
-      return {
-        bg: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
-      }
-    } else {
-      return {
-        bg: 'bg-green-100 text-green-800 border border-green-300',
-      }
-    }
-  }
-
-  const { bg } = getStyles()
-
   return (
     <div
       className={cn(
-        'px-2 py-[2px] text-xs font-medium rounded-md shadow-sm',
-        bg
+        'inline-flex items-center gap-1 px-3 py-1 text-sm font-semibold rounded-full shadow-sm',
+        getScoreColor(score)
       )}
     >
-      Product Score: {score}
+      {score} <span className="text-xs font-normal opacity-80">/ 100</span>
     </div>
   )
 }

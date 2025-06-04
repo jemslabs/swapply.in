@@ -22,7 +22,8 @@ model User {
   notifications Notification[]
   boostedItems  BoostedItem[]
   createdAt     DateTime       @default(now())
-  updatedAt     DateTime?       @updatedAt
+  updatedAt     DateTime?      @updatedAt
+  plan       ProPlan?
 }
 
 model Item {
@@ -141,6 +142,16 @@ model Notification {
   link      String?
   type      String
   category  NotificationCategory?
+}
+
+model ProPlan {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id])
+  startedAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
 }
 
 enum NotificationCategory {

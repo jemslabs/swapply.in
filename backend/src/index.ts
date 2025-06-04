@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import authRoutes from './routes/auth'
 import itemRoutes from './routes/item';
 import circleRoutes from './routes/circle';
+import razorpayRoutes from './routes/razorpay';
 
 const app = new Hono();
 app.use("*", async (c: Context, next: Next) => {
@@ -21,6 +22,6 @@ app.use(
 app.route("/api/auth", authRoutes);
 app.route("/api/item", itemRoutes);
 app.route("/api/circle", circleRoutes);
-
+app.route("/api/razorpay", razorpayRoutes);
 
 export default app

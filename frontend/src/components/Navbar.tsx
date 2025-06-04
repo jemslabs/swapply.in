@@ -12,6 +12,7 @@ import {
   Users,
   Bell,
   Library,
+  Crown,
 } from "lucide-react";
 import {
   Popover,
@@ -24,13 +25,15 @@ import clsx from "clsx";
 function Navbar() {
   const { user, logout } = useAuth();
   const location = useLocation();
-
+  const isPro = !!user?.plan;
   const bgClass = clsx(
     "fixed top-5 left-20 right-10 z-50 border rounded-xl transition-colors duration-300",
     {
-      "bg-[#000000] border-[#2a2a2a]": !location.pathname.startsWith("/login") &&
+      "bg-[#000000] border-[#2a2a2a]":
+        !location.pathname.startsWith("/login") &&
         !location.pathname.startsWith("/signup"),
-      "bg-transparent border-transparent": location.pathname.startsWith("/login") ||
+      "bg-transparent border-transparent":
+        location.pathname.startsWith("/login") ||
         location.pathname.startsWith("/signup"),
     }
   );
@@ -38,12 +41,10 @@ function Navbar() {
   return (
     <div className={bgClass}>
       <div className="py-2 px-4 flex justify-between items-center">
-
         <div className="flex items-center gap-6">
           <Logo />
 
           <div className="flex gap-4">
-
             <Popover>
               <PopoverTrigger asChild>
                 <div
@@ -52,7 +53,8 @@ function Navbar() {
                     location.pathname.startsWith("/browse")
                       ? "bg-[#1a1a1a] text-white"
                       : "text-white"
-                  )}>
+                  )}
+                >
                   <Compass className="w-3 h-3" />
                   Browse
                 </div>
@@ -87,10 +89,8 @@ function Navbar() {
                   </div>
                   <span>Join Circles</span>
                 </Link>
-
               </PopoverContent>
             </Popover>
-
 
             <Link
               to="/circles"
@@ -117,16 +117,26 @@ function Navbar() {
                 </Button>
               </Link>
 
-
               <Link to="/notifications" className="relative">
-                <Bell className="h-6 w-6 hover:text-gray-300" />
+                <Bell className="h-5 w-5 hover:text-gray-300" />
                 {user.notifications?.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
                     {user.notifications.length}
                   </span>
                 )}
               </Link>
-
+              {isPro ? (
+                <Button size="sm" className="">
+                  <Crown className="w-4 h-4" />
+                  Pro
+                </Button>
+              ) : (
+                <Link to="/pricing">
+                  <Button size="sm" variant={"default"}>
+                    Upgrade
+                  </Button>
+                </Link>
+              )}
 
               <Popover>
                 <PopoverTrigger asChild>
@@ -136,19 +146,34 @@ function Navbar() {
                 </PopoverTrigger>
                 <PopoverContent className="w-44 p-2">
                   <div className="flex flex-col gap-1">
-                    <Button variant="ghost" asChild className="w-full justify-start">
-                      <Link to={`/profile/${user?.id}`} className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      asChild
+                      className="w-full justify-start"
+                    >
+                      <Link
+                        to={`/profile/${user?.id}`}
+                        className="flex items-center gap-2"
+                      >
                         <User className="w-4 h-4" />
                         <span>Profile</span>
                       </Link>
                     </Button>
-                    <Button variant="ghost" asChild className="w-full justify-start">
+                    <Button
+                      variant="ghost"
+                      asChild
+                      className="w-full justify-start"
+                    >
                       <Link to="/my-items" className="flex items-center gap-2">
                         <Package className="w-4 h-4" />
                         <span>My Items</span>
                       </Link>
                     </Button>
-                    <Button variant="ghost" asChild className="w-full justify-start">
+                    <Button
+                      variant="ghost"
+                      asChild
+                      className="w-full justify-start"
+                    >
                       <Link to="/my-swaps" className="flex items-center gap-2">
                         <RefreshCw className="w-4 h-4" />
                         <span>My Swaps</span>

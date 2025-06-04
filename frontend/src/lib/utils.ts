@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 const isProduction = false;
 
-export const endpoint = isProduction ? "" : "http://localhost:8787";
+export const endpoint = isProduction ? "https://swapply-backend.isonikrish.workers.dev" : "http://localhost:8787";
 
 export const categories = [
   { name: "Electronics", value: "ELECTRONICS" },

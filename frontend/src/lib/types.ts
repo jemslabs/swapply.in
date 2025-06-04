@@ -13,7 +13,7 @@ type user = {
   receivedSwaps: proposalType[];
   circles: memberType[];
   notifications: notification[];
-
+  plan?: ProPlanType;
 };
 
 type loginData = {
@@ -135,7 +135,12 @@ export type notification = {
   type: string;
   category: "SWAP" | "MEETING" | "CIRCLE" | string;
 };
-
+export type ProPlanType = {
+  id: number;
+  userId: number;
+  startedAt: Date;
+  expiresAt: Date;
+}
 export type useAppType = {
   addItem: (data: FormData) => void;
   getBrowseItems: (data: {

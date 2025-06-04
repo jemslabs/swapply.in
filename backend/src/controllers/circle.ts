@@ -13,13 +13,20 @@ export async function handleCreateCircle(c: Context) {
       where: {
         id,
       },
+      include: {
+        plan: true
+      }
     });
     if (!user) return c.json({ msg: "User not found" }, 404);
+    const isPro = !!user.plan;
     const validatedData = createCircleSchema.safeParse(data);
     if (!validatedData.success) {
       return c.json({ msg: "Invalid Fields" }, 400);
     }
     const { name, description, image, isPrivate } = validatedData.data;
+    if(isPrivate && !isPro){
+      return c.json({msg: "Upgrade to pro plan to create private circles"}, 400)
+    }
     let imageUrl;
     if (image) {
       imageUrl = await uploadToCloudinary(image, "swapply/image", c);

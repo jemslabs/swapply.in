@@ -664,7 +664,6 @@ export async function handleBoostItem(c: Context) {
     });
     return c.json({ msg: "Item successfully boosted" }, 200);
   } catch (error) {
-    console.error(error);
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }

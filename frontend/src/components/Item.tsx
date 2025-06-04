@@ -29,12 +29,11 @@ function Item({ item, isBoost }: { item: ItemType | undefined, isBoost: boolean 
   }
 
   const isBoosted = item?.boostedItem?.itemId === item?.id
-  console.log(item)
   return (
-    <Card className={`p-2 flex flex-col relative ${isBoosted && 'border-orange-500 border-2'}`}>
+    <Card className={`p-2 flex flex-col relative ${isBoosted && 'border-[#c084fc] border-2'}`}>
       {isBoosted && (
         <div className="absolute top-2 left-2 z-10">
-          <Badge className="bg-orange-500 text-white text-xs px-2 py-1 shadow-md rounded-full flex items-center gap-1">
+          <Badge className="bg-[#c084fc] text-black text-xs px-2 py-1 shadow-md rounded-full flex items-center gap-1">
             <Rocket className="h-3 w-3" />
             Boosted
           </Badge>
@@ -45,7 +44,6 @@ function Item({ item, isBoost }: { item: ItemType | undefined, isBoost: boolean 
         <ScoreBadge score={item.score ?? 0} />
       </div>
 
-      {/* Image */}
       <img
         src={item.image || ''}
         alt={item.title}
@@ -95,7 +93,6 @@ function Item({ item, isBoost }: { item: ItemType | undefined, isBoost: boolean 
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div>
           <Link to={`/item/${item.id}`} className="w-full">
             <Button className="w-full text-sm py-1">View Details</Button>
@@ -109,13 +106,13 @@ function Item({ item, isBoost }: { item: ItemType | undefined, isBoost: boolean 
                   Boosting...
                 </div>
               ) : isBoosted ? (
-                <Button disabled className="w-full bg-orange-500 text-white">
-                  <Rocket className="h-4 w-4 mr-2" />
+                <Button disabled className="w-full  text-white" variant={"outline"}>
+                  <Rocket className="h-4 w-4" />
                   Boosted
                 </Button>
               ) : (
                 <Button className="w-full" variant="outline" onClick={handleBoostItem}>
-                  <Rocket className="h-4 w-4 mr-2" />
+                  <Rocket className="h-4 w-4" />
                   Boost
                 </Button>
               )}

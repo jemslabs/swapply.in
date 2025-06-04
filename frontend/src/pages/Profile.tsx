@@ -5,20 +5,22 @@ import { Card, CardTitle } from "@/components/ui/card";
 import type { ItemType } from "@/lib/types";
 import { useAuth } from "@/stores/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { BadgeCheck } from "lucide-react";
 
 function Profile() {
   const { id } = useParams();
   const { fetchPublicUser, user } = useAuth();
-
+  const navigate = useNavigate();
   const { data } = useQuery({
     queryKey: ["user", id],
     queryFn: async () => await fetchPublicUser(id),
     staleTime: 5 * 60 * 1000,
   });
 
+  const isPro = !!data?.plan;
   return (
-    <div className="max-w-6xl mx-auto p-6 md:p-10 space-y-12">
+    <div className="max-w-6xl mx-auto p-6 md:p-10 space-y-6">
 
       <Card className="flex flex-col md:flex-row items-center gap-6 p-6 md:p-8 shadow-lg">
         <Avatar className="w-24 h-24">
@@ -28,19 +30,27 @@ function Profile() {
         </Avatar>
 
         <div className="text-center md:text-left space-y-2">
-          <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <CardTitle className="text-2xl font-bold tracking-tight">
               {data?.name}
             </CardTitle>
-            {user?.id === data?.id && (
+            {isPro && (
+              <div className="gap-1 rounded-full text-blue-400 text-xs font-medium shadow-sm">
+                <BadgeCheck className="fill-blue-400 text-white" />
+              </div>
+            )}
+
+            {user?.id === data?.id && !isPro && (
               <Badge
                 variant="outline"
-                className="border-dashed border-muted-foreground text-muted-foreground hover:border-primary transition"
+                className="border-dashed border-primary transition text-xs cursor-pointer"
+                onClick={() => navigate("/pricing")}
               >
                 Get Verified
               </Badge>
             )}
           </div>
+
           <p className="text-muted-foreground text-base">{data?.email}</p>
         </div>
       </Card>
@@ -50,7 +60,7 @@ function Profile() {
           Listed Items ({data?.items?.length || 0})
         </h2>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {data?.items?.map((item: ItemType, index) => (
           <Item item={item} key={index} isBoost={false} />
         ))}

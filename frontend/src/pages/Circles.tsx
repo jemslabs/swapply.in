@@ -2,7 +2,7 @@ import Circle from "@/components/Circle";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/stores/useApp";
 import { useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // Skeleton component inside the same file
@@ -45,7 +45,16 @@ function Circles() {
 
   return (
     <div className="py-5 px-10 max-w-4xl mx-auto">
-      <div className="flex justify-end mb-5">
+      <div className="flex justify-between mb-5">
+        <div className="flex items-center justify-center gap-5">
+
+
+          <Button variant={"outline"} onClick={() => navigate(-1)}>
+            <ArrowLeft />
+          </Button>
+          <h1 className="text-3xl font-bold text-white text-center tracking-tight">
+            Circles          </h1>
+        </div>
         <Button onClick={() => navigate("/circles/create")}>
           <Plus /> Create Circle
         </Button>

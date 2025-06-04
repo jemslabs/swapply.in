@@ -4,6 +4,7 @@ import { Check, Crown } from "lucide-react";
 import axios from "axios";
 import { endpoint } from "@/lib/utils";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 export default function PricingPlans() {
     const { user } = useAuth();
@@ -89,13 +90,15 @@ export default function PricingPlans() {
                             </li>
                         ))}
                     </ul>
-                    <Button
-                        className="w-full py-2 rounded-xl font-semibold text-base"
-                        size="lg"
-                        variant="outline"
-                    >
-                        Get Started
-                    </Button>
+                    <Link to={"/login"} className="w-full">
+                        <Button
+                            className="w-full py-2 rounded-xl font-semibold text-base"
+                            size="lg"
+                            variant="outline"
+                        >
+                            Get Started
+                        </Button>
+                    </Link>
                 </div>
 
                 {/* Pro Plan */}

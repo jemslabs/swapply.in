@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PlusCircle, RefreshCw, Loader2, ArrowLeft, Rocket } from "lucide-react";
+import { PlusCircle, RefreshCw, Loader2, ArrowLeft, Rocket, BadgeCheck } from "lucide-react";
 import { categories, conditions } from "@/lib/utils";
 import { useState } from "react";
 import {
@@ -74,7 +74,7 @@ function Item() {
     : 0;
 
   const isBoosted = boostedItem?.itemId === itemId;
-
+  const isPro = !!user?.plan;
   const handleItemInCircle = async (circleId: string | number) => {
     const addItemdata = { circleId: circleId, itemId: data?.id };
     setIsSending(true)
@@ -221,6 +221,7 @@ function Item() {
                               <Avatar className="h-5 w-5 mr-2">
                                 <AvatarImage src={c.circle.image} />
                                 <AvatarFallback>{c.circle.name?.charAt(0)}</AvatarFallback>
+
                               </Avatar>
                               {c.circle.name}
                             </Button>
@@ -271,14 +272,21 @@ function Item() {
                     {user?.name?.charAt(0)?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <div>
-                  <p className="text-lg font-medium">
+                <Link to={`/profile/${user?.id}`}>
+                  <p className="text-lg font-medium flex items-center gap-2 underline">
                     {user?.name || "Unknown Seller"}
+                    {isPro &&
+                    <div className="gap-1 rounded-full text-blue-400 text-xs font-medium shadow-sm">
+                      <BadgeCheck className="fill-blue-400 text-white" size={18}/>
+                    </div>
+                  }
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {user?.email || "No email provided"}
                   </p>
-                </div>
+                  
+                </Link>
+                
               </CardTitle>
             </CardHeader>
           </Card>

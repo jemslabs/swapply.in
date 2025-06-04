@@ -151,8 +151,13 @@ export async function handleGetItem(c: Context) {
         id: parsedId,
       },
       include: {
-        user: true,
-        boostedItem: true
+        user: {
+          include: {
+            plan: true
+          }
+        },
+        boostedItem: true,
+        
       },
     });
 

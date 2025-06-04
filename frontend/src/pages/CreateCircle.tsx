@@ -19,6 +19,7 @@ function CreateCircle() {
   });
   const navigate = useNavigate()
   const { createCircle } = useApp();
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);

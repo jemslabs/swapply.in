@@ -67,7 +67,7 @@ export const useAuth = create<useAuthType>((set) => ({
       if (res.status === 200) {
         return res.data;
       }
-    } catch (error) {
+    } catch {
       return null;
     }
   },

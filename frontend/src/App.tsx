@@ -6,7 +6,6 @@ import { Toaster } from "@/components/ui/sonner";
 import FetchUser from "./components/FetchUser";
 //@ts-ignore
 import AddItem from "./pages/AddItem";
-
 import MyItems from "./pages/MyItems";
 import Item from "./pages/Item";
 import ItemSwap from "./pages/ItemSwap";

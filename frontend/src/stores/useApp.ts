@@ -179,7 +179,7 @@ export const useApp = create<useAppType>((set) => ({
       if (res.status === 200) {
         return res.data;
       }
-    } catch (error) {
+    } catch {
       return [];
     }
   },
@@ -194,7 +194,7 @@ export const useApp = create<useAppType>((set) => ({
       if (res.status === 200) {
         return res.data;
       }
-    } catch (error) {
+    } catch{
       return null;
     }
   },
@@ -289,7 +289,7 @@ export const useApp = create<useAppType>((set) => ({
       if (res.status === 200) {
         return res.data;
       }
-    } catch (error) {
+    } catch {
       return null;
     }
   },

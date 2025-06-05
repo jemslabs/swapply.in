@@ -36,7 +36,7 @@ function Home() {
                     </div>
 
                     <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl animate-fade-in-up">
-                        Turn Your Unused Stuff Into Treasure
+                        Swap Your Unused Stuff for What You Love
                     </h1>
 
                     <p className="mt-6 text-sm sm:text-lg md:text-xl text-white/80 max-w-2xl animate-fade-in-up delay-200">
@@ -251,7 +251,6 @@ function Home() {
             </section>
 
             <div className="bg-black">
-                {/* CTA Section */}
                 <section className="py-20 bg-[rgb(100,42,154)] text-white mx-4 md:mx-20 rounded-2xl relative overflow-hidden">
                     <div
                         className="absolute inset-0 pointer-events-none opacity-20"
@@ -278,10 +277,8 @@ function Home() {
                     </div>
                 </section>
 
-                {/* Footer */}
                 <footer className="bg-black text-white py-12 px-6 md:px-8">
                     <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-                        {/* Logo + Description */}
                         <div>
                             <Logo />
                             <p className="mt-4 text-white/80 text-sm leading-relaxed max-w-md">
@@ -290,7 +287,6 @@ function Home() {
                             </p>
                         </div>
 
-                        {/* Social Links */}
                         <div className="flex md:justify-end items-center gap-6">
                             <a
                                 href="https://github.com/Jems-Labs/swapply"
@@ -322,12 +318,10 @@ function Home() {
                         </div>
                     </div>
 
-                    {/* Separator */}
                     <div className="py-10">
                         <Separator />
                     </div>
 
-                    {/* Copyright */}
                     <div className="text-center text-white/70 text-sm pb-4">
                         © {new Date().getFullYear()} Swapply. A product by{' '}
                         <a

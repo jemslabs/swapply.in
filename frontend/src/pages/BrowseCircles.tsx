@@ -54,7 +54,7 @@ function BrowseCircles() {
       <div className="grid grid-cols-1 gap-6 mt-10 max-w-6xl mx-auto">
         {isLoading || isFetching ? (
           Array.from({ length: 6 }).map((_, idx) => (
-            <>
+            <div key={idx}>
 
               <div className="rounded-2xl shadow-sm animate-pulse border bg-muted p-6">
                 <div className="flex items-center gap-5">
@@ -66,7 +66,7 @@ function BrowseCircles() {
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           ))
         ) : circles.length > 0 ? (
           circles.map((circle) => (

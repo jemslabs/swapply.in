@@ -14,7 +14,6 @@ import { format } from "date-fns";
 import { cn, ISTtoUTC } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-
 function SwapPage() {
   const { getSwap, scheduleSwapMeeting, cancelSwapMeeting } = useApp();
   const { id } = useParams();
@@ -85,7 +84,7 @@ function SwapPage() {
 
       <div className="flex justify-between items-center gap-6 p-4 rounded-2xl shadow-md">
         <div className="w-1/2">
-          <Item item={data?.proposedItem} />
+          <Item item={data?.proposedItem} isBoost={false}/>
         </div>
         <div className="flex flex-col items-center">
           <RefreshCw className="text-muted-foreground h-6 w-6" />
@@ -94,7 +93,7 @@ function SwapPage() {
           </Badge>
         </div>
         <div className="w-1/2">
-          <Item item={data?.receiverItem} />
+          <Item item={data?.receiverItem} isBoost={false}/>
         </div>
       </div>
 
@@ -169,7 +168,7 @@ function SwapPage() {
           <Label htmlFor="notes">Notes (optional)</Label>
           <Textarea
             id="notes"
-            placeholder="Any extra info like ‘look for a blue backpack’"
+            placeholder="Any extra info like look for a blue backpack"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />

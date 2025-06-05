@@ -1,7 +1,7 @@
 import Item from "@/components/Item";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import type { memberType } from "@/lib/types";
+import type { circleItemType, memberType } from "@/lib/types";
 import { useApp } from "@/stores/useApp";
 import { useAuth } from "@/stores/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -48,7 +48,7 @@ export default function CirclePage() {
     setIsApproving(false)
   }
   const allVisibleItems = data?.items.filter(
-    (it: any) => it.isApproved || isAdmin
+    (it: circleItemType) => it.isApproved || isAdmin
   ) ?? [];
   return (
     <div className="px-8 py-10 max-w-7xl mx-auto">
@@ -175,7 +175,7 @@ export default function CirclePage() {
             <p className="text-muted-foreground">No shared items yet.</p>
           ) : (
             <div className="grid grid-cols-2 gap-6">
-              {allVisibleItems.map((it: any) => (
+              {allVisibleItems.map((it: circleItemType) => (
                 <div
                   key={it.id}
                   className="relative border p-4 rounded-lg bg-muted/40"
@@ -208,7 +208,7 @@ export default function CirclePage() {
                     ) : null}
                   </div>
 
-                  <Item item={it.item} />
+                  <Item item={it.item} isBoost={false}/>
                 </div>
               ))}
             </div>

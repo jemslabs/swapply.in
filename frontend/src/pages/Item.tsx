@@ -250,7 +250,7 @@ function Item() {
                       </div>
                     ) : (
                       <p className="text-sm text-muted-foreground">
-                        You haven't joined any circles yet.
+                        You haven&apos;t joined any circles yet.
                       </p>
                     )}
                   </PopoverContent>

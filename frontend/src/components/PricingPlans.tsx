@@ -30,7 +30,11 @@ export default function PricingPlans() {
                 name: "Swapply",
                 description: "Upgrade to Pro",
                 order_id: order.id,
-                handler: async (response: any) => {
+                handler: async (response: {
+                    razorpay_payment_id: string;
+                    razorpay_order_id: string;
+                    razorpay_signature: string;
+                }) => {
                     try {
                         const result = await axios.post(
                             `${endpoint}/api/razorpay/order/validate`,
@@ -47,7 +51,7 @@ export default function PricingPlans() {
                         } else {
                             toast.error("Payment could not be validated.");
                         }
-                    } catch (err) {
+                    } catch {
                         toast.error("Payment validation failed.");
                     }
                 },
@@ -63,7 +67,7 @@ export default function PricingPlans() {
             //@ts-ignore
             const rzp = new window.Razorpay(options);
             rzp.open();
-        } catch (err) {
+        } catch {
             toast.error("Failed to upgrade to Pro.");
         }
     };

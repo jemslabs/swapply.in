@@ -22,14 +22,15 @@ import {
 import { FaXTwitter } from "react-icons/fa6";
 import { FaYoutube } from "react-icons/fa";
 import { Link } from "react-router-dom";
+
 function Home() {
+
     return (
         <div className="bg-black pb-10 w-full min-h-screen overflow-x-hidden">
             <div className="relative min-h-screen overflow-hidden bg-black text-white">
                 <div className="absolute inset-0 h-1/2 bg-gradient-to-b from-[rgb(131,78,184)] to-transparent z-0" />
 
                 <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 text-center max-w-5xl mx-auto">
-
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#c084fc]/10 border border-[#c084fc]/60 text-xs sm:text-sm text-white mb-4 animate-fade-in">
                         <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4" />
                         A P2P bartering platform
@@ -38,12 +39,11 @@ function Home() {
                     <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl animate-fade-in-up">
                         Swap Your Unused Stuff for What You Love
                     </h1>
-
                     <p className="mt-6 text-sm sm:text-lg md:text-xl text-white/80 max-w-2xl animate-fade-in-up delay-200">
                         Swap items you no longer need for the things you actually want. Connect,
                         trade, and make someone's trash your next treasure.
                     </p>
-
+                    
                     <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up delay-400">
                         <Button variant={"default"} className="w-full sm:w-40 p-5">
                             <Link to={"/login"} className="flex items-center justify-center gap-2">
@@ -232,7 +232,7 @@ function Home() {
 
             <Separator />
             <section className="py-16 bg-black">
-               <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
+                <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
                     <div className="text-center mb-16">
                         <Badge className="mb-4 bg-[#c084fc]/10 text-[#c084fc] border-[#c084fc]/30">
                             <BadgePercent className="w-4 h-4" />

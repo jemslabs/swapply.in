@@ -14,7 +14,7 @@ export const useAuth = create<useAuthType>((set) => ({
       if (res.status === 200) {
         await useAuth.getState().fetchUser();
         toast.success("Authenticated");
-        navigate("/browse");
+        navigate("/browse/items");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

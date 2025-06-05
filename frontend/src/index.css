@@ -133,6 +133,134 @@ body {
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-slow {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-delay {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-alt {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(15px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 5s ease-in-out infinite;
+}
+
+.animate-float-delay {
+  animation: float-delay 4s ease-in-out infinite;
+}
+
+.animate-float-alt {
+  animation: float-alt 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out forwards;
+}
+
+@keyframes glow-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.glow-border {
+  position: relative;
+  padding: 1.7px;
+  border-radius: 0.75rem; /* rounded-xl */
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(131, 78, 184),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: glow-border 3s linear infinite;
+
+}
+
+.glow-border-inner {
+  border-radius: 0.75rem;
+  background-color: #000;
+  height: 100%;
+  width: 100%;
+  padding: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.rotate-left {
+  transform: rotate(-8deg) translateX(-10px);
+  transition: transform 0.3s ease;
+  margin-top: 20px;
+}
+
+.rotate-center {
+  transform: rotate(0deg);
+}
+
+.rotate-right {
+  transform: rotate(8deg) translateX(10px);
+  transition: transform 0.3s ease;
+  margin-top: 20px;
+}
 
 @layer base {
   * {

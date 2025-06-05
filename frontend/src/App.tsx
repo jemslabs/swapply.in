@@ -1,5 +1,5 @@
 import Navbar from "./components/Navbar";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { Toaster } from "@/components/ui/sonner";
@@ -21,14 +21,18 @@ import BrowseItems from "./pages/BrowseItems";
 import BrowseCircles from "./pages/BrowseCircles";
 import Profile from "./pages/Profile";
 import Pricing from "./pages/Pricing";
+import Home from "./pages/Home";
 
 function App() {
+  const location = useLocation();
+  const isHome  = location.pathname === "/";
   return (
     <>
       <Navbar />
-      <div className="pt-20">
+      <div className={`${isHome ? "" : "pt-20"}`}>
         <FetchUser />
         <Routes>
+          <Route path="/" element={<Home />}/>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/item/add" element={<AddItem />} />

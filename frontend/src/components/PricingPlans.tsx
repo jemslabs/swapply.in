@@ -102,7 +102,7 @@ export default function PricingPlans() {
                 </div>
 
                 {/* Pro Plan */}
-                <div className="relative border-2 rounded-3xl shadow-2xl flex-1 max-w-sm w-full p-8 flex flex-col items-center border-[#c084fc] scale-[1.08] z-10 transition duration-300 shadow-purple-500/30">
+                <div className="relative border-2 rounded-3xl shadow-2xl flex-1 max-w-sm w-full p-8 flex flex-col items-center border-[#c084fc] scale-[1.08] z-10 transition duration-300 shadow-purple-500/30 ">
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#c084fc] text-black px-4 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-md">
                         <Crown size={13} className="text-black fill-black" /> Most Popular
                     </div>
@@ -144,12 +144,15 @@ export default function PricingPlans() {
                             </Button>
                         )
                     ) : (
+                        
                         <Button
                             className="w-full py-2 rounded-xl font-semibold text-base"
                             size="lg"
                             variant="outline"
+                            asChild
                         >
-                            Sign in to Upgrade
+                            <Link to={"/login"}> Sign in to Upgrade</Link>
+                           
                         </Button>
                     )}
 

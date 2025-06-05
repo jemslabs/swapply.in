@@ -9,7 +9,7 @@ function Logo() {
         alt="Swapply Logo"
         className="w-8 h-8 object-contain"
       />
-      <span className="text-lg font-semibold ">Swapply</span>
+      <span className="text-lg ">Swapply</span>
     </Link>
   )
 }

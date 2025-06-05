@@ -58,17 +58,18 @@ function CreateCircle() {
     <div className="py-4 px-10">
       <div className="w-1/2 space-y-4 mx-auto">
 
-        <div className="flex items-center justify-center gap-5">
 
-
-          <Button variant={"outline"} onClick={() => navigate(-1)}>
-            <ArrowLeft />
-          </Button>
-          <h1 className="text-3xl font-bold text-white text-center tracking-tight">
-            Create New Circle
-          </h1>
-        </div>
         <Card className="p-6  bg-[#000000] border border-[#2a2a2a] mx-auto">
+          <div className="flex items-center justify-center gap-5">
+
+
+            <Button variant={"outline"} onClick={() => navigate(-1)}>
+              <ArrowLeft />
+            </Button>
+            <h1 className="text-3xl font-bold text-white text-center tracking-tight">
+              Create New Circle
+            </h1>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="image">Logo</Label>
             <input

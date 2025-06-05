@@ -42,16 +42,12 @@ function Navbar() {
       "bg-[#000000] border-[#2a2a2a]":
         !location.pathname.startsWith("/login") &&
         !location.pathname.startsWith("/signup"),
-      "bg-transparent border-transparent":
-        location.pathname.startsWith("/login") ||
-        location.pathname.startsWith("/signup"),
     }
   );
 
   return (
     <nav className={bgClass}>
       <div className="py-2 px-4 flex justify-between items-center">
-        {/* Left - Logo + Desktop Nav */}
         <div className="flex items-center gap-4">
           <Logo />
           <div className="hidden md:flex gap-4">
@@ -131,11 +127,12 @@ function Navbar() {
                   Pro
                 </Button>
               ) : (
-                <Link to="/pricing">
-                  <Button size="sm" variant={"default"}>
+
+                <Button size="sm" asChild>
+                  <Link to="/pricing">
                     Upgrade
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               )}
               <Link to="/notifications" className="relative">
                 <Bell className="h-5 w-5 hover:text-gray-300" />

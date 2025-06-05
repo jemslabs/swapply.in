@@ -35,12 +35,12 @@ function Login() {
 
     useEffect(() => {
         if (user) {
-            navigate("/browse")
+            navigate("/browse/items")
         }
     }, [user])
 
     return (
-        <div className="flex flex-col min-h-screen justify-center items-center">
+        <div className="flex flex-col h-screen justify-center items-center">
             <div className="border border-[#3a3a3a] p-5 rounded-2xl w-[450px] bg-[#000000]">
                 <h1 className="text-3xl font-bold mb-2 text-center font-playfair">
                     Login

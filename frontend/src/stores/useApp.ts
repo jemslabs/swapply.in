@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { create } from "zustand";
 
-export const useApp = create<useAppType>((set) => ({
+export const useApp = create<useAppType>(() => ({
   addItem: async (data) => {
     try {
       const res = await axios.post(`${endpoint}/api/item/add`, data, {

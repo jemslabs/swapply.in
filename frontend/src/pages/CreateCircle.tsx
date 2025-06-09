@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/stores/useApp";
-import { ArrowLeft, CloudUpload, Loader2, X } from "lucide-react";
+import { useAuth } from "@/stores/useAuth";
+import { ArrowLeft, ArrowUpRight, CloudUpload, Loader2, X } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -15,14 +16,17 @@ function CreateCircle() {
     name: "",
     description: "",
     image: null as File | null,
-    isPrivate: false
+    isPrivate: false,
   });
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { createCircle } = useApp();
-
+  const { user } = useAuth();
+  const isPro = !!user?.plan;
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -41,28 +45,54 @@ function CreateCircle() {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    const formData = new FormData();
-    if (!data.name || !data.description || !data.image) {
-      toast.error("Name, Description and logo is required");
-      return;
-    }
-    formData.append("name", data.name);
-    formData.append("description", data.description);
-    formData.append("image", data.image);
-    formData.append("isPrivate", String(data.isPrivate));
+    try {
+      if (!data.name) {
+        toast.error("Name is required");
+        return;
+      }
+      if (!data.description) {
+        toast.error("Description is required");
+        return;
+      }
+      if (!data.image) {
+        toast.error("Image is required");
+        return;
+      }
 
-    await createCircle(formData);
-    setIsLoading(false);
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("description", data.description);
+      formData.append("image", data.image);
+      formData.append("isPrivate", String(data.isPrivate));
+
+      await createCircle(formData, navigate);
+    } catch {
+      toast.error("Something went wrong.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const handlePrivacyToggle = (value: boolean) => {
+    if (value && !isPro) {
+
+      setShowUpgradePrompt(true);
+      setData((prev) => ({ ...prev, isPrivate: false }));
+    } else {
+      setShowUpgradePrompt(false);
+      setData((prev) => ({ ...prev, isPrivate: value }));
+    }
+  };
+
+  const handleUpgradeClick = () => {
+    navigate("/pricing");
+  };
+
   return (
     <div className="py-4 px-10">
       <div className="w-1/2 space-y-4 mx-auto">
-
-
-        <Card className="p-6  bg-[#000000] border border-[#2a2a2a] mx-auto">
+        <Card className="p-6 bg-[#0a0a0a] border border-[#2a2a2a] mx-auto">
           <div className="flex items-center justify-center gap-5">
-
-
             <Button variant={"outline"} onClick={() => navigate(-1)}>
               <ArrowLeft />
             </Button>
@@ -126,26 +156,59 @@ function CreateCircle() {
             <Textarea
               id="description"
               value={data.description}
-              onChange={(e) => setData({ ...data, description: e.target.value })}
+              onChange={(e) =>
+                setData({ ...data, description: e.target.value })
+              }
               placeholder="Describe what this circle is about, who it's for, and what members can expect."
             />
           </div>
-          <div className="flex items-center gap-3">
-            <Label htmlFor="isPrivate">
-              {data.isPrivate ? "Private" : "Public"}
-            </Label>
-            <Switch
-              id="isPrivate"
-              checked={data.isPrivate}
-              onCheckedChange={(value) =>
-                setData({ ...data, isPrivate: value })
-              }
-              className="cursor-pointer"
-            />
+
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-3">
+              <Label htmlFor="isPrivate">
+                {data.isPrivate ? "Private" : "Public"}
+              </Label>
+              <Switch
+                id="isPrivate"
+                checked={data.isPrivate}
+                onCheckedChange={handlePrivacyToggle}
+                className="cursor-pointer"
+              />
+            </div>
+            {showUpgradePrompt && (
+              <div
+                className="
+                    mt-3
+                    flex
+                    items-center
+                    justify-between
+                    rounded-xl
+                    bg-gradient-to-r from-[rgb(79,46,111)]/90 via-[#c084fc]/80 to-[rgb(79,46,111)]/90
+                    shadow-lg
+                    px-5
+                    py-4
+                    text-purple-100
+                    backdrop-blur-sm
+                    transition-opacity duration-300 ease-in-out"
+              >
+                <p className="text-sm font-medium leading-snug max-w-[75%]">
+                  To create a <strong>Private Circle</strong>, please upgrade to{" "}
+                  <strong>Pro</strong>.
+                </p>
+
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleUpgradeClick}
+                  className="flex items-center gap-1 text-purple-300 hover:text-white rounded-lg px-3 py-1.5 transition-colors duration-200"
+                >
+                  Upgrade Now <ArrowUpRight size={16} />
+                </Button>
+              </div>
+            )}
           </div>
 
-
-          <Button disabled={isLoading} onClick={handleSubmit}>
+          <Button disabled={isLoading} onClick={handleSubmit} className="mt-6 w-30">
             {isLoading ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />

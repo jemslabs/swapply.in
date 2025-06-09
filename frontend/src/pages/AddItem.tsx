@@ -15,11 +15,10 @@ import {
 } from "@/components/ui/select";
 import { categories } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CloudUpload, Loader2, X, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
+import { CloudUpload, Loader2, X } from "lucide-react";
 import type { AddItem } from "@/lib/types";
 import { useApp } from "@/stores/useApp";
 import { toast } from "sonner";
-import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 
@@ -31,7 +30,7 @@ export default function AddItem() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const totalSteps = 2;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [data, setData] = useState<AddItem>({
     title: "",
     description: "",
@@ -46,13 +45,7 @@ export default function AddItem() {
     itemAge: 0,
   });
 
-  const nextStep = () => {
-    if (step < totalSteps) setStep((prev) => prev + 1);
-  };
 
-  const prevStep = () => {
-    if (step > 1) setStep((prev) => prev - 1);
-  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -80,9 +73,6 @@ export default function AddItem() {
     setData({ ...data, image: null });
   };
 
-  const handleCompanyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, company: e.target.value });
-  };
 
   const handleAdd = async () => {
     // Basic validation for required fields
@@ -145,31 +135,40 @@ export default function AddItem() {
     formData.append("image", data.image);
 
     setIsLoading(true);
-    await addItem(formData);
+    await addItem(formData, navigate);
     setIsLoading(false);
   };
 
 
   return (
     <div className="py-4 px-6">
-      <Card className="p-6 w-full md:w-2/3 lg:w-1/2 bg-[#000000] border border-[#2a2a2a] mx-auto">
-        <div className="mb-6">
-
+      <Card className="p-6 w-full md:w-2/3 lg:w-1/2 bg-[#0a0a0a] border border-[#2a2a2a] mx-auto">
+        <div>
           <h1 className="text-3xl font-bold text-white text-center tracking-tight mb-2 flex gap-3 justify-center">
-            <Button variant={"outline"} onClick={() => navigate(-1)}>
-              <ArrowLeft />
-            </Button>
             List an Item
           </h1>
           <p className="text-center text-muted-foreground text-sm">
-            Fill out the details to swap your item
+            Fill out the details to add your item
           </p>
-          <Separator className="mt-4" />
         </div>
-
-
+        <div className="flex space-x-6 border-b border-gray-700">
+          {[1, 2].map((tabNumber) => (
+            <button
+              key={tabNumber}
+              onClick={() => setStep(tabNumber)}
+              className={`px-4 py-2 font-semibold cursor-pointer ${step === tabNumber
+                  ? "border-b-2 border-purple-500 text-white"
+                  : "text-gray-500 hover:text-gray-300"
+                }`}
+              aria-selected={step === tabNumber}
+              role="tab"
+            >
+              {tabNumber === 1 ? "Basic Info" : "Pricing & Details"}
+            </button>
+          ))}
+        </div>
         {step === 1 && (
-          <div className="space-y-4">
+          <div className="space-y-4" role="tabpanel" aria-labelledby="tab1">
             <div className="space-y-2">
               <Label htmlFor="image">Image</Label>
               <input
@@ -223,160 +222,141 @@ export default function AddItem() {
         )}
 
         {step === 2 && (
-          <>
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <div className="space-y-2 w-full">
-                  <Label htmlFor="currentPrice">Current Price</Label>
-                  <Input
-                    id="currentPrice"
-                    type="number"
-                    value={data.currentPrice}
-                    onChange={(e) => setData({ ...data, currentPrice: Number(e.target.value) })}
-                    step="1"
-                    min="0"
-                    inputMode="decimal"
-                    placeholder="2999"
-                  />
-                </div>
-
-                <div className="space-y-2 w-full">
-                  <Label htmlFor="originalPrice">Original Price</Label>
-                  <Input
-                    id="originalPrice"
-                    type="number"
-                    value={data.originalPrice}
-                    onChange={(e) => setData({ ...data, originalPrice: Number(e.target.value) })}
-                    step="1"
-                    min="0"
-                    inputMode="decimal"
-                    placeholder="4999"
-                  />
-                </div>
+          <div className="space-y-4" role="tabpanel" aria-labelledby="tab2">
+            <div className="flex gap-4">
+              <div className="space-y-2 w-full">
+                <Label htmlFor="currentPrice">Current Price</Label>
+                <Input
+                  id="currentPrice"
+                  type="number"
+                  value={data.currentPrice}
+                  onChange={(e) => setData({ ...data, currentPrice: Number(e.target.value) })}
+                  inputMode="decimal"
+                  placeholder="2999"
+                />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="currencyType">Currency Type</Label>
+              <div className="space-y-2 w-full">
+                <Label htmlFor="originalPrice">Original Price</Label>
+                <Input
+                  id="originalPrice"
+                  type="number"
+                  value={data.originalPrice}
+                  onChange={(e) => setData({ ...data, originalPrice: Number(e.target.value) })}
+                  step="1"
+                  min="0"
+                  inputMode="decimal"
+                  placeholder="4999"
+                  
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="currencyType">Currency Type</Label>
+              <Select
+                value={data.currencyType}
+                onValueChange={(value) => setData({ ...data, currencyType: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Currency</SelectLabel>
+                    <SelectItem value="USD">USD</SelectItem>
+                    <SelectItem value="INR">INR</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex gap-4 justify-between">
+              <div className="space-y-2 w-full">
+                <Label htmlFor="company">Company</Label>
+                <Input
+                  id="company"
+                  value={data.company}
+                  onChange={(e) => setData({ ...data, company: e.target.value })}
+                  placeholder="Sony"
+                />
+              </div>
+              <div className="space-y-2 w-full">
+                <Label htmlFor="category">Category</Label>
                 <Select
-                  value={data.currencyType}
-                  onValueChange={(value) => setData({ ...data, currencyType: value })}
+                  value={data.category}
+                  onValueChange={(value) => setData({ ...data, category: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a currency" />
+                    <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Currency</SelectLabel>
-                      <SelectItem value="USD">USD</SelectItem>
-                      <SelectItem value="INR">INR</SelectItem>
+                      <SelectLabel>Category</SelectLabel>
+                      {categories.map((c, i) => (
+                        <SelectItem key={i} value={c.value}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2 w-full">
+                <Label htmlFor="condition">Condition</Label>
+                <Select
+                  value={data.condition}
+                  onValueChange={(value) => setData({ ...data, condition: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select condition" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Condition</SelectLabel>
+                      <SelectItem value="NEW">New</SelectItem>
+                      <SelectItem value="LIKE_NEW">Like New</SelectItem>
+                      <SelectItem value="USED">Used</SelectItem>
+                      <SelectItem value="DAMAGED">Damaged</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <div className="space-y-4">
-              <div className="flex gap-4 justify-between">
-                <div className="space-y-2 w-full">
-                  <Label htmlFor="company">Company</Label>
-                  <Input
-                    id="company"
-                    value={data.company}
-                    onChange={handleCompanyChange}
-                    placeholder="Sony"
-                  />
-                </div>
-                <div className="space-y-2 w-full">
-                  <Label htmlFor="category">Category</Label>
-                  <Select
-                    value={data.category}
-                    onValueChange={(value) => setData({ ...data, category: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Category</SelectLabel>
-                        {categories.map((c, i) => (
-                          <SelectItem key={i} value={c.value}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2 w-full">
-                  <Label htmlFor="condition">Condition</Label>
-                  <Select
-                    value={data.condition}
-                    onValueChange={(value) => setData({ ...data, condition: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select condition" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Condition</SelectLabel>
-                        <SelectItem value="NEW">New</SelectItem>
-                        <SelectItem value="LIKE_NEW">Like New</SelectItem>
-                        <SelectItem value="USED">Used</SelectItem>
-                        <SelectItem value="DAMAGED">Damaged</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="itemAge">Item Age (months)</Label>
-                <Input
-                  id="itemAge"
-                  type="number"
-                  min="0"
-                  value={data.itemAge}
-                  onChange={(e) =>
-                    setData({ ...data, itemAge: e.target.value ? Number(e.target.value.replace(/\D/g, "")) : 0 })
+            <div className="space-y-2">
+              <Label htmlFor="itemAge">Item Age (months)</Label>
+              <Input
+                id="itemAge"
+                type="number"
+                min="0"
+                value={data.itemAge}
+                onChange={(e) =>
+                  setData({ ...data, itemAge: e.target.value ? Number(e.target.value.replace(/\D/g, "")) : 0 })
+                }
+                placeholder="e.g. 2"
+              />
+              <p className="text-xs text-muted-foreground pl-1">
+                * Please specify the age of the item in months, for example: 1, 2, or 12
+              </p>
+            </div>
+            <div className="flex  items-center justify-between">
+              <div className="flex items-center space-x-2 pt-2">
+                <Switch
+                  id="hasBill"
+                  checked={data.hasBill}
+                  onCheckedChange={(checked) =>
+                    setData({ ...data, hasBill: checked })
                   }
-                  placeholder="e.g. 2"
+                  className="cursor-pointer"
                 />
-                <p className="text-xs text-muted-foreground pl-1">
-                  * Please specify the age of the item in months, for example: 1, 2, or 12
-                </p>
-              </div>
-              <div className="flex  items-center justify-between">
-                <div className="flex items-center space-x-2 pt-2">
-                  <Switch
-                    id="hasBill"
-                    checked={data.hasBill}
-                    onCheckedChange={(checked) =>
-                      setData({ ...data, hasBill: checked })
-                    }
-                    className="cursor-pointer"
-                  />
-                  <Label htmlFor="hasBill">Has Bill</Label>
-                </div>
+                <Label htmlFor="hasBill">Has Bill</Label>
               </div>
             </div>
-          </>
+          </div>
         )}
-
-
-
-
-
-        <div className="flex justify-between items-center mt-6">
-          <Button variant="outline" onClick={prevStep} disabled={step === 1}>
-            <ChevronLeft className="h-5 w-5" />
-            Back
-          </Button>
-
-          {step < totalSteps ? (
-            <Button onClick={nextStep}>
-              Next
-              <ChevronRight className="h-5 w-5" />
-            </Button>
-          ) : (
+        <div className="flex justify-end mt-6">
+          {step === totalSteps && (
             <Button onClick={handleAdd} disabled={isLoading}>
               {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
               Add Item

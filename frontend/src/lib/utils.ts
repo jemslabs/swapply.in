@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const isProduction = true;
+const isProduction = false;
 
 export const endpoint = isProduction ? "https://swapply-backend.isonikrish.workers.dev" : "http://localhost:8787";
 

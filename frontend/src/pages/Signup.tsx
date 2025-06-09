@@ -5,8 +5,9 @@ import { useAuth } from "@/stores/useAuth";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import * as EmailValidator from 'email-validator';
+import * as EmailValidator from "email-validator";
 import { toast } from "sonner";
+import swapply from "/swapply-nobg.png";
 
 function Signup() {
     const { login } = useAuth();
@@ -18,7 +19,8 @@ function Signup() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [passwordError, setPasswordError] = useState("");
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!data.name || !data.email || !data.password) {
@@ -35,37 +37,41 @@ function Signup() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen justify-center items-center">
-            <div className="border border-[#3a3a3a] p-5 rounded-2xl w-[450px] bg-[#000000]">
-                <h1 className="text-3xl font-bold mb-2 text-center font-playfair">
+        <div className="min-h-screen flex items-center justify-center bg-[#00000] px-4">
+
+            <div className="flex-1 max-w-lg bg-[#0a0a0a] p-8 rounded-2xl shadow-md border border-white/10">
+                <div className="h-16 w-16 mb-10 mx-auto">
+                    <img src={swapply} alt="Swapply Logo" />
+                </div>
+                <h1 className="text-4xl font-bold mb-2 font-playfair text-white text-center">
                     Signup
                 </h1>
-                <p className="text-sm text-gray-400 text-center mb-6">
+                <p className="text-sm text-gray-400 mb-6 text-center">
                     Join us and start your journey
                 </p>
 
-                <form onSubmit={handleSignup} className="flex flex-col gap-3 py-4">
+                <form onSubmit={handleSignup} className="flex flex-col gap-4 py-4">
                     <div className="flex flex-col gap-2">
-                        <Label>Name</Label>
+                        <Label className="text-white">Name</Label>
                         <Input
-                            value={data?.name}
+                            value={data.name}
                             onChange={(e) => setData({ ...data, name: e.target.value })}
                             placeholder="eg. isonikrish"
                         />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <Label>Email</Label>
+                        <Label className="text-white">Email</Label>
                         <Input
-                            value={data?.email}
+                            value={data.email}
                             onChange={(e) => setData({ ...data, email: e.target.value })}
                             placeholder="eg. isonikrish@gmail.com"
                         />
                     </div>
-                    <div className="flex flex-col gap-2 relative">
-                        <Label>Password</Label>
+                    <div className="flex flex-col gap-2">
+                        <Label className="text-white">Password</Label>
                         <div className="relative">
                             <Input
-                                value={data?.password}
+                                value={data.password}
                                 onChange={(e) => {
                                     const newPassword = e.target.value;
                                     setData({ ...data, password: newPassword });
@@ -87,27 +93,30 @@ function Signup() {
                             </div>
                         </div>
                         {passwordError && (
-                            <p className="text-red-700 text-xs">{passwordError}</p>
+                            <p className="text-red-600 text-xs">{passwordError}</p>
                         )}
                     </div>
 
-                    <Button disabled={isLoading}>
+                    <Button disabled={isLoading} className="w-full">
                         {isLoading ? (
                             <div className="flex items-center gap-2">
                                 <Loader2 className="h-4 w-4 animate-spin" />
+                                Signing up...
                             </div>
                         ) : (
                             "Signup"
                         )}
                     </Button>
                 </form>
-                <p className="text-sm text-gray-400 text-center mb-6">
+
+                <p className="text-sm text-gray-400 text-center mt-6">
                     Already have an account?{" "}
-                    <Link to={"/login"} className="text-[#c084fc] underline">
+                    <Link to="/login" className="text-[#c084fc] underline">
                         Login
                     </Link>
                 </p>
             </div>
+
         </div>
     );
 }

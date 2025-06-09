@@ -5,13 +5,14 @@ import { toast } from "sonner";
 import { create } from "zustand";
 
 export const useApp = create<useAppType>(() => ({
-  addItem: async (data) => {
+  addItem: async (data, navigate) => {
     try {
       const res = await axios.post(`${endpoint}/api/item/add`, data, {
         withCredentials: true,
       });
       if (res.status === 200) {
         toast.success("Item Added");
+        navigate(`/item/${res.data.data.id}`)
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -154,13 +155,15 @@ export const useApp = create<useAppType>(() => ({
       }
     }
   },
-  createCircle: async (data) => {
+  createCircle: async (data, navigate) => {
     try {
       const res = await axios.post(`${endpoint}/api/circle/create`, data, {
         withCredentials: true,
       });
       if (res.status === 200) {
         toast.success(res.data.msg);
+        navigate(`/circles/${res.data.data.id}`);
+
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

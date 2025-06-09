@@ -10,7 +10,7 @@ import { toast } from "sonner";
 const Circle = ({ circle }: { circle: circleType }) => {
   const [copied, setCopied] = useState(false);
   const shareLink = async () => {
-    const url = `${window.location.origin}/circles/${circle.id}`;
+    const url = `${window.location.origin}/circles/${circle?.id}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
@@ -30,11 +30,11 @@ const Circle = ({ circle }: { circle: circleType }) => {
 
           <div className="flex flex-col gap-2 max-w-md">
             <Link
-              to={`/circles/${circle.id}`}
+              to={`/circles/${circle?.id}`}
               className="group underline flex items-center gap-1"
             >
-              <h2 className="text-xl font-semibold">{circle.name}</h2>
-              {circle.isPrivate && ( 
+              <h2 className="text-xl font-semibold">{circle?.name}</h2>
+              {circle?.isPrivate && ( 
                 <span className="text-xs flex items-center rounded-full text-red-500">
                   <Lock className="h-3 w-3 mx-2" />
                 </span>
@@ -43,12 +43,12 @@ const Circle = ({ circle }: { circle: circleType }) => {
 
             </Link>
             <p className="text-muted-foreground text-sm line-clamp-2">
-              {circle.description}
+              {circle?.description}
             </p>
 
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Users className="h-4 w-4" />
-              <span>{circle.members.length} members</span>
+              <span>{circle?.members.length} members</span>
             </div>
           </div>
         </div>

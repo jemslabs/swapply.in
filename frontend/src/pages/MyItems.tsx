@@ -18,7 +18,7 @@ function MyItems() {
         <p className="text-center text-gray-500 mt-10">You haven't listed any items yet.</p>
       ) : (
         <div>
-          <h1 className="text-2xl sm:text-2xl font-bold tracking-tight flex items-center gap-4 mx-10 mb-5">
+          <h1 className="text-2xl sm:text-2xl font-bold tracking-tight flex items-center gap-4 mx-10 mb-10">
             <Button variant={"outline"} onClick={() => navigate(-1)}>
               <ArrowLeft />
             </Button>

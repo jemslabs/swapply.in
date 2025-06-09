@@ -119,7 +119,19 @@ export async function handleGetPublicUser(c: Context) {
             boostedItem: true,
           },
         },
-        circles: true,
+        circles: {
+          where: {
+            role: "ADMIN",
+          },
+
+          include: {
+            circle: {
+              include: {
+                members: true
+              }
+            },
+          },
+        },
         plan: true,
       },
     });

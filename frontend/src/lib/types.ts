@@ -142,7 +142,7 @@ export type ProPlanType = {
   expiresAt: Date;
 }
 export type useAppType = {
-  addItem: (data: FormData) => void;
+  addItem: (data: FormData, navigate: NavigateFunction) => void;
   getBrowseItems: (data: {
     category: string;
     query: string;
@@ -158,7 +158,7 @@ export type useAppType = {
   acceptSwapProposal: (id: string | number) => void;
   rejectSwapProposal: (id: string | number) => void;
   cancelSwapProposal: (id: string | number) => void;
-  createCircle: (data: FormData) => void;
+  createCircle: (data: FormData, navigate: NavigateFunction) => void;
   fetchMyCircles: () => Promise<memberType[] | []>;
   fetchCircle: (id: string | undefined) => Promise<circleType | null>;
   joinCircle: (id: string | number | undefined) => void;

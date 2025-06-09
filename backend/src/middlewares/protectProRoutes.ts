@@ -86,7 +86,7 @@ export async function protectProductBoost(c: Context, next: Next) {
   if (!isPro) {
     return c.json(
       {
-        msg: "Boosting is available for Pro users only. Upgrade to boost products.",
+        msg: "Upgrade to Pro to boost your products.",
       },
       400
     );

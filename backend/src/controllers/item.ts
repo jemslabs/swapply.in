@@ -69,7 +69,7 @@ export async function handleAddItem(c: Context) {
       return c.json({ msg: "Failed to add new item" }, 400);
     }
 
-    return c.json({ msg: "New item added" }, 200);
+    return c.json({ msg: "New item added", data: newItem }, 200);
   } catch {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
 export default function PricingPlans() {
-    const { user } = useAuth();
+    const { user , fetchUser} = useAuth();
     const proPlanAmount = 299;
     const isPro = !!user?.plan;
     const initiateRazorpay = async () => {
@@ -48,6 +48,7 @@ export default function PricingPlans() {
 
                         if (result.data.success) {
                             toast.success("You're now a Pro user! 🚀");
+                            fetchUser()
                         } else {
                             toast.error("Payment could not be validated.");
                         }

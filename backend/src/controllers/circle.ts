@@ -52,7 +52,7 @@ export async function handleCreateCircle(c: Context) {
       },
     });
 
-    return c.json({ msg: "New Circle Created" }, 200);
+    return c.json({ msg: "New Circle Created", data:newCircle }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

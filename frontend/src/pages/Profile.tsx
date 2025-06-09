@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Item from "@/components/Item";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +8,7 @@ import { useAuth } from "@/stores/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { BadgeCheck } from "lucide-react";
+import Circle from "@/components/Circle";
 
 function Profile() {
   const { id } = useParams();
@@ -19,9 +21,10 @@ function Profile() {
   });
 
   const isPro = !!data?.plan;
+  const [activeTab, setActiveTab] = useState<"items" | "circles">("items");
+
   return (
     <div className="max-w-6xl mx-auto p-6 md:p-10 space-y-6">
-
       <Card className="flex flex-col md:flex-row items-center gap-6 p-6 md:p-8 shadow-lg">
         <Avatar className="w-24 h-24">
           <AvatarFallback className="text-3xl">
@@ -55,16 +58,47 @@ function Profile() {
         </div>
       </Card>
 
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl sm:text-2xl font-semibold">
-          Listed Items ({data?.items?.length || 0})
-        </h2>
+      <div className="flex border-b border-muted">
+        <button
+          className={`px-4 py-2 font-semibold cursor-pointer ${
+            activeTab === "items"
+              ? "border-b-2 border-purple-500 text-white"
+              : "text-gray-500 hover:text-gray-300"
+          }`}
+          onClick={() => setActiveTab("items")}
+        >
+          Listed Items
+        </button>
+        <button
+          className={`px-4 py-2 font-semibold cursor-pointer ${
+            activeTab === "circles"
+              ? "border-b-2 border-purple-500 text-white"
+              : "text-gray-500 hover:text-gray-300"
+          }`}
+          onClick={() => setActiveTab("circles")}
+        >
+          Circles
+        </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {data?.items?.map((item: ItemType, index) => (
-          <Item item={item} key={index} isBoost={false} />
-        ))}
-      </div>
+
+      {activeTab === "items" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {data?.items?.map((item: ItemType, index) => (
+            <Item item={item} key={index} isBoost={false} />
+          ))}
+        </div>
+      )}
+
+      {activeTab === "circles" && (
+        <div className="grid grid-cols-1 gap-6">
+          {data?.circles &&
+            data?.circles?.map((circle, index) => (
+              <div key={index}>
+                <Circle circle={circle.circle} />
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 }

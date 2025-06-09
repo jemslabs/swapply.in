@@ -12,5 +12,5 @@ circleRoutes.delete("/leave", protectRoute, handleLeaveCircle)
 circleRoutes.post("/add-item", protectRoute, handleAddItemCircle);
 circleRoutes.put("/approve-item", protectRoute, handleApproveItem);
 circleRoutes.get("/get-circle", protectRoute, handleGetCircle);
-circleRoutes.get("/get-public-circles", protectRoute, handleGetPublicCircles);
+circleRoutes.get("/get-public-circles", handleGetPublicCircles);
 export default circleRoutes; 

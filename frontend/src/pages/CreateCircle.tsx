@@ -176,36 +176,25 @@ function CreateCircle() {
               />
             </div>
             {showUpgradePrompt && (
-              <div
-                className="
-                    mt-3
-                    flex
-                    items-center
-                    justify-between
-                    rounded-xl
-                    bg-gradient-to-r from-[rgb(79,46,111)]/90 via-[#c084fc]/80 to-[rgb(79,46,111)]/90
-                    shadow-lg
-                    px-5
-                    py-4
-                    text-purple-100
-                    backdrop-blur-sm
-                    transition-opacity duration-300 ease-in-out"
-              >
-                <p className="text-sm font-medium leading-snug max-w-[75%]">
-                  To create a <strong>Private Circle</strong>, please upgrade to{" "}
-                  <strong>Pro</strong>.
-                </p>
-
+              <div className="mt-4 flex items-center justify-between gap-4 rounded-lg border border-[#c084fc]/10 bg-[#c084fc]/20 px-4 py-3 text-purple-100 shadow-inner backdrop-blur-md">
+                <div className="flex flex-col">
+                  <p className="text-lg font-medium">
+                    Upgrade to <strong>Pro</strong>
+                  </p>
+                  <p className="text-xs leading-snug text-purple-200">
+                    to enable private circles and unlock more exclusive features.
+                  </p>
+                </div>
                 <Button
                   size="sm"
-                  variant="ghost"
                   onClick={handleUpgradeClick}
-                  className="flex items-center gap-1 text-purple-300 hover:text-white rounded-lg px-3 py-1.5 transition-colors duration-200"
+                  variant={"ghost"}
                 >
-                  Upgrade Now <ArrowUpRight size={16} />
+                  Upgrade <ArrowUpRight size={14} />
                 </Button>
               </div>
             )}
+
           </div>
 
           <Button disabled={isLoading} onClick={handleSubmit} className="mt-6 w-30">

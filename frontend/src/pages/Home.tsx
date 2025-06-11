@@ -22,8 +22,6 @@ import {
 import { FaXTwitter } from "react-icons/fa6";
 import { FaYoutube } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-
 function Home() {
   return (
     <div className="bg-black pb-10 w-full min-h-screen overflow-x-hidden">

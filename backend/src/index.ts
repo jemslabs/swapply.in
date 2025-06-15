@@ -12,14 +12,14 @@ const allowedOrigins = [
   "https://swapply.in",
 ];
 app.use("*", async (c: Context, next: Next) => {
-  c.header("Access-Control-Allow-Origin", "https://swapply.netlify.app");
+  c.header("Access-Control-Allow-Origin", "https://swapply.in");
   c.header("Access-Control-Allow-Credentials", "true");
   return next();
 });
 app.use(
   "*",
   cors({
-    origin: "https://swapply.netlify.app",
+    origin: "https://swapply.in",
     credentials: true,
   })
 );

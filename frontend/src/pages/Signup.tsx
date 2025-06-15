@@ -40,7 +40,7 @@ function Signup() {
         <div className="min-h-screen flex items-center justify-center bg-[#00000] px-4">
 
             <div className="flex-1 max-w-lg bg-[#0a0a0a] p-8 rounded-2xl shadow-md border border-white/10">
-                <div className="h-16 w-16 mb-10 mx-auto">
+                <div className="h-16 w-40 mb-10 mx-auto">
                     <img src={swapply} alt="Swapply Logo" />
                 </div>
                 <h1 className="text-4xl font-bold mb-2 font-playfair text-white text-center">

@@ -7,9 +7,8 @@ function Logo() {
       <img 
         src={logo} 
         alt="Swapply Logo"
-        className="w-8 h-8 object-contain"
+        className="w-22 h-10 object-contain"
       />
-      <span className="text-lg ">Swapply</span>
     </Link>
   )
 }

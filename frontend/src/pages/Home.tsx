@@ -414,11 +414,21 @@ function Home() {
               href="https://jemslabs.xyz"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-white hover:underline"
+              className="font-semibold text-white underline"
             >
               Jems Labs
-            </a>.
+            </a>
+            . Developed by{' '}
+            <a
+              href="https://x.com/isonikrish"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-white underline"
+            >
+              Krish Soni
+            </a>
           </div>
+
         </footer>
       </div>
 

@@ -9,17 +9,17 @@ const app = new Hono();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://swapply.netlify.app",
+  "https://www.swapply.in",
   "https://swapply.in",
 ];
 app.use("*", async (c: Context, next: Next) => {
-  c.header("Access-Control-Allow-Origin", "https://swapply.in");
   c.header("Access-Control-Allow-Credentials", "true");
   return next();
 });
 app.use(
   "*",
   cors({
-    origin: "https://swapply.in",
+    origin: (origin) => (allowedOrigins.includes(origin ?? "") ? origin : ""),
     credentials: true,
   })
 );

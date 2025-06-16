@@ -1,17 +1,15 @@
 import Item from "@/components/Item";
 import { useApp } from "@/stores/useApp";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Calendar, Loader2, RefreshCw } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { cn, ISTtoUTC } from "@/lib/utils";
+import { ISTtoUTC } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -26,7 +24,7 @@ function SwapPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate()
   const [meetingLocation, setMeetingLocation] = useState("");
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [date, setDate] = useState<Date>(new Date());
   const [time, setTime] = useState(""); // e.g. "2:30 PM"
   const [notes, setNotes] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -85,7 +83,7 @@ function SwapPage() {
 
       <div className="flex justify-between items-center gap-6 p-4 rounded-2xl shadow-md">
         <div className="w-1/2">
-          <Item item={data?.proposedItem} isBoost={false}/>
+          <Item item={data?.proposedItem} isBoost={false} />
         </div>
         <div className="flex flex-col items-center">
           <RefreshCw className="text-muted-foreground h-6 w-6" />
@@ -94,7 +92,7 @@ function SwapPage() {
           </Badge>
         </div>
         <div className="w-1/2">
-          <Item item={data?.receiverItem} isBoost={false}/>
+          <Item item={data?.receiverItem} isBoost={false} />
         </div>
       </div>
 
@@ -135,22 +133,27 @@ function SwapPage() {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label>Date</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
-              >
-                {date ? format(date, "PPP") : "Pick a date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-            </PopoverContent>
-          </Popover>
+        <div className="space-y-2 w-40 relative">
+          <Label htmlFor="date">Date</Label>
+
+
+          <Input
+            type="date"
+            id="date"
+            name="date"
+            value={format(date, "yyyy-MM-dd")}
+            onChange={(e) => setDate(new Date(e.target.value))}
+            onClick={() => {
+              const input = document.getElementById("date") as HTMLInputElement;
+              input?.showPicker?.();
+            }}
+            className="cursor-pointer pr-10"
+          />
+          <Calendar
+            className="absolute right-3 top-8 h-4 w-4 text-gray-300 pointer-events-none"
+          />
         </div>
+
 
         <div className="space-y-2">
           <Label>Time</Label>
@@ -174,7 +177,7 @@ function SwapPage() {
             onChange={(e) => setNotes(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 w-24">
           <Button type="submit" className="flex-1" disabled={isSending}>
             {isSending ? (
               <div className="flex items-center gap-2">

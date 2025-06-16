@@ -262,6 +262,10 @@ body {
   margin-top: 20px;
 }
 
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

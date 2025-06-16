@@ -616,12 +616,14 @@ export async function handleCancelMeeting(c: Context) {
         : inpersonMeeting.swapProposal.proposerId;
 
     await prisma.notification.create({
+      data: {
       userId: otherUserId,
       title: "Meeting Canceled",
       body: `A meeting for your swap has been Canceled.`,
       type: "meeting.canceled",
       category: "MEETING",
       link: `/swap/${inpersonMeeting?.swapProposal?.id}`,
+      }
     });
     return c.json({ msg: "Canceled In-Person Meeting" }, 200);
   } catch (error) {

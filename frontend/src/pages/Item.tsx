@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { useAuth } from "@/stores/useAuth";
 import ScoreBadge from "@/components/ScoreBadge";
-
+import { useAuth as useClerkAuth } from '@clerk/clerk-react'
 function Item() {
   const { id } = useParams();
   const { getItem, addItemCircle } = useApp();
@@ -27,10 +27,15 @@ function Item() {
   const { user: loggedUser } = useAuth();
   const [isSending, setIsSending] = useState(false);
   const navigate = useNavigate();
-
+  const { getToken } = useClerkAuth();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["item", id],
-    queryFn: async () => await getItem(id),
+    queryFn: async () => {
+
+      const token = await getToken({ template: "default" });
+      const res = await getItem(id, token)
+      return res;
+    },
     staleTime: 5 * 60 * 1000,
     enabled: !!id,
   });
@@ -52,8 +57,9 @@ function Item() {
   const isPro = !!user?.plan;
 
   const handleItemInCircle = async (circleId: string | number) => {
+    const token = await getToken({ template: "default" });
     setIsSending(true);
-    await addItemCircle({ circleId, itemId: data?.id });
+    await addItemCircle({ circleId, itemId: data?.id }, token);
     setIsSending(false);
   };
 
@@ -64,9 +70,8 @@ function Item() {
         Go Back
       </Button>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Main item card */}
-        <div className="w-full lg:w-2/3">
+      <div className="flex flex-col gap-6">
+        <div className="w-full ">
           <Card className={`flex flex-col md:flex-row relative ${isBoosted && 'border-[#c084fc] border-2'}`}>
             <div className="w-full md:w-1/2">
               <img

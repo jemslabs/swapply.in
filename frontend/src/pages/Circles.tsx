@@ -4,7 +4,7 @@ import { useApp } from "@/stores/useApp";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from '@clerk/clerk-react'
 // Skeleton component inside the same file
 const CircleSkeleton = () => (
   <div className="rounded-2xl shadow-sm animate-pulse border bg-muted p-6">
@@ -22,11 +22,13 @@ const CircleSkeleton = () => (
 function Circles() {
   const { fetchMyCircles } = useApp();
   const navigate = useNavigate();
-
+  const { getToken } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ["my-circles"],
     queryFn: async () => {
-      const res = await fetchMyCircles();
+
+      const token = await getToken({ template: "default" });
+      const res = await fetchMyCircles(token);
       return res;
     },
     staleTime: 20000,

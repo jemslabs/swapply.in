@@ -1,7 +1,5 @@
 import Navbar from "./components/Navbar";
 import { Route, Routes, useLocation } from "react-router-dom";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
 import { Toaster } from "@/components/ui/sonner";
 import FetchUser from "./components/FetchUser";
 //@ts-ignore
@@ -32,8 +30,6 @@ function App() {
         <FetchUser />
         <Routes>
           <Route path="/" element={<Home />}/>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
           <Route path="/item/add" element={<AddItem />} />
           <Route path="/browse/items" element={<BrowseItems />} />
           <Route path="/browse/circles" element={<BrowseCircles />} />

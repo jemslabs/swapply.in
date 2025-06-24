@@ -1,8 +1,6 @@
 import { Context } from "hono";
 import { authSchema } from "../lib/zod";
 import { prismaClient } from "../lib/prisma";
-import bcrypt from "bcryptjs";
-import { generateTokenAndSetCookie, removeToken } from "../lib/generateToken";
 
 export async function handleAuth(c: Context) {
   const prisma = prismaClient(c);
@@ -14,23 +12,12 @@ export async function handleAuth(c: Context) {
       return c.json({ msg: "Invalid Input" }, 400);
     }
 
-    const { name, email, password } = validatedData.data;
+    const { name, email, image, clerkId } = validatedData.data;
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
-      const isPasswordValid = await bcrypt.compare(
-        password,
-        existingUser.password
-      );
-      if (!isPasswordValid) {
-        return c.json({ msg: "Incorrect password" }, 401);
-      }
-
-      await generateTokenAndSetCookie(existingUser.id, c);
       return c.json(existingUser, 200);
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
     if (!name) {
       return c.json({ msg: "Name is required" }, 400);
     }
@@ -38,11 +25,11 @@ export async function handleAuth(c: Context) {
       data: {
         name,
         email,
-        password: hashedPassword,
+        image,
+        clerkId,
       },
     });
     if (!newUser) return c.json({ msg: "Failed to create new user" }, 400);
-    await generateTokenAndSetCookie(newUser?.id, c);
 
     return c.json(newUser, 200);
   } catch {
@@ -95,14 +82,6 @@ export async function handleGetUser(c: Context) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
-export const handleUserLogout = async (c: Context) => {
-  try {
-    await removeToken(c);
-    return c.json({ msg: "Logged Out" }, 200);
-  } catch {
-    return c.json({ msg: "Internal Server Error" }, 500);
-  }
-};
 
 export async function handleGetPublicUser(c: Context) {
   const prisma = prismaClient(c);
@@ -127,8 +106,8 @@ export async function handleGetPublicUser(c: Context) {
           include: {
             circle: {
               include: {
-                members: true
-              }
+                members: true,
+              },
             },
           },
         },

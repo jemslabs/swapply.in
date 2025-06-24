@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useApp } from "@/stores/useApp";
 import { useState } from "react";
-
+import { useAuth as useClerkAuth } from '@clerk/clerk-react'
 function MySwaps() {
   const { user, fetchUser } = useAuth();
   const { acceptSwapProposal, rejectSwapProposal, cancelSwapProposal } =
@@ -60,23 +60,29 @@ function MySwaps() {
   };
 
   async function handleAcceptSwapProposal(id: string | number) {
+    const { getToken } = await useClerkAuth();
+    const token = await getToken({template: "default" });
     setLoadingSwapId(id);
-    await acceptSwapProposal(id);
-    fetchUser();
+    await acceptSwapProposal(id, token);
+    fetchUser(token);
     setLoadingSwapId(null);
   }
 
   async function handleRejectSwapProposal(id: string | number) {
+    const { getToken } = await useClerkAuth();
+    const token = await getToken({template: "default" });
     setLoadingSwapId(id);
-    await rejectSwapProposal(id);
-    fetchUser();
+    await rejectSwapProposal(id, token);
+    fetchUser(token);
     setLoadingSwapId(null);
   }
 
   async function handleCancelSwapProposal(id: string | number) {
+    const { getToken } = await useClerkAuth();
+    const token = await getToken({template: "default" });
     setLoadingSwapId(id);
-    await cancelSwapProposal(id);
-    fetchUser();
+    await cancelSwapProposal(id, token);
+    fetchUser(token);
     setLoadingSwapId(null);
   }
   return (

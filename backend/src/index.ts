@@ -4,7 +4,6 @@ import authRoutes from "./routes/auth";
 import itemRoutes from "./routes/item";
 import circleRoutes from "./routes/circle";
 import razorpayRoutes from "./routes/razorpay";
-
 const app = new Hono();
 const allowedOrigins = [
   "http://localhost:5173",
@@ -23,7 +22,6 @@ app.use(
     credentials: true,
   })
 );
-
 app.route("/api/auth", authRoutes);
 app.route("/api/item", itemRoutes);
 app.route("/api/circle", circleRoutes);

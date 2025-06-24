@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ItemType } from "@/lib/types";
-
+import { useAuth as useClerkAuth } from '@clerk/clerk-react'
 function ItemSwap() {
   const { id } = useParams();
   const { getItem, sendSwapPropsal } = useApp();
@@ -27,11 +27,15 @@ function ItemSwap() {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const navigate = useNavigate()
+  const { getToken } = useClerkAuth();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["swap-item", id],
     queryFn: async () => {
+
+      const token = await getToken({ template: "default" });
       if (!id) throw new Error("No item ID provided");
-      const res = await getItem(id);
+
+      const res = await getItem(id, token);
       return res;
     },
     staleTime: 12000,
@@ -49,6 +53,7 @@ function ItemSwap() {
   if (isError) return <div className="p-8 text-red-500">Failed to load item. Please try again.</div>;
 
   const handleSendProposal = async () => {
+    const token = await getToken({ template: "default" });
     const proposalData = {
       proposedItemId: selectedItemId ?? undefined,
       receiverItemId: data?.id,
@@ -56,8 +61,8 @@ function ItemSwap() {
       receiverId: data?.userId,
     };
     setIsSending(true);
-    await sendSwapPropsal(proposalData);
-    fetchUser();
+    await sendSwapPropsal(proposalData, token);
+    fetchUser(token);
     setIsSending(false)
   }
   return (
@@ -108,7 +113,7 @@ function ItemSwap() {
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="w-full sm:w-1/2">
                   {selectedItem ? (
-                    <Item item={selectedItem} isBoost={false}/>
+                    <Item item={selectedItem} isBoost={false} />
                   ) : (
                     <div className="border rounded p-4 text-center text-muted-foreground">
                       <p>Select one of your items to offer</p>
@@ -122,7 +127,7 @@ function ItemSwap() {
 
                 <div className="w-full sm:w-1/2">
                   {data ? (
-                    <Item item={data} isBoost={false}/>
+                    <Item item={data} isBoost={false} />
                   ) : (
                     <div className="border rounded p-4 text-center text-muted-foreground">
                       <p>Loading requested item...</p>

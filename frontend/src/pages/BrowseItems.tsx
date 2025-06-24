@@ -17,10 +17,11 @@ import { Slider } from "@/components/ui/slider";
 import { categories } from "@/lib/utils";
 import { useApp } from "@/stores/useApp";
 import { Loader2, Search } from "lucide-react";
+import { useAuth } from "@clerk/clerk-react";
 
 function BrowseItems() {
   const { getBrowseItems } = useApp();
-
+  const { getToken } = useAuth();
   const [filter, setFilter] = useState({
     category: "ELECTRONICS",
     query: "",
@@ -38,7 +39,9 @@ function BrowseItems() {
   } = useQuery({
     queryKey: ["browse-items"],
     queryFn: async () => {
-      const res = await getBrowseItems(filter);
+
+      const token = await getToken({ template: "default" })
+      const res = await getBrowseItems(filter, token);
       return res;
     },
     staleTime: 5 * 60 * 1000,
@@ -157,15 +160,15 @@ function BrowseItems() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10 max-w-6xl mx-auto">
         {isLoading || isFetching
           ? Array.from({ length: 8 }).map((_, idx) => (
-              <ItemSkeleton key={idx} />
-            ))
+            <ItemSkeleton key={idx} />
+          ))
           : items && items?.length > 0 ? (
-              items?.map((item) => <Item key={item.id} item={item} isBoost={false}/>)
-            ) : (
-              <div className="col-span-full text-center text-muted-foreground text-sm">
-                No items found for this filter.
-              </div>
-            )}
+            items?.map((item) => <Item key={item.id} item={item} isBoost={false} />)
+          ) : (
+            <div className="col-span-full text-center text-muted-foreground text-sm">
+              No items found for this filter.
+            </div>
+          )}
       </div>
     </div>
   );

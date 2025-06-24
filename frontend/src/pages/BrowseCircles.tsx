@@ -4,12 +4,13 @@ import { Input } from "@/components/ui/input";
 import { useApp } from "@/stores/useApp";
 import { Search } from "lucide-react";
 import Circle from "@/components/Circle";
+import { useAuth } from "@clerk/clerk-react";
 
 function BrowseCircles() {
   const { getBrowseCircles } = useApp();
   const [filter, setFilter] = useState({ query: "" });
   const [debouncedQuery, setDebouncedQuery] = useState(filter.query);
-
+  const { getToken } = useAuth();
   // Debounce the search input
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -26,7 +27,9 @@ function BrowseCircles() {
   } = useQuery({
     queryKey: ["browse-circles", debouncedQuery],
     queryFn: async () => {
-      const res = await getBrowseCircles({ query: debouncedQuery });
+
+      const token = await getToken({ template: "default" })
+      const res = await getBrowseCircles({ query: debouncedQuery }, token);
       return res;
     },
     staleTime: 5 * 60 * 1000,

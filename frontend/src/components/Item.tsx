@@ -7,8 +7,10 @@ import ScoreBadge from './ScoreBadge'
 import { Rocket } from 'lucide-react'
 import { useApp } from '@/stores/useApp'
 import { useState } from 'react'
+import { useAuth } from '@clerk/clerk-react'
 
 function Item({ item, isBoost }: { item: ItemType | undefined, isBoost: boolean }) {
+  const { getToken } = useAuth();
   if (!item) return null
   const [isBoosting, setIsBoosting] = useState(false)
 
@@ -23,8 +25,9 @@ function Item({ item, isBoost }: { item: ItemType | undefined, isBoost: boolean 
 
   const { boostItem } = useApp()
   const handleBoostItem = async () => {
+    const token = await getToken({template: "default" });
     setIsBoosting(true)
-    await boostItem(item?.id)
+    await boostItem(item?.id, token)
     setIsBoosting(false)
   }
 

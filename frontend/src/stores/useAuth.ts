@@ -6,16 +6,12 @@ import type { useAuthType } from "@/lib/types";
 
 export const useAuth = create<useAuthType>((set) => ({
   user: null,
-  login: async (data, navigate) => {
+
+  login: async (data) => {
     try {
-      const res = await axios.post(`${endpoint}/api/auth/login`, data, {
+      await axios.post(`${endpoint}/api/auth/login`, data, {
         withCredentials: true,
       });
-      if (res.status === 200) {
-        await useAuth.getState().fetchUser();
-        toast.success("Authenticated");
-        navigate("/browse/items");
-      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const errorMsg =
@@ -25,11 +21,17 @@ export const useAuth = create<useAuthType>((set) => ({
       }
     }
   },
-  fetchUser: async () => {
+
+  fetchUser: async (token) => {
     try {
+
       const res = await axios.get(`${endpoint}/api/auth/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         withCredentials: true,
       });
+
       if (res.status === 200) {
         set({ user: res.data });
       }
@@ -37,33 +39,20 @@ export const useAuth = create<useAuthType>((set) => ({
       set({ user: null });
     }
   },
-  logout: async () => {
+
+  fetchPublicUser: async (id, token) => {
     try {
-      const res = await axios.post(
-        `${endpoint}/api/auth/logout`,
-        {},
+
+      const res = await axios.get(
+        `${endpoint}/api/auth/get-user?id=${id}`,
         {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           withCredentials: true,
         }
       );
-      if (res.status === 200) {
-        set({ user: null });
-        toast.success(res.data.msg);
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMsg =
-          error.response?.data?.msg ||
-          "Something went wrong. Please try again.";
-        toast.error(errorMsg);
-      }
-    }
-  },
-  fetchPublicUser: async (id) => {
-    try {
-      const res = await axios.get(`${endpoint}/api/auth/get-user?id=${id}`, {
-        withCredentials: true,
-      });
+
       if (res.status === 200) {
         return res.data;
       }

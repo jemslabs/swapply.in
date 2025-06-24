@@ -9,7 +9,7 @@ function ClientProtect({ children }: { children: JSX.Element }) {
 
   useEffect(() => {
     if (!user) {
-      navigate("/login");
+      navigate("/");
     }
   }, [user, navigate]);
 

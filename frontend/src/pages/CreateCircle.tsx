@@ -10,7 +10,7 @@ import { ArrowLeft, ArrowUpRight, CloudUpload, Loader2, X } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import { useAuth as useClerkAuth } from '@clerk/clerk-react'
 function CreateCircle() {
   const [data, setData] = useState({
     name: "",
@@ -18,6 +18,7 @@ function CreateCircle() {
     image: null as File | null,
     isPrivate: false,
   });
+
   const navigate = useNavigate();
   const { createCircle } = useApp();
   const { user } = useAuth();
@@ -44,6 +45,8 @@ function CreateCircle() {
   };
 
   const handleSubmit = async () => {
+    const { getToken } = useClerkAuth();
+    const token = await getToken({template: "default" });
     setIsLoading(true);
     try {
       if (!data.name) {
@@ -65,7 +68,7 @@ function CreateCircle() {
       formData.append("image", data.image);
       formData.append("isPrivate", String(data.isPrivate));
 
-      await createCircle(formData, navigate);
+      await createCircle(formData, navigate, token);
     } catch {
       toast.error("Something went wrong.");
     } finally {

@@ -8,7 +8,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CheckCircle, Loader2, LogOut, Users, Lock } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-
+import { useAuth as useClerkAuth } from '@clerk/clerk-react'
 export default function CirclePage() {
   const { id } = useParams();
   const { fetchCircle, joinCircle, leaveCircle, approveItem } = useApp();
@@ -20,7 +20,12 @@ export default function CirclePage() {
   const navigate = useNavigate()
   const { data, isLoading } = useQuery({
     queryKey: ["circle", id],
-    queryFn: () => fetchCircle(id),
+    queryFn: async () => {
+      const { getToken } = useClerkAuth();
+      const token = await getToken({template: "default" });
+      const res = await fetchCircle(id, token)
+      return res;
+    },
     staleTime: 300000,
     enabled: !!id,
   });
@@ -29,21 +34,27 @@ export default function CirclePage() {
   const isAdmin = data?.members?.some((m) => m.userId === user?.id && m.role === "ADMIN");
 
   const handleJoin = async () => {
+    const { getToken } = useClerkAuth();
+    const token = await getToken({template: "default" });
     setIsJoining(true);
-    await joinCircle(id);
+    await joinCircle(id, token);
     await queryClient.invalidateQueries({ queryKey: ["circle", id] });
     setIsJoining(false);
   };
 
   const handleLeave = async () => {
+    const { getToken } = useClerkAuth();
+    const token = await getToken({template: "default" });
     setIsLeaving(true);
-    await leaveCircle(id);
+    await leaveCircle(id, token);
     await queryClient.invalidateQueries({ queryKey: ["circle", id] });
     setIsLeaving(false);
   };
   const handleApproveItem = async (id: string | undefined | number) => {
+    const { getToken } = useClerkAuth();
+    const token = await getToken({template: "default" });
     setIsApproving(true)
-    await approveItem(id)
+    await approveItem(id, token)
     await queryClient.invalidateQueries({ queryKey: ["circle", id] });
     setIsApproving(false)
   }
@@ -208,7 +219,7 @@ export default function CirclePage() {
                     ) : null}
                   </div>
 
-                  <Item item={it.item} isBoost={false}/>
+                  <Item item={it.item} isBoost={false} />
                 </div>
               ))}
             </div>

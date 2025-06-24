@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { SignOutButton, useUser } from "@clerk/clerk-react";
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import type { loginData } from "@/lib/types";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/stores/useAuth";
 import clsx from "clsx";
@@ -27,12 +31,35 @@ import {
 } from "@/components/ui/popover";
 
 import Logo from "./Logo";
-
+import { SignInButton } from "@clerk/clerk-react";
 function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, login } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isPro = !!user?.plan;
+  const { isSignedIn, user: clerkUser, isLoaded } = useUser();
+
+  const hasSynced = useRef(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isSignedIn || !clerkUser || !isLoaded || hasSynced.current) return;
+    hasSynced.current = true;
+
+    const userData: loginData = {
+      name: clerkUser.fullName || "",
+      image: clerkUser.imageUrl || "",
+      email: clerkUser.primaryEmailAddress?.emailAddress || "",
+      clerkId: clerkUser.id || ""
+    };
+
+    handleSyncUser(userData);
+
+    async function handleSyncUser(data: loginData) {
+      await login(data);
+      navigate("/browse/items");
+    }
+  }, [isSignedIn, clerkUser, isLoaded, user]);
 
   const bgClass = clsx(
     "fixed top-2 left-5 right-5 z-50 border rounded-xl transition-colors duration-300 bg-[#000000]",
@@ -47,7 +74,6 @@ function Navbar() {
     <>
       <nav className={bgClass}>
         <div className="py-2 px-4 flex justify-between items-center">
-          {/* Left: Logo + Desktop Nav */}
           <div className="flex items-center gap-4">
             <Logo />
             <div className="hidden md:flex gap-4">
@@ -112,9 +138,8 @@ function Navbar() {
             </div>
           </div>
 
-          {/* Right: Desktop Auth + Mobile Menu */}
           <div className="hidden md:flex items-center gap-3">
-            {user ? (
+            {clerkUser ? (
               <>
                 <Link to="/item/add">
                   <Button variant="outline" size="sm">
@@ -131,7 +156,7 @@ function Navbar() {
                 )}
                 <Link to="/notifications" className="relative">
                   <Bell className="h-5 w-5 hover:text-gray-300" />
-                  {user.notifications?.length > 0 && (
+                  {user && user.notifications?.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
                       {user.notifications.length}
                     </span>
@@ -172,28 +197,25 @@ function Navbar() {
                         </Link>
                       </Button>
                       <Separator />
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start"
-                        onClick={() => logout()}
-                      >
-                        <LogOut className="w-4 h-4 text-red-500" />
-                        <span className="text-red-500">Logout</span>
-                      </Button>
+                      <SignOutButton>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-red-500 cursor-pointer h-10"
+                        >
+                          <LogOut className="w-5 h-5 mr-2 text-red-500" />
+                          Logout
+                        </Button>
+                      </SignOutButton>
+
                     </div>
                   </PopoverContent>
                 </Popover>
               </>
             ) : (
               <>
-                <Link to="/login">
+                <SignInButton mode="modal">
                   <Button size="sm">Login</Button>
-                </Link>
-                <Link to="/signup">
-                  <Button size="sm" variant="outline">
-                    Signup
-                  </Button>
-                </Link>
+                </SignInButton>
               </>
             )}
           </div>
@@ -256,22 +278,18 @@ function Navbar() {
                 </Link>
                 <button
                   onClick={() => {
-                    logout();
                     setSidebarOpen(false);
                   }}
                   className="flex gap-2 items-center px-2 py-2 text-red-500 rounded hover:bg-[#222]"
                 >
-                  <LogOut className="w-4 h-4" /> Logout
+                  <LogOut className="w-4 h-4" /> <SignOutButton />
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="text-white px-2 py-2 rounded hover:bg-[#222]" onClick={() => setSidebarOpen(false)}>
-                  Login
-                </Link>
-                <Link to="/signup" className="text-white px-2 py-2 rounded hover:bg-[#222]" onClick={() => setSidebarOpen(false)}>
-                  Signup
-                </Link>
+                <SignInButton mode="modal">
+                  <Button size="sm" onClick={() => setSidebarOpen(false)}>Login</Button>
+                </SignInButton>
               </>
             )}
           </div>

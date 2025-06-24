@@ -12,13 +12,19 @@ import { format } from "date-fns";
 import { ISTtoUTC } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@clerk/clerk-react";
 
 function SwapPage() {
   const { getSwap, scheduleSwapMeeting, cancelSwapMeeting } = useApp();
   const { id } = useParams();
+  const { getToken } = useAuth();
   const { data, isLoading, error } = useQuery({
     queryKey: ["swap", id],
-    queryFn: async () => await getSwap(id),
+    queryFn: async () => {
+      const token = await getToken({ template: "default" });
+      const res = await getSwap(id, token)
+      return res;
+    },
     staleTime: 12000,
   });
   const queryClient = useQueryClient();
@@ -41,6 +47,7 @@ function SwapPage() {
   }, [existingMeeting]);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    const token = await getToken({ template: "default" });
     e.preventDefault();
     if (!id || !date || !time) return;
     const utcDateString = ISTtoUTC({ time, date });
@@ -51,13 +58,14 @@ function SwapPage() {
       meetingLocation,
       notes,
       swapProposalId: parseInt(id),
-    });
+    }, token);
     await queryClient.invalidateQueries({ queryKey: ["swap", id] });
     setIsSending(false);
   };
   const handleCancelMeeting = async (id: string | number | undefined) => {
+    const token = await getToken({ template: "default" });
     setIsCanceling(true);
-    await cancelSwapMeeting(id);
+    await cancelSwapMeeting(id, token);
     await queryClient.invalidateQueries({ queryKey: ["swap", id] });
     setIsCanceling(false)
   }

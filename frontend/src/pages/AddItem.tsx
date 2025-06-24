@@ -21,6 +21,7 @@ import { useApp } from "@/stores/useApp";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
+import { useAuth } from "@clerk/clerk-react";
 
 export default function AddItem() {
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -44,6 +45,7 @@ export default function AddItem() {
     image: null,
     itemAge: 0,
   });
+  const { getToken } = useAuth();
 
 
 
@@ -75,7 +77,8 @@ export default function AddItem() {
 
 
   const handleAdd = async () => {
-    // Basic validation for required fields
+
+    const token = await getToken({template: "default" })
     if (!data.title.trim()) {
       toast.error("Title is required");
       return;
@@ -135,7 +138,7 @@ export default function AddItem() {
     formData.append("image", data.image);
 
     setIsLoading(true);
-    await addItem(formData, navigate);
+    await addItem(formData, navigate, token);
     setIsLoading(false);
   };
 
@@ -157,8 +160,8 @@ export default function AddItem() {
               key={tabNumber}
               onClick={() => setStep(tabNumber)}
               className={`px-4 py-2 font-semibold cursor-pointer ${step === tabNumber
-                  ? "border-b-2 border-purple-500 text-white"
-                  : "text-gray-500 hover:text-gray-300"
+                ? "border-b-2 border-purple-500 text-white"
+                : "text-gray-500 hover:text-gray-300"
                 }`}
               aria-selected={step === tabNumber}
               role="tab"
@@ -247,7 +250,7 @@ export default function AddItem() {
                   min="0"
                   inputMode="decimal"
                   placeholder="4999"
-                  
+
                 />
               </div>
             </div>

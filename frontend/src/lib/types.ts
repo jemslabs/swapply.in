@@ -1,10 +1,9 @@
 import type { NavigateFunction } from "react-router-dom";
 
-type user = {
+export type user = {
   id: number;
   name: string;
   email: string;
-  password: string;
   image?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -14,12 +13,14 @@ type user = {
   circles: memberType[];
   notifications: notification[];
   plan?: ProPlanType;
+  clerkId: string;
 };
 
-type loginData = {
+export type loginData = {
   name?: string;
   email: string;
-  password: string;
+  image: string;
+  clerkId: string;
 };
 
 export type AddItem = {
@@ -140,44 +141,77 @@ export type ProPlanType = {
   userId: number;
   startedAt: Date;
   expiresAt: Date;
-}
+};
 export type useAppType = {
-  addItem: (data: FormData, navigate: NavigateFunction) => void;
-  getBrowseItems: (data: {
-    category: string;
-    query: string;
-    fromPrice: string | number;
-    toPrice: string | number;
-    condition: string;
-    score: number;
-  }) => Promise<{ items: ItemType[] } | { items: [] }>;
-  getBrowseCircles: (data: { query: string }) => Promise<circleType[]>;
-  getMyItems: () => Promise<ItemType[] | []>;
-  getItem: (id: string | undefined) => Promise<ItemType | null>;
-  sendSwapPropsal: (data: SendPropsalType) => void;
-  acceptSwapProposal: (id: string | number) => void;
-  rejectSwapProposal: (id: string | number) => void;
-  cancelSwapProposal: (id: string | number) => void;
-  createCircle: (data: FormData, navigate: NavigateFunction) => void;
-  fetchMyCircles: () => Promise<memberType[] | []>;
-  fetchCircle: (id: string | undefined) => Promise<circleType | null>;
-  joinCircle: (id: string | number | undefined) => void;
-  addItemCircle: (data: {
-    itemId: string | number | undefined;
-    circleId: string | number | undefined;
-  }) => void;
-  leaveCircle: (id: string | number | undefined) => void;
-  approveItem: (id: string | number | undefined) => void;
-  getSwap: (id: string | number | undefined) => Promise<proposalType | null>;
+  addItem: (
+    data: FormData,
+    navigate: NavigateFunction,
+    token: string | null
+  ) => void;
+  getBrowseItems: (
+    data: {
+      category: string;
+      query: string;
+      fromPrice: string | number;
+      toPrice: string | number;
+      condition: string;
+      score: number;
+    },
+    token: string | null
+  ) => Promise<{ items: ItemType[] } | { items: [] }>;
+  getBrowseCircles: (
+    data: { query: string },
+    token: string | null
+  ) => Promise<circleType[]>;
+  getItem: (
+    id: string | undefined,
+    token: string | null
+  ) => Promise<ItemType | null>;
+  sendSwapPropsal: (data: SendPropsalType, token: string | null) => void;
+  acceptSwapProposal: (id: string | number, token: string | null) => void;
+  rejectSwapProposal: (id: string | number, token: string | null) => void;
+  cancelSwapProposal: (id: string | number, token: string | null) => void;
+  createCircle: (
+    data: FormData,
+    navigate: NavigateFunction,
+    token: string | null
+  ) => void;
+  fetchMyCircles: (token: string | null) => Promise<memberType[] | []>;
+  fetchCircle: (
+    id: string | undefined,
+    token: string | null
+  ) => Promise<circleType | null>;
+  joinCircle: (id: string | number | undefined, token: string | null) => void;
+  addItemCircle: (
+    data: {
+      itemId: string | number | undefined;
+      circleId: string | number | undefined;
+    },
+    token: string | null
+  ) => void;
+  leaveCircle: (id: string | number | undefined, token: string | null) => void;
+  approveItem: (id: string | number | undefined, token: string | null) => void;
+  getSwap: (
+    id: string | number | undefined,
+    token: string | null
+  ) => Promise<proposalType | null>;
 
-  scheduleSwapMeeting: (data: AddSwapInpersonType) => void;
-  cancelSwapMeeting: (id: string | number | undefined) => void;
-  boostItem: (id: number) => void;
+  scheduleSwapMeeting: (
+    data: AddSwapInpersonType,
+    token: string | null
+  ) => void;
+  cancelSwapMeeting: (
+    id: string | number | undefined,
+    token: string | null
+  ) => void;
+  boostItem: (id: number, token: string | null) => void;
 };
 export type useAuthType = {
   user: user | null;
-  login: (data: loginData, navigate: NavigateFunction) => void;
-  fetchUser: () => void;
-  logout: () => void;
-  fetchPublicUser: (id: number | string| undefined) => Promise<user | null>;
+  login: (data: loginData) => void;
+  fetchUser: (token: string | null) => void;
+  fetchPublicUser: (
+    id: number | string | undefined,
+    token: string | null
+  ) => Promise<user | null>;
 };

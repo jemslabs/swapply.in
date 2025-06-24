@@ -5,12 +5,15 @@ import axios from "axios";
 import { endpoint } from "@/lib/utils";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
-
+import { useAuth as useClerkAuth } from "@clerk/clerk-react"
 export default function PricingPlans() {
-    const { user , fetchUser} = useAuth();
+    const { user, fetchUser } = useAuth();
+    const { getToken } = useClerkAuth();
+
     const proPlanAmount = 299;
     const isPro = !!user?.plan;
     const initiateRazorpay = async () => {
+        const token = await getToken({template: "default" });
         try {
             const res = await axios.post(
                 `${endpoint}/api/razorpay/create-order`,
@@ -18,7 +21,12 @@ export default function PricingPlans() {
                     amount: proPlanAmount,
                     currency: "INR",
                 },
-                { withCredentials: true }
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
             );
 
             const order = res.data;
@@ -36,6 +44,7 @@ export default function PricingPlans() {
                     razorpay_signature: string;
                 }) => {
                     try {
+                        const token = await getToken({template: "default" });
                         const result = await axios.post(
                             `${endpoint}/api/razorpay/order/validate`,
                             {
@@ -43,12 +52,17 @@ export default function PricingPlans() {
                                 razorpay_order_id: response.razorpay_order_id,
                                 razorpay_signature: response.razorpay_signature,
                             },
-                            { withCredentials: true }
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                },
+                                withCredentials: true,
+                            }
                         );
 
                         if (result.data.success) {
                             toast.success("You're now a Pro user! 🚀");
-                            fetchUser()
+                            fetchUser(token)
                         } else {
                             toast.error("Payment could not be validated.");
                         }
@@ -149,7 +163,7 @@ export default function PricingPlans() {
                             </Button>
                         )
                     ) : (
-                        
+
                         <Button
                             className="w-full py-2 rounded-xl font-semibold text-base"
                             size="lg"
@@ -157,7 +171,7 @@ export default function PricingPlans() {
                             asChild
                         >
                             <Link to={"/login"}> Sign in to Upgrade</Link>
-                           
+
                         </Button>
                     )}
 

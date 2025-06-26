@@ -62,18 +62,14 @@ function Navbar() {
   }, [isSignedIn, clerkUser, isLoaded, user]);
 
   const bgClass = clsx(
-    "fixed top-2 left-5 right-5 z-50 border rounded-xl transition-colors duration-300 bg-[#000000]",
-    {
-      "bg-[#000000] border-[#2a2a2a]":
-        !location.pathname.startsWith("/login") &&
-        !location.pathname.startsWith("/signup"),
-    }
+    "fixed top-2 left-10 right-10 z-50 border-2 rounded-4xl transition-colors duration-300 bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] border-[#2a2a2a]"
   );
 
   return (
     <>
       <nav className={bgClass}>
-        <div className="py-2 px-4 flex justify-between items-center">
+
+        <div className="py-2 px-7 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Logo />
             <div className="hidden md:flex gap-4">
@@ -92,11 +88,11 @@ function Navbar() {
                     <ChevronDown className="w-3 h-3" />
                   </div>
                 </PopoverTrigger>
-                <PopoverContent className="space-y-2 p-2">
+                <PopoverContent className="space-y-2 p-2 bg-[#0d0d0d]">
                   <Link
                     to="/browse/items"
                     className={clsx(
-                      "flex gap-5 items-center p-2 rounded-md transition",
+                      "flex gap-5 items-center p-2 rounded-md transition ",
                       location.pathname === "/browse/items"
                         ? "bg-muted text-white"
                         : "hover:bg-muted"
@@ -123,6 +119,7 @@ function Navbar() {
                   </Link>
                 </PopoverContent>
               </Popover>
+              {clerkUser && 
               <Link
                 to="/circles"
                 className={clsx(
@@ -134,7 +131,7 @@ function Navbar() {
               >
                 <Users className="w-3 h-3" />
                 Circles
-              </Link>
+              </Link>}
             </div>
           </div>
 
@@ -214,7 +211,7 @@ function Navbar() {
             ) : (
               <>
                 <SignInButton mode="modal">
-                  <Button size="sm">Login</Button>
+                  <Button size="default">Login</Button>
                 </SignInButton>
               </>
             )}

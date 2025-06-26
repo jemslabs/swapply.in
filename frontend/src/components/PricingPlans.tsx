@@ -89,8 +89,8 @@ export default function PricingPlans() {
 
     return (
         <div className="flex flex-col items-center justify-center">
-            <div className="flex flex-col md:flex-row gap-8 max-w-5xl w-full justify-center items-stretch">
-                <div className="relative border rounded-3xl shadow-xl flex-1 max-w-sm w-full p-8 flex flex-col items-center transition duration-300">
+            <div className="flex flex-col md:flex-row gap-20 max-w-5xl w-full justify-center items-stretch">
+                <div className="relative border rounded-3xl shadow-xl flex-1 max-w-sm w-full p-8 flex flex-col items-center transition duration-300 bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] ">
                     <h2 className="text-2xl font-bold text-white mb-2">Free</h2>
                     <div className="flex items-end justify-center mb-6">
                         <span className="text-4xl font-extrabold text-white">₹0</span>
@@ -120,8 +120,7 @@ export default function PricingPlans() {
                     </Link>
                 </div>
 
-                {/* Pro Plan */}
-                <div className="relative border-2 rounded-3xl shadow-2xl flex-1 max-w-sm w-full p-8 flex flex-col items-center border-[#c084fc] scale-[1.08] z-10 transition duration-300 shadow-purple-500/30 ">
+                <div className="relative border-2 rounded-3xl shadow-2xl flex-1 max-w-sm w-full p-8 flex flex-col items-center bg-gradient-to-br from-[#c084fc]/20 via-[#c084fc]/30 to-[#c084fc]/20 border-[#c084fc] scale-[1.1] z-10 transition duration-300 shadow-purple-500/30 ">
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#c084fc] text-black px-4 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-md">
                         <Crown size={13} className="text-black fill-black" /> Most Popular
                     </div>

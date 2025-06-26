@@ -24,9 +24,9 @@ function App() {
   const location = useLocation();
   const isHome  = location.pathname === "/";
   return (
-    <>
+    <div className="bg-[#0d0d0d]">
       <Navbar />
-      <div className={`${isHome ? "" : "pt-20"}`}>
+      <div className={`${isHome ? "pt-0" : "pt-20"}`}>
         <FetchUser />
         <Routes>
           <Route path="/" element={<Home />}/>
@@ -91,7 +91,7 @@ function App() {
         </Routes>
       </div>
       <Toaster position="top-center" />
-    </>
+    </div>
   );
 }
 

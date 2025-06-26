@@ -86,7 +86,7 @@ function MySwaps() {
     setLoadingSwapId(null);
   }
   return (
-    <div className="px-4 py-4 w-full max-w-5xl mx-auto">
+    <div className="px-4 py-4 w-full max-w-5xl mx-auto min-h-screen">
       <div className="flex items-center gap-2 sm:gap-4 mb-6">
         <Button
           variant="outline"

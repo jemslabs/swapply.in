@@ -31,7 +31,7 @@ function Profile() {
   const [activeTab, setActiveTab] = useState<"items" | "circles">("items");
 
   return (
-    <div className="max-w-6xl mx-auto p-6 md:p-10 space-y-6">
+    <div className="max-w-6xl mx-auto p-6 md:p-10 space-y-6 min-h-screen">
       <Card className="flex flex-col md:flex-row items-center gap-6 p-6 md:p-8 shadow-lg">
         <Avatar className="w-24 h-24">
           <AvatarImage src={data?.image} alt={data?.name} />

@@ -144,7 +144,7 @@ export default function AddItem() {
 
 
   return (
-    <div className="py-4 px-6">
+    <div className="py-4 px-6 min-h-screen">
       <Card className="p-6 w-full md:w-2/3 lg:w-1/2 bg-[#0a0a0a] border border-[#2a2a2a] mx-auto">
         <div>
           <h1 className="text-3xl font-bold text-white text-center tracking-tight mb-2 flex gap-3 justify-center">

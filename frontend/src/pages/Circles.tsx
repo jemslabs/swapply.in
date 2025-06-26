@@ -46,7 +46,7 @@ function Circles() {
   }
 
   return (
-    <div className="py-5 px-10 max-w-4xl mx-auto">
+    <div className="py-5 px-10 max-w-4xl mx-auto min-h-screen">
       <div className="flex justify-between mb-5">
         <div className="flex items-center justify-center gap-5">
 

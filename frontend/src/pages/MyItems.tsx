@@ -11,7 +11,7 @@ function MyItems() {
 
 
   return (
-    <div className="mx-10 py-5">
+    <div className="mx-10 py-5 min-h-screen">
 
 
       {user?.items && user.items.length === 0 ? (

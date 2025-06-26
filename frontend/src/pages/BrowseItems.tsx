@@ -54,7 +54,7 @@ function BrowseItems() {
   };
 
   return (
-    <div className="py-6 px-5">
+    <div className="py-6 px-5 min-h-screen">
       <div className="flex flex-col gap-6 max-w-5xl mx-auto">
         <div className="relative w-full">
           <Input

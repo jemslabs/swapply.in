@@ -14,122 +14,73 @@ model User {
   image         String?
   email         String         @unique
   items         Item[]
-  circles       CircleMember[]
-  proposedSwaps SwapProposal[] @relation("Proposer")
-  receivedSwaps SwapProposal[] @relation("Receiver")
-  addedItems    CircleItem[]
+  skills        Skill[]
   notifications Notification[]
-  boostedItems  BoostedItem[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime?      @updatedAt
-  plan          ProPlan?
   clerkId       String?        @unique
+
+  proposedSwaps SwapRequest[] @relation("ProposedSwaps")
+  receivedSwaps SwapRequest[] @relation("ReceivedSwaps")
 }
 
 model Item {
-  id              Int            @id @default(autoincrement())
-  userId          Int
-  user            User           @relation(fields: [userId], references: [id])
-  title           String
-  description     String         @db.Text
-  image           String
-  currentPrice    Float          @default(1)
-  originalPrice   Float          @default(1)
-  currencyType    CurrencyType   @default(INR)
-  company         String
-  category        Category
-  condition       ItemCondition
-  hasBill         Boolean        @default(false)
-  rating          Float?         @default(0)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  isSwapped       Boolean        @default(false)
-  itemAge         Int?
-  score           Float?         @default(0)
-  circles         CircleItem[]
-  proposerInSwaps SwapProposal[] @relation("ProposerItem")
-  receiverInSwaps SwapProposal[] @relation("ReceiverItem")
-  boostedItem     BoostedItem?
-}
-
-model BoostedItem {
-  id        Int      @id @default(autoincrement())
-  itemId    Int      @unique
-  item      Item     @relation(fields: [itemId], references: [id])
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  boostedAt DateTime @default(now())
-  expiresAt DateTime
-
-  @@index([userId])
-}
-
-model SwapProposal {
-  id Int @id @default(autoincrement())
-
-  proposerId Int
-  proposer   User @relation("Proposer", fields: [proposerId], references: [id])
-
-  receiverId Int
-  receiver   User @relation("Receiver", fields: [receiverId], references: [id])
-
-  proposedItemId Int
-  proposedItem   Item @relation("ProposerItem", fields: [proposedItemId], references: [id])
-
-  receiverItemId Int
-  receiverItem   Item @relation("ReceiverItem", fields: [receiverItemId], references: [id])
-
-  message      String?       @db.Text
-  status       SwapStatus    @default(PENDING)
-  swapInperson SwapInperson?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-}
-
-model SwapInperson {
   id              Int           @id @default(autoincrement())
-  swapProposalId  Int           @unique
-  swapProposal    SwapProposal  @relation(fields: [swapProposalId], references: [id])
-  meetingLocation String
-  date            DateTime
-  time            String?
-  meetingStatus   MeetingStatus @default(SCHEDULED)
-  notes           String?
+  userId          Int
+  user            User          @relation(fields: [userId], references: [id])
+  title           String
+  image           String
+  price           Float         @default(1)
+  category        ItemCategory
+  condition       ItemCondition
+  hasBill         Boolean       @default(false)
+  isSwapped       Boolean       @default(false)
+  lookingFor      String
+  location        String
+  proposedInSwaps SwapRequest[] @relation("ProposerItem")
+  receivedInSwaps SwapRequest[] @relation("ReceiverItem")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Circle {
-  id          Int            @id @default(autoincrement())
-  name        String
-  description String         @db.Text
-  image       String?
-  members     CircleMember[]
-  items       CircleItem[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  isPrivate   Boolean        @default(false)
+model Skill {
+  id              Int           @id @default(autoincrement())
+  userId          Int
+  user            User          @relation(fields: [userId], references: [id])
+  image           String
+  title           String
+  category        SkillCategory
+  location        String?
+  isRemote        Boolean
+  lookingFor      String
+  duration        Int           @default(0)
+  proposedInSwaps SwapRequest[] @relation("ProposerSkill")
+  receivedInSwaps SwapRequest[] @relation("ReceiverSkill")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
-model CircleMember {
-  id       Int        @id @default(autoincrement())
-  userId   Int
-  user     User       @relation(fields: [userId], references: [id])
-  circleId Int
-  circle   Circle     @relation(fields: [circleId], references: [id])
-  role     MemberRole @default(MEMBER)
+model SwapRequest {
+  id         Int  @id @default(autoincrement())
+  proposerId Int
+  proposer   User @relation("ProposedSwaps", fields: [proposerId], references: [id])
 
-  @@unique([userId, circleId])
-}
+  receiverId     Int
+  receiver       User  @relation("ReceivedSwaps", fields: [receiverId], references: [id])
+  proposerItemId Int?
+  proposerItem   Item? @relation("ProposerItem", fields: [proposerItemId], references: [id])
 
-model CircleItem {
-  id         Int      @id @default(autoincrement())
-  itemId     Int
-  item       Item     @relation(fields: [itemId], references: [id])
-  circleId   Int
-  circle     Circle   @relation(fields: [circleId], references: [id])
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
-  isApproved Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  proposerSkillId Int?
+  proposerSkill   Skill?       @relation("ProposerSkill", fields: [proposerSkillId], references: [id])
+  proposerType    ProposerType
+  receiverItemId  Int?
+  receiverItem    Item?        @relation("ReceiverItem", fields: [receiverItemId], references: [id])
+
+  receiverSkillId Int?
+  receiverSkill   Skill?       @relation("ReceiverSkill", fields: [receiverSkillId], references: [id])
+  receiverType    ReceiverType
+  status          SwapStatus   @default(PENDING)
 }
 
 model Notification {
@@ -144,35 +95,22 @@ model Notification {
   category  NotificationCategory?
 }
 
-model ProPlan {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id])
-  startedAt DateTime @default(now())
-  expiresAt DateTime
-
-  @@index([userId])
-}
-
 enum NotificationCategory {
   SWAP
   MEETING
-  CIRCLE
 }
 
-enum SwapStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  CANCELLED
+enum ProposerType {
+  ITEM
+  SKILL
 }
 
-enum CurrencyType {
-  INR
-  USD
+enum ReceiverType {
+  ITEM
+  SKILL
 }
 
-enum Category {
+enum ItemCategory {
   ELECTRONICS
   CLOTHING
   BOOKS
@@ -184,6 +122,17 @@ enum Category {
   OTHER
 }
 
+enum SkillCategory {
+  TECH
+  MUSIC
+  ART
+  TUTORING
+  COOKING
+  FITNESS
+  DIY
+  OTHER
+}
+
 enum ItemCondition {
   NEW
   LIKE_NEW
@@ -191,13 +140,9 @@ enum ItemCondition {
   DAMAGED
 }
 
-enum MemberRole {
-  ADMIN
-  MEMBER
-}
-
-enum MeetingStatus {
+enum SwapStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
   CANCELLED
-  SCHEDULED
-  RESHEDULED
 }

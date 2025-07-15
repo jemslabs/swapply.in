@@ -8,11 +8,8 @@ export type user = {
   createdAt: Date;
   updatedAt: Date;
   items: ItemType[];
-  proposedSwaps: proposalType[];
-  receivedSwaps: proposalType[];
-  circles: memberType[];
+  skills: SkillType[]
   notifications: notification[];
-  plan?: ProPlanType;
   clerkId: string;
 };
 
@@ -23,109 +20,43 @@ export type loginData = {
   clerkId: string;
 };
 
-export type AddItem = {
+export type AddItemType = {
   title: string;
-  description: string;
-  currentPrice: number;
-  originalPrice: number;
-  currencyType: string;
-  company: string;
+  price: number;
   category: string;
   condition: string;
   hasBill: boolean;
   image: File | null;
-  itemAge: number;
+  lookingFor: string;
+  location: string;
 };
-export type ItemType = {
+export type ItemType = Omit<AddItemType, "image"> & {
   id: number;
   userId: number;
   user: user | null;
-  title: string;
-  description: string;
-  currentPrice: number;
-  originalPrice: number;
-  currencyType: string;
-  company: string;
-  category: string;
-  condition: string;
-  hasBill: boolean;
-  image: string | undefined;
-  createdAt: Date;
-  rating: number;
-  isSwapped: boolean;
-  itemAge: number;
-  score: number;
-  boostedItem: boostedItemType;
-};
-export type boostedItemType = {
-  id: number;
-  itemId: number;
-  userId: number;
-  boostedAt: Date;
-  expiresAt: Date;
-};
-
-export type SendPropsalType = {
-  receiverId: string | number | undefined;
-  proposedItemId: string | number | undefined;
-  receiverItemId: string | number | undefined;
-  message: string;
-};
-
-export type proposalType = {
-  id: number;
-  receiver: user;
-  proposer: user;
-  proposedItem: ItemType;
-  receiverItem: ItemType;
-  status: string;
-  swapInperson: swapInpersonType;
-} & SendPropsalType;
-
-export type swapInpersonType = {
-  id: number;
-  meetingStatus: string;
-} & AddSwapInpersonType;
-
-export type AddSwapInpersonType = {
-  swapProposalId: number;
-  meetingLocation: string;
-  date: string;
-  time: string;
-
-  notes: string;
-};
-
-export type memberType = {
-  id: number;
-  userId: number;
-  user: user;
-  circleId: number;
-  circle: circleType;
-  role: string;
-};
-
-export type circleItemType = {
-  id: number;
-  itemId: number;
-  item: ItemType;
-  circleId: number;
-  userId: number;
-  user: user;
-  isApproved: boolean;
-};
-export type circleType = {
-  id: number;
-  name: string;
-  description: string;
   image: string;
-  items: circleItemType[];
-  members: memberType[];
+  isSwapped: boolean;
   createdAt: Date;
   updatedAt: Date;
-  isPrivate: boolean;
 };
 
+export type AddSkillType = {
+  title: string;
+  image: File | string | null;
+  category: string;
+  location: string;
+  isRemote: boolean;
+  lookingFor: string;
+  duration: number;
+};
+export type SkillType = Omit<AddSkillType, "image"> & {
+  id: number;
+  userId: number;
+  user: user | null;
+  image: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 export type notification = {
   id: number;
   userId: number;
@@ -134,14 +65,19 @@ export type notification = {
   createdAt: string;
   link: string;
   type: string;
-  category: "SWAP" | "MEETING" | "CIRCLE" | string;
+  category: "SWAP" | "MEETING" | string;
 };
-export type ProPlanType = {
-  id: number;
-  userId: number;
-  startedAt: Date;
-  expiresAt: Date;
+
+export type sendSwapRequestType = {
+  proposerType: "ITEM" | "SKILL";
+  receiverType: "ITEM" | "SKILL";
+  receiverId: number;
+  proposedId: number;
+  receivedId: number;
 };
+type ExtendedItem = ItemType & { type: "item" };
+type ExtendedSkill = SkillType & { type: "skill" };
+type BrowseResult = ExtendedItem | ExtendedSkill;
 export type useAppType = {
   addItem: (
     data: FormData,
@@ -150,61 +86,32 @@ export type useAppType = {
   ) => void;
   getBrowseItems: (
     data: {
-      category: string;
       query: string;
-      fromPrice: string | number;
-      toPrice: string | number;
-      condition: string;
-      score: number;
     },
     token: string | null
   ) => Promise<{ items: ItemType[] } | { items: [] }>;
-  getBrowseCircles: (
-    data: { query: string },
+  getBrowseSkills: (
+    data: {
+      query: string;
+    },
     token: string | null
-  ) => Promise<circleType[]>;
+  ) => Promise<{ skills: SkillType[] } | { skills: [] }>;
+  getBrowseAll: (
+    data: {
+      query: string;
+    },
+    token: string | null
+  ) => Promise<{ results: BrowseResult[] }>;
   getItem: (
     id: string | undefined,
     token: string | null
   ) => Promise<ItemType | null>;
-  sendSwapPropsal: (data: SendPropsalType, token: string | null) => void;
-  acceptSwapProposal: (id: string | number, token: string | null) => void;
-  rejectSwapProposal: (id: string | number, token: string | null) => void;
-  cancelSwapProposal: (id: string | number, token: string | null) => void;
-  createCircle: (
+  addSkill: (
     data: FormData,
     navigate: NavigateFunction,
     token: string | null
   ) => void;
-  fetchMyCircles: (token: string | null) => Promise<memberType[] | []>;
-  fetchCircle: (
-    id: string | undefined,
-    token: string | null
-  ) => Promise<circleType | null>;
-  joinCircle: (id: string | number | undefined, token: string | null) => void;
-  addItemCircle: (
-    data: {
-      itemId: string | number | undefined;
-      circleId: string | number | undefined;
-    },
-    token: string | null
-  ) => void;
-  leaveCircle: (id: string | number | undefined, token: string | null) => void;
-  approveItem: (id: string | number | undefined, token: string | null) => void;
-  getSwap: (
-    id: string | number | undefined,
-    token: string | null
-  ) => Promise<proposalType | null>;
-
-  scheduleSwapMeeting: (
-    data: AddSwapInpersonType,
-    token: string | null
-  ) => void;
-  cancelSwapMeeting: (
-    id: string | number | undefined,
-    token: string | null
-  ) => void;
-  boostItem: (id: number, token: string | null) => void;
+  sendSwapRequest: (data: sendSwapRequestType, token: string | null) => void;
 };
 export type useAuthType = {
   user: user | null;

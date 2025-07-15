@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Underdog&display=swap");
 
-@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Orbitron:wght@400..900&family=Underdog&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -275,6 +276,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     @apply bg-background text-foreground;
     /* font-family: 'Underdog', cursive;
      */
-    font-family: "Lora", serif;
+    font-family: "Urbanist", sans-serif;
   }
 }

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/stores/useAuth";
-import { ArrowLeft, ArrowRight, Bell, Users, RefreshCw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bell, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { notification } from "@/lib/types";
 
@@ -13,8 +13,6 @@ function Notifications() {
         switch (category) {
             case "SWAP":
                 return <RefreshCw className="text-blue-500 w-4 h-4" />;
-            case "CIRCLE":
-                return <Users className="text-green-500 w-4 h-4" />;
             default:
                 return <Bell className="w-4 h-4" />;
         }

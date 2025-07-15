@@ -46,33 +46,8 @@ export async function handleGetUser(c: Context) {
         id,
       },
       include: {
-        items: {
-          include: {
-            boostedItem: true,
-          },
-        },
-        proposedSwaps: {
-          include: {
-            receiver: true,
-            proposer: true,
-            proposedItem: true,
-            receiverItem: true,
-          },
-        },
-        receivedSwaps: {
-          include: {
-            receiver: true,
-            proposer: true,
-            proposedItem: true,
-            receiverItem: true,
-          },
-        },
-        circles: {
-          include: {
-            circle: true,
-          },
-        },
-        plan: true,
+        items: true,
+        skills: true,
         notifications: true,
       },
     });
@@ -93,25 +68,7 @@ export async function handleGetPublicUser(c: Context) {
         id: parseInt(id),
       },
       include: {
-        items: {
-          include: {
-            boostedItem: true,
-          },
-        },
-        circles: {
-          where: {
-            role: "ADMIN",
-          },
-
-          include: {
-            circle: {
-              include: {
-                members: true,
-              },
-            },
-          },
-        },
-        plan: true,
+        items: true
       },
     });
     if (!user) {
@@ -119,52 +76,6 @@ export async function handleGetPublicUser(c: Context) {
     }
 
     return c.json(user, 200);
-  } catch (error) {
-    return c.json({ msg: "Internal Server Error" }, 500);
-  }
-}
-
-export async function handleUpgradeUserPlan(c: Context) {
-  const { event, payload } = await c.req.json();
-  const prisma = prismaClient(c);
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        email: payload?.payment?.entity?.email,
-      },
-    });
-
-    if (!user) return c.json({ msg: "User not found" }, 404);
-
-    const isPlanActive = await prisma.proPlan.findUnique({
-      where: {
-        userId: user.id,
-      },
-    });
-
-    if (isPlanActive) {
-      return c.json({ msg: "Pro plan is already active" }, 400);
-    }
-
-    if (event.payment.captured) {
-      const now = new Date();
-      now.setMonth(now.getMonth() + 1);
-      await prisma.proPlan.create({
-        data: {
-          userId: user.id,
-          expiresAt: now,
-        },
-      });
-
-      return c.json({ msg: "Pro plan activated" }, 200);
-    }
-
-    if (event.payment.failed) {
-      return c.json({ msg: "Payment Failed" }, 500);
-    }
-
-    return c.json({ msg: "Unexpected event got triggered" }, 500);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

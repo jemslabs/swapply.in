@@ -1,5 +1,4 @@
 import Logo from "@/components/Logo";
-import PricingPlans from "@/components/PricingPlans";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -14,7 +13,6 @@ import {
   Sparkles,
   Rocket,
   BadgeCheck,
-  BadgePercent,
   ChevronRight,
   Github
 } from "lucide-react";
@@ -42,14 +40,14 @@ function Home() {
               backgroundSize: "60px 60px",
             }}
           />
-          <div
+          {/* <div
             className="absolute top-0 left-0 w-full h-full"
             style={{
               background:
                 "radial-gradient(ellipse at top right, rgba(192, 132, 252, 0.25), transparent 100%)",
               transform: "translateZ(0)",
             }}
-          />
+          /> */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -265,24 +263,7 @@ function Home() {
       </section>
 
 
-      <section className="py-40 bg-[#0d0d0d]">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-[#c084fc]/10 text-[#c084fc] border-[#c084fc]/30">
-              <BadgePercent className="w-4 h-4" />
-              Pricing
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-semibold mb-4 text-white">Choose Your Plan</h2>
-            <p className="text-base sm:text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
-              Get started for free. Upgrade to Pro for full access and premium benefits.
-            </p>
 
-          </div>
-          <div className="w-full">
-            <PricingPlans />
-          </div>
-        </div>
-      </section>
 
       <div className="bg-[#0d0d0d]">
         <section className="py-20 bg-[rgb(100,42,154)] text-white mx-4 md:mx-20 rounded-2xl relative overflow-hidden">

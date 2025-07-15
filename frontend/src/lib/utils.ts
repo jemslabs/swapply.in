@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const isProduction = true;
+const isProduction = false;
 
 export const endpoint = isProduction ? "https://swapply-backend.isonikrish.workers.dev" : "http://localhost:8787";
 
@@ -20,7 +20,17 @@ export const categories = [
   { name: "Stationery", value: "STATIONERY" },
   { name: "Other", value: "OTHER" },
 ];
+export const skillCategories = [
+  {name: "Tech", value: "TECH"},
+  {name: "Music", value: "MUSIC"},
+  {name: "Art", value: "ART"},
+  {name: "Tutoring", value: "TUTORING"},
+  {name: "Cooking", value: "COOKING"},
+  {name: "Fitness", value: "FITNESS"},
+  {name: "Diy", value: "DIY"},
+  {name: "Other", value: "OTHER"},
 
+]
 export const conditions = [
   {
     name: "New",

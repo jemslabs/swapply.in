@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useApp } from "@/stores/useApp";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 
-function Item({ item }: { item: ItemType }) {
+function Item({ item, isSwap }: { item: ItemType, isSwap: boolean }) {
     const { user } = useAuth();
     const { sendSwapRequest } = useApp();
     const [open, setOpen] = useState(false);
@@ -66,7 +66,7 @@ function Item({ item }: { item: ItemType }) {
                         </span>
                     </div>
                     <p className="text-lg font-bold text-white whitespace-nowrap">
-                        ₹{item.price}
+                        ₹{item.price.toLocaleString()}
                     </p>
                 </div>
 
@@ -88,7 +88,7 @@ function Item({ item }: { item: ItemType }) {
                 >
                     View
                 </Button>
-
+                {isSwap && 
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button
@@ -136,6 +136,7 @@ function Item({ item }: { item: ItemType }) {
                         </Button>
                     </DialogContent>
                 </Dialog>
+}
             </div>
         </div>
     );

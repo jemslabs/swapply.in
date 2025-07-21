@@ -8,16 +8,18 @@ import { useAuth } from "@/stores/useAuth";
 import { useState } from "react";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import { useApp } from "@/stores/useApp";
-function Skill({ skill }: { skill: SkillType }) {
+
+
+function Skill({ skill, isSwap }: { skill: SkillType, isSwap: boolean }) {
   const { user } = useAuth();
-  const {sendSwapRequest} = useApp();
+  const { sendSwapRequest } = useApp();
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { getToken } = useClerkAuth();
   const handleSubmitSwap = async () => {
     setIsLoading(true)
-    const token = await getToken({ template: "default"});
+    const token = await getToken({ template: "default" });
     if (!selectedId) return;
 
     const isItem = user?.items.some(i => i.id === selectedId);
@@ -86,52 +88,54 @@ function Skill({ skill }: { skill: SkillType }) {
         >
           View
         </Button>
+        {isSwap &&
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button className="text-xs px-3 py-1 h-auto flex-1">
+                Swap
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Select your item or skill to propose</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-2 max-h-[300px] overflow-y-auto">
+                <p className="text-sm font-medium text-white/80">Your Items</p>
+                {user?.items
+                  .filter((i) => !i.isSwapped)
+                  .map((i) => (
+                    <Button
+                      key={`item-${i.id}`}
+                      variant={selectedId === i.id ? "default" : "outline"}
+                      className="w-full justify-start text-left gap-2"
+                      onClick={() => setSelectedId(i.id)}
+                    >
+                      <img src={i.image || ""} alt={i.title} className="w-5 h-5 rounded object-cover" />
+                      {i.title}
+                    </Button>
+                  ))}
 
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="text-xs px-3 py-1 h-auto flex-1">
-              Swap
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Select your item or skill to propose</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-2 max-h-[300px] overflow-y-auto">
-              <p className="text-sm font-medium text-white/80">Your Items</p>
-              {user?.items
-                .filter((i) => !i.isSwapped)
-                .map((i) => (
+                <p className="text-sm font-medium text-white/80 pt-2">Your Skills</p>
+                {user?.skills.map((s) => (
                   <Button
-                    key={`item-${i.id}`}
-                    variant={selectedId === i.id ? "default" : "outline"}
+                    key={`skill-${s.id}`}
+                    variant={selectedId === s.id ? "default" : "outline"}
                     className="w-full justify-start text-left gap-2"
-                    onClick={() => setSelectedId(i.id)}
+                    onClick={() => setSelectedId(s.id)}
                   >
-                    <img src={i.image || ""} alt={i.title} className="w-5 h-5 rounded object-cover" />
-                    {i.title}
+                    <img src={s.image || ""} alt={s.title} className="w-5 h-5 rounded object-cover" />
+                    {s.title}
                   </Button>
                 ))}
+              </div>
+              <Button className="mt-3 w-full" onClick={handleSubmitSwap} disabled={!selectedId || isLoading}>
+                {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
+                Send Swap Request
+              </Button>
+            </DialogContent>
+          </Dialog>
 
-              <p className="text-sm font-medium text-white/80 pt-2">Your Skills</p>
-              {user?.skills.map((s) => (
-                <Button
-                  key={`skill-${s.id}`}
-                  variant={selectedId === s.id ? "default" : "outline"}
-                  className="w-full justify-start text-left gap-2"
-                  onClick={() => setSelectedId(s.id)}
-                >
-                  <img src={s.image || ""} alt={s.title} className="w-5 h-5 rounded object-cover" />
-                  {s.title}
-                </Button>
-              ))}
-            </div>
-            <Button className="mt-3 w-full" onClick={handleSubmitSwap}  disabled={!selectedId || isLoading}>
-              {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
-              Send Swap Request
-            </Button>
-          </DialogContent>
-        </Dialog>
+        }
       </div>
     </div>
   );

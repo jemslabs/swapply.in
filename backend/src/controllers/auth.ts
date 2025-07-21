@@ -68,7 +68,7 @@ export async function handleGetPublicUser(c: Context) {
         id: parseInt(id),
       },
       include: {
-        items: true
+        items: true,
       },
     });
     if (!user) {
@@ -78,5 +78,52 @@ export async function handleGetPublicUser(c: Context) {
     return c.json(user, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+export async function handleGetSwapRequests(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  try {
+    if (!id) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) {
+      return c.json({ msg: "User not found" }, 400);
+    }
+
+    const receivedSwaps = await prisma.swapRequest.findMany({
+      where: {
+        receiverId: user.id,
+      },
+      include: {
+        proposer: true,
+        proposerItem: true,
+        receiverItem: true,
+        receiverSkill: true,
+        proposerSkill: true,
+      },
+    });
+
+    const proposedSwaps = await prisma.swapRequest.findMany({
+      where: {
+        proposerId: user.id,
+      },
+      include: {
+        receiver: true,
+        proposerItem: true,
+        receiverItem: true,
+        receiverSkill: true,
+        proposerSkill: true,
+      },
+    });
+
+    return c.json({ receivedSwaps, proposedSwaps }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Sevrer Error" }, 500);
   }
 }

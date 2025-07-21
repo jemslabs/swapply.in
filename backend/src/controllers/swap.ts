@@ -6,21 +6,17 @@ export async function handleSwap(c: Context) {
   const prisma = prismaClient(c);
   const data = await c.req.json();
   const { id } = c.get("user");
-
   try {
     if (!id) {
       return c.json({ msg: "Unauthorised" }, 400);
     }
 
     const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) return c.json({ msg: "Unauthorised" }, 401);
+    if (!user) return c.json({ msg: "User not found" }, 400);
 
     const validatedData = swapSchema.safeParse(data);
     if (!validatedData.success) {
-      return c.json(
-        { msg: "Invalid Input" },
-        400
-      );
+      return c.json({ msg: "Invalid Input" }, 400);
     }
 
     const { proposerType, receiverType, receiverId, proposedId, receivedId } =
@@ -71,10 +67,7 @@ export async function handleSwap(c: Context) {
     });
 
     if (existingSwap) {
-      return c.json(
-        { msg: "You already have a swap request for this." },
-        409
-      );
+      return c.json({ msg: "You already have a swap request for this." }, 409);
     }
     const swap = await prisma.swapRequest.create({
       data: {
@@ -93,15 +86,197 @@ export async function handleSwap(c: Context) {
     await prisma.notification.create({
       data: {
         userId: receivedThing.userId,
-        title: "Received an swap proposal",
-        body: `${user.name} has proposed a swap for your item "${receivedThing.title}".`,
+        title: "Received an swap request",
+        body: `${user.name} has requested a swap for your item "${receivedThing.title}".`,
         type: "swap.proposal_received",
         category: "SWAP",
-        link: `/swap-requests`,
+        link: `/swap/requests`,
       },
     });
 
     return c.json({ msg: "Request Sent", swap });
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+export async function handleAcceptSwap(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  try {
+    const swapId = parseInt(c.req.param("id"));
+    if (!id) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) return c.json({ msg: "User not found" }, 400);
+
+    if (!swapId) {
+      return c.json({ msg: "No swap id provided" }, 400);
+    }
+
+    const swap = await prisma.swapRequest.findUnique({
+      where: {
+        id: swapId,
+      },
+      include: {
+        proposerItem: true,
+        receiverItem: true,
+        receiver: true,
+      },
+    });
+
+    if (swap.receiverId !== user.id) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+
+    if (swap.proposerType === "ITEM" && swap.proposerItem.isSwapped) {
+      return c.json({ msg: "The proposed item has already been swapped" }, 400);
+    }
+    if (swap.receiverType === "ITEM" && swap.receiverItem.isSwapped) {
+      return c.json(
+        { msg: "The requested item has already been swapped" },
+        400
+      );
+    }
+    if (swap.status !== "PENDING") {
+      return c.json({ msg: "Swap is no longer pending" }, 400);
+    }
+
+    const operations = [
+      prisma.swapRequest.update({
+        where: { id: swap.id },
+        data: { status: "ACCEPTED" },
+      }),
+    ];
+
+    if (swap.proposerType === "ITEM") {
+      operations.push(
+        prisma.item.update({
+          where: { id: swap.proposerItemId! },
+          data: { isSwapped: true },
+        })
+      );
+    }
+
+    if (swap.receiverType === "ITEM") {
+      operations.push(
+        prisma.item.update({
+          where: { id: swap.receiverItemId! },
+          data: { isSwapped: true },
+        })
+      );
+    }
+    operations.push(
+      prisma.notification.create({
+        data: {
+          userId: swap.proposerId,
+          title: "Your Swap Request Was Accepted",
+          body: `${swap.receiver.name} accepted your swap request.`,
+          type: "swap.proposal_accepted",
+          category: "SWAP",
+          link: `/swap/${swap.id}`,
+        },
+      })
+    );
+    await prisma.$transaction(operations);
+
+    return c.json({msg: "Accepted the swap request"}, 200)
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+export async function handleRejectSwap(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  try {
+    const swapId = parseInt(c.req.param("id"));
+    if (!id) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) return c.json({ msg: "User not found" }, 400);
+
+    if (!swapId) {
+      return c.json({ msg: "No swap id provided" }, 400);
+    }
+
+    const swap = await prisma.swapRequest.findUnique({
+      where: {
+        id: swapId,
+      },
+      include: {
+        proposerItem: true,
+        receiverItem: true,
+        receiver: true,
+      },
+    });
+
+    if (swap.receiverId !== user.id) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+
+    if (swap.status !== "PENDING") {
+      return c.json({ msg: "Swap is no longer pending" }, 400);
+    }
+
+    const operations = [
+      prisma.swapRequest.update({
+        where: { id: swap.id },
+        data: { status: "REJECTED" },
+      }),
+    ];
+    operations.push(
+      prisma.notification.create({
+        data: {
+          userId: swap.proposerId,
+          title: "Your Swap Request Was Rejected",
+          body: `${swap.receiver.name} rejected your swap request.`,
+          type: "swap.proposal_rejected",
+          category: "SWAP",
+          link: `/swap/${swap.id}`,
+        },
+      })
+    );
+    await prisma.$transaction(operations);
+    return c.json({msg: "Rejected the swap request"}, 200)
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+export async function handleGetSwap(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  try {
+    const swapId = parseInt(c.req.param("id"));
+    if (!swapId) {
+      return c.json({ msg: "No swap id provided" }, 400);
+    }
+
+    const swap = await prisma.swapRequest.findUnique({
+      where: {
+        id: swapId,
+      },
+      include: {
+        proposer: true,
+        receiver: true,
+        proposerItem: true,
+        proposerSkill: true,
+        receiverItem: true,
+        receiverSkill: true,
+      },
+    });
+
+    if (!swap) {
+      return c.json({ msg: "No swap found for this id" }, 404);
+    }
+
+    if (swap.proposerId !== id && swap.receiverId !== id) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+
+    return c.json(swap, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

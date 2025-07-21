@@ -143,4 +143,45 @@ export const useApp = create<useAppType>(() => ({
       }
     }
   },
+  acceptSwapRequest: async(id, token) => {
+    try {
+      const res = await axios.put(`${endpoint}/api/swap/accept/${id}`,{}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
+  rejectSwapRequest: async(id, token) => {
+    try {
+      const res = await axios.put(`${endpoint}/api/swap/reject/${id}`,{}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
+  
 }));

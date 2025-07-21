@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "./ui/separator";
+
 function Navbar() {
   const { user, login } = useAuth();
   const { isSignedIn, user: clerkUser, isLoaded } = useUser();
@@ -44,14 +45,14 @@ function Navbar() {
 
     async function handleSyncUser(data: loginData) {
       await login(data);
-      navigate("/browse");
+      // navigate("/browse");
     }
 
     handleSyncUser(userData);
   }, [isSignedIn, clerkUser, isLoaded, user]);
 
   const navClasses = clsx(
-    "fixed top-4 left-3 right-3 z-50",
+    "fixed top-2 left-4 right-4 z-50",
     "bg-[#2a202d]/70 backdrop-blur-md border border-[#3a2f43]",
     "rounded-2xl shadow-xl px-6 py-2",
     "flex justify-between items-center"
@@ -63,7 +64,7 @@ function Navbar() {
         <Logo />
         <Link
           to="/browse"
-          className="px-4 py-2 rounded-xl text-sm font-semibold text-white/80 hover:text-white hover:bg-[#c084fc]/10 transition-all flex items-center gap-2">
+          className="px-3 py-2 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-[#c084fc]/15 transition-all flex items-center gap-2">
           <Compass size={16} />
           Browse
         </Link>
@@ -71,7 +72,7 @@ function Navbar() {
       <div className="flex items-center gap-3">
 
 
-        {clerkUser ? (
+        {clerkUser && user ? (
           <>
             <Button
               onClick={() => navigate("/new")}>
@@ -81,7 +82,8 @@ function Navbar() {
             <Button
               size="icon"
               variant="outline"
-              className="relative hover:bg-[#c084fc]/10 text-white">
+              className="relative hover:bg-[#c084fc]/10 text-white"
+              onClick={()=>navigate("/notifications")}>
               <Bell className="w-5 h-5" />
             </Button>
             <DropdownMenu>
@@ -110,7 +112,7 @@ function Navbar() {
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-                  onClick={() => navigate("/requests")}
+                  onClick={() => navigate("/swap/requests")}
                   className="px-4 py-3 cursor-pointer rounded-lg transition-all data-[highlighted]:bg-[#c084fc]/10">
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Swap Requests

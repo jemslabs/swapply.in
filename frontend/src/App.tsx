@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import AddNew from "./pages/AddNew";
 import Browse from "./pages/Browse";
+import SwapRequests from "./pages/SwapRequests";
 
 function App() {
   const location = useLocation();
@@ -42,6 +43,7 @@ function App() {
           />
           <Route path="/profile/:id" element={<Profile />}/>
           <Route path="/browse" element={<Browse />}/>
+          <Route path="/swap/requests" element={<SwapRequests />}/>
         </Routes>
       </div>
       <Toaster position="top-center" />

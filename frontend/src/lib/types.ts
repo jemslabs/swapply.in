@@ -8,7 +8,7 @@ export type user = {
   createdAt: Date;
   updatedAt: Date;
   items: ItemType[];
-  skills: SkillType[]
+  skills: SkillType[];
   notifications: notification[];
   clerkId: string;
 };
@@ -75,6 +75,26 @@ export type sendSwapRequestType = {
   proposedId: number;
   receivedId: number;
 };
+
+export type swapRequestType = {
+  id: number;
+  proposerId: number;
+  receiverId: number;
+  proposer: user;
+  receiver: user;
+  proposerItemId: number;
+  proposerItem: ItemType;
+  proposerSkillId: number;
+  proposerSkill: SkillType;
+  proposerType: "ITEM" | "SKILL";
+  receiverItemId: number;
+  receiverItem: ItemType;
+  receiverSkillId: number;
+  receiverSkill: SkillType;
+  receiverType: "ITEM" | "SKILL";
+  status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
+};
+
 type ExtendedItem = ItemType & { type: "item" };
 type ExtendedSkill = SkillType & { type: "skill" };
 type BrowseResult = ExtendedItem | ExtendedSkill;
@@ -112,6 +132,8 @@ export type useAppType = {
     token: string | null
   ) => void;
   sendSwapRequest: (data: sendSwapRequestType, token: string | null) => void;
+  acceptSwapRequest: (id: string | number, token: string | null) => void;
+  rejectSwapRequest: (id: string | number, token: string | null) => void;
 };
 export type useAuthType = {
   user: user | null;
@@ -121,4 +143,10 @@ export type useAuthType = {
     id: number | string | undefined,
     token: string | null
   ) => Promise<user | null>;
+  getSwapRequests: (
+    token: string | null
+  ) => Promise<{
+    receivedSwaps: swapRequestType[];
+    proposedSwaps: swapRequestType[];
+  }>;
 };

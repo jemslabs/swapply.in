@@ -25,7 +25,7 @@ function Browse() {
   } = useQuery({
     queryKey: ["browse", "all", debouncedQuery],
     queryFn: async () => {
-      const token = await getToken();
+      const token = await getToken({ template: "default"});
       const res = await getBrowseAll({ query: debouncedQuery }, token);
       return res.results;
     },
@@ -38,7 +38,7 @@ function Browse() {
   } = useQuery({
     queryKey: ["browse", "items", debouncedQuery],
     queryFn: async () => {
-      const token = await getToken();
+      const token = await getToken({ template: "default"});
       const res = await getBrowseItems({ query: debouncedQuery }, token);
       return res.items;
     },
@@ -51,7 +51,7 @@ function Browse() {
   } = useQuery({
     queryKey: ["browse", "skills", debouncedQuery],
     queryFn: async () => {
-      const token = await getToken();
+      const token = await getToken({ template: "default"});
       const res = await getBrowseSkills({ query: debouncedQuery }, token);
       return res.skills;
     },
@@ -90,9 +90,9 @@ function Browse() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {allResults.map((r, i) =>
                   r.type === "item" ? (
-                    <Item item={r} key={i}/>
+                    <Item item={r} key={i} isSwap={true}/>
                   ) : (
-                    <Skill skill={r} key={i}/>
+                    <Skill skill={r} key={i} isSwap={true}/>
                   )
                 )}
               </div>
@@ -110,7 +110,7 @@ function Browse() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {itemResults.map((r) => (
-                  <Item key={r.id} item={r as ItemType} />
+                  <Item key={r.id} item={r as ItemType} isSwap={true}/>
                 ))}
               </div>
             )}
@@ -126,7 +126,7 @@ function Browse() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {skillResults.map((r) => (
-                  <Skill key={r.id} skill={r as SkillType} />
+                  <Skill key={r.id} skill={r as SkillType} isSwap={true} />
                 ))}
               </div>
             )}

@@ -12,7 +12,7 @@ function Notifications() {
     const getCategoryIcon = (category: string) => {
         switch (category) {
             case "SWAP":
-                return <RefreshCw className="text-blue-500 w-4 h-4" />;
+                return <RefreshCw className="text-purple-400 w-4 h-4" />;
             default:
                 return <Bell className="w-4 h-4" />;
         }

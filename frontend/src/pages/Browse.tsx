@@ -60,9 +60,9 @@ function Browse() {
 
 
   return (
-    <div className="p-5">
+    <div className="p-5 bg-background">
       <div className="flex flex-col gap-6">
-        <div className="w-full sm:w-1/2 relative">
+        <div className="w-full sm:w-1/2 relative ">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             placeholder="Search items and skills..."
@@ -73,7 +73,7 @@ function Browse() {
         </div>
 
         <Tabs value={tab} onValueChange={(val) => setTab(val as any)} className="w-full">
-          <TabsList className="w-full sm:w-[300px]">
+          <TabsList className="w-full sm:w-[300px] bg-[#2a202d]/70">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="items">Items</TabsTrigger>
             <TabsTrigger value="skills">Skills</TabsTrigger>

@@ -39,7 +39,7 @@ function Skill({ skill, isSwap }: { skill: SkillType, isSwap: boolean }) {
   };
 
   return (
-    <div className="relative w-[250px] bg-[#2a202d]/70 backdrop-blur-md border border-white/10 rounded-[28px] cursor-pointer overflow-hidden shadow-md">
+    <div className="relative w-[300px] bg-[#2a202d]/70 backdrop-blur-md border border-white/10 rounded-[28px] cursor-pointer overflow-hidden shadow-md">
       <div className="relative h-[140px] overflow-hidden rounded-[28px]">
         <img
           src={skill.image}

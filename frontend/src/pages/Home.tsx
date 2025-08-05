@@ -23,46 +23,13 @@ import clsx from "clsx";
 function Home() {
   return (
 
-    <div className="pb-10 w-full">
+    <div className="pb-10 w-full bg-background">
 
       <div className="relative min-h-screen overflow-hidden text-white">
-        <div className="absolute inset-0 z-10 pointer-events-none perspective-[800px] overflow-hidden">
-          <div
-            className="w-full h-full"
-            style={{
-              transform: "rotateX(35deg) scale(1.1) translateY(-40px)",
-              transformOrigin: "top",
-              backgroundColor: "#0d0d0d",
-              backgroundImage: `
-          linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-        `,
-              backgroundSize: "60px 60px",
-            }}
-          />
-          {/* <div
-            className="absolute top-0 left-0 w-full h-full"
-            style={{
-              background:
-                "radial-gradient(ellipse at top right, rgba(192, 132, 252, 0.25), transparent 100%)",
-              transform: "translateZ(0)",
-            }}
-          /> */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "linear-gradient(to top, #0d0d0d 15%, transparent 60%)",
-            }}
-          />
-
-        </div>
+        
 
 
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 text-center max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#d0a2fd]/20  text-xs sm:text-sm text-white mb-4 animate-fade-in">
-            <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4" />
-            A P2P bartering platform
-          </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight bg-gradient-to-r from-white via-purple-200 to-[#d0a2fd] bg-clip-text text-transparent break-words text-balance max-w-2xl sm:max-w-3xl animate-fade-in-up">
             Swap Your Unused Stuff for What You Love
@@ -113,7 +80,7 @@ function Home() {
 
 
 
-      <section className="py-20 bg-[#0d0d0d] text-white w-full">
+      <section className="py-20 bg-background text-white w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-[#c084fc]/10 text-[#c084fc] border-[#c084fc]/30">
@@ -189,7 +156,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="py-24 bg-[#0d0d0d] relative overflow-hidden">
+      <section className="py-24 bg-background relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <Badge className="mb-6 bg-[#c084fc]/10 text-[#c084fc] border-[#c084fc]/30">
             <Sparkles className="w-4 h-4" />
@@ -265,7 +232,7 @@ function Home() {
 
 
 
-      <div className="bg-[#0d0d0d]">
+      <div className="bg-background">
         <section className="py-20 bg-[rgb(100,42,154)] text-white mx-4 md:mx-20 rounded-2xl relative overflow-hidden">
           <div
             className="absolute inset-0 pointer-events-none opacity-20"

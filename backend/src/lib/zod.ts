@@ -54,3 +54,11 @@ export const swapSchema = z.object({
   proposedId: z.number(),
   receivedId: z.number(),
 });
+
+export const meetingSchema = z.object({
+  swapId: z.number(),
+  location: z.string().optional(),
+  meetingLink: z.string().optional(),
+  date: z.any(),
+  type: z.enum(["ONLINE", "INPERSON"])
+})

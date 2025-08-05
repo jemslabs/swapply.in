@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Package, Brain, ChevronRight } from "lucide-react";
-
+import { Package, Brain, ChevronRight, ArrowLeft } from "lucide-react";
 import AddItem from "@/components/AddItem";
 import AddSkill from "@/components/AddSkill";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function ListPage() {
   const [listingType, setListingType] = useState<"item" | "skill" | null>(null);
   const [showForm, setShowForm] = useState(false);
-
+  const navigate = useNavigate();
   const options = [
     {
       label: "Physical Item",
@@ -30,16 +30,22 @@ export default function ListPage() {
     <div className="min-h-screen py-10 px-4 sm:px-8 flex flex-col items-center justify-start">
       {!showForm && (
         <>
+
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="mb-10 text-center"
+            className="mb-10 text-center flex gap-3 "
           >
+            <Button variant="outline" onClick={() => navigate(-1)} size="icon">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div className="flex flex-col">
             <h1 className="text-3xl font-bold text-white mb-2">What do you want to list?</h1>
             <p className="text-muted-foreground text-sm">
               Choose what you want to offer for swapping.
             </p>
+            </div>
           </motion.div>
 
           <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -52,11 +58,10 @@ export default function ListPage() {
                 className="cursor-pointer"
               >
                 <Card
-                  className={`transition-all duration-300 border-2 p-6 bg-[#2a202d]/70 backdrop-blur-md rounded-2xl shadow-lg ${
-                    listingType === option.type
-                      ? "border-purple-400 bg-purple-400/10"
-                      : "border-white/10 hover:border-white/20"
-                  }`}
+                  className={`transition-all duration-300 border-2 p-6 bg-[#2a202d]/70 backdrop-blur-md rounded-2xl shadow-lg ${listingType === option.type
+                    ? "border-purple-400 bg-purple-400/10"
+                    : "border-white/10 hover:border-white/20"
+                    }`}
                 >
                   <CardContent className="flex flex-col items-center text-center gap-4">
                     <div className="w-14 h-14 bg-[#c084fc] rounded-full flex items-center justify-center shadow-md">

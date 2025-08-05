@@ -92,8 +92,30 @@ export type swapRequestType = {
   receiverSkillId: number;
   receiverSkill: SkillType;
   receiverType: "ITEM" | "SKILL";
-  status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
+  status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED" | "COMPLETED";
+  meeting: swapMeetingType | null;
 };
+export type swapMeetingType = {
+  id: number;
+  swapId: number;
+  swap: swapRequestType;
+  location?: string | null;
+  meetingLink?: string | null;
+  date: Date;
+  type: "INPERSON" | "ONLINE";
+  createdAt: Date;
+  updatedAt: Date | null;
+  status: "CONFIRMED" | "PENDING";
+};
+
+export type scheduleMeetingType = {
+  swapId: number | null;
+  location?: string;
+  meetingLink?: string;
+  date: Date;
+  type: "INPERSON" | "ONLINE";
+};
+
 
 type ExtendedItem = ItemType & { type: "item" };
 type ExtendedSkill = SkillType & { type: "skill" };
@@ -134,6 +156,13 @@ export type useAppType = {
   sendSwapRequest: (data: sendSwapRequestType, token: string | null) => void;
   acceptSwapRequest: (id: string | number, token: string | null) => void;
   rejectSwapRequest: (id: string | number, token: string | null) => void;
+  getSwap: (
+    id: number,
+    token: string | null
+  ) => Promise<swapRequestType | null>;
+  scheduleMeeting: (data: scheduleMeetingType, token: string | null) => void;
+  confirmMeeting: (id: number, token: string | null) => void;
+  completeSwap: (id: number, token: string | null) => void;
 };
 export type useAuthType = {
   user: user | null;
@@ -143,9 +172,7 @@ export type useAuthType = {
     id: number | string | undefined,
     token: string | null
   ) => Promise<user | null>;
-  getSwapRequests: (
-    token: string | null
-  ) => Promise<{
+  getSwapRequests: (token: string | null) => Promise<{
     receivedSwaps: swapRequestType[];
     proposedSwaps: swapRequestType[];
   }>;

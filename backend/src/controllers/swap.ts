@@ -1,5 +1,5 @@
 import { Context } from "hono";
-import { swapSchema } from "../lib/zod";
+import { meetingSchema, swapSchema } from "../lib/zod";
 import { prismaClient } from "../lib/prisma";
 
 export async function handleSwap(c: Context) {
@@ -181,7 +181,7 @@ export async function handleAcceptSwap(c: Context) {
     );
     await prisma.$transaction(operations);
 
-    return c.json({msg: "Accepted the swap request"}, 200)
+    return c.json({ msg: "Accepted the swap request" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
@@ -240,7 +240,7 @@ export async function handleRejectSwap(c: Context) {
       })
     );
     await prisma.$transaction(operations);
-    return c.json({msg: "Rejected the swap request"}, 200)
+    return c.json({ msg: "Rejected the swap request" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
@@ -265,6 +265,7 @@ export async function handleGetSwap(c: Context) {
         proposerSkill: true,
         receiverItem: true,
         receiverSkill: true,
+        meeting: true
       },
     });
 
@@ -277,6 +278,163 @@ export async function handleGetSwap(c: Context) {
     }
 
     return c.json(swap, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleScheduleMeeting(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  const data = await c.req.json();
+  try {
+    if (!id) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+    const validatedData = meetingSchema.safeParse(data);
+    if (!validatedData.success) {
+      return c.json({ msg: "Invalid Input" }, 400);
+    }
+
+    const { swapId, date, location, type, meetingLink } = validatedData.data;
+
+    const swap = await prisma.swapRequest.findUnique({
+      where: {
+        id: swapId,
+      },
+    });
+    if (!swap) {
+      return c.json({ msg: "Swap request doesn't exist" }, 404);
+    }
+
+    if (id !== swap.proposerId) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+    const existingMeeting = await prisma.swapMeeting.findUnique({
+      where: { swapId: swap.id },
+    });
+    if (existingMeeting) {
+      return c.json({ msg: "Meeting already scheduled" }, 400);
+    }
+    const meeting = await prisma.swapMeeting.create({
+      data: {
+        swapId: swap.id,
+        date,
+        location: type === "INPERSON" ? location : null,
+        meetingLink: type === "ONLINE" ? meetingLink : null,
+        type,
+      },
+    });
+    if (!meeting) {
+      return c.json({ msg: "Failed to schedule meeting" }, 400);
+    }
+
+    await prisma.notification.create({
+      data: {
+        userId: swap.receiverId,
+        title: "Meeting Scheduled",
+        body: `A meeting for your swap has been scheduled`,
+        type: "meeting.scheduled",
+        category: "MEETING",
+        link: `/swap/${swap?.id}`,
+      },
+    });
+    return c.json({ msg: "Meeting Scheduled" }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleConfirmMeeting(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  const swapId = parseInt(c.req.param("swapId"));
+  try {
+    if (!id) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+    const swap = await prisma.swapRequest.findUnique({
+      where: {
+        id: swapId,
+      },
+    });
+    if (!swap) {
+      return c.json({ msg: "Swap request doesn't exist" }, 404);
+    }
+
+    if (id !== swap.receiverId) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+    const existingMeeting = await prisma.swapMeeting.findUnique({
+      where: { swapId: swap.id },
+    });
+    if (!existingMeeting) {
+      return c.json(
+        {
+          msg: "Meeting is not scheduled. Wait for proposer to schedule this meeting",
+        },
+        400
+      );
+    }
+
+    await prisma.swapMeeting.update({
+      where: {
+        id: existingMeeting.id,
+      },
+      data: {
+        status: "CONFIRMED",
+      },
+    });
+
+    return c.json({ msg: "Meeting Confirmed" }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+
+export async function handleCompleteSwap(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+  const swapId = Number(c.req.param("id"));
+
+  if (!id) {
+    return c.json({ msg: "Unauthorised" }, 400);
+  }
+
+  if (isNaN(swapId)) {
+    return c.json({ msg: "Invalid swap ID" }, 400);
+  }
+
+  try {
+    const swap = await prisma.swapRequest.findUnique({
+      where: { id: swapId },
+      include: {
+        meeting: true
+      }
+    });
+
+    if (!swap) {
+      return c.json({ msg: "Swap request doesn't exist" }, 404);
+    }
+
+    if (id !== swap.proposerId) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
+
+    if (swap.status !== "ACCEPTED") {
+      return c.json({ msg: "Swap request is not accepted" }, 400);
+    }
+
+
+    if (!swap.meeting || swap.meeting.status !== "CONFIRMED") {
+      return c.json({ msg: "Meeting not confirmed yet" }, 400);
+    }
+
+    await prisma.swapRequest.update({
+      where: { id: swap.id },
+      data: { status: "COMPLETED" },
+    });
+    return c.json({ msg: "Swapped!" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

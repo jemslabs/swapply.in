@@ -2,7 +2,7 @@ import Navbar from "./components/Navbar";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import FetchUser from "./components/FetchUser";
-import MyItems from "./pages/MyItems";
+import MyListings from "./pages/MyListings";
 import Item from "./pages/Item";
 import ClientProtect from "./components/ClientProtect";
 import Notifications from "./pages/Notifications";
@@ -11,12 +11,13 @@ import Home from "./pages/Home";
 import AddNew from "./pages/AddNew";
 import Browse from "./pages/Browse";
 import SwapRequests from "./pages/SwapRequests";
+import SwapPage from "./pages/SwapPage";
 
 function App() {
   const location = useLocation();
   const isHome  = location.pathname === "/";
   return (
-    <>
+    <div>
       <Navbar />
       <div className={`${isHome ? "pt-0" : "pt-20"}`}>
         <FetchUser />
@@ -24,10 +25,10 @@ function App() {
           <Route path="/" element={<Home />}/>
           <Route path="/new" element={<ClientProtect><AddNew /></ClientProtect>}/>
           <Route
-            path="/my-items"
+            path="/my-listings"
             element={
               <ClientProtect>
-                <MyItems />
+                <MyListings />
               </ClientProtect>
             }
           />
@@ -44,10 +45,11 @@ function App() {
           <Route path="/profile/:id" element={<Profile />}/>
           <Route path="/browse" element={<Browse />}/>
           <Route path="/swap/requests" element={<SwapRequests />}/>
+          <Route path="/swap/:id" element={<SwapPage />}/>
         </Routes>
       </div>
       <Toaster position="top-center" />
-    </>
+    </div>
   );
 }
 

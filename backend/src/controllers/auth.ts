@@ -69,6 +69,7 @@ export async function handleGetPublicUser(c: Context) {
       },
       include: {
         items: true,
+        skills: true,
       },
     });
     if (!user) {

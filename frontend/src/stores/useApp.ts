@@ -26,21 +26,7 @@ export const useApp = create<useAppType>(() => ({
       }
     }
   },
-  getItem: async (id, token) => {
-    try {
-      const res = await axios.get(`${endpoint}/api/item/get-item?id=${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
-      if (res.status === 200) {
-        return res.data;
-      }
-    } catch {
-      return null;
-    }
-  },
+
   addSkill: async (data, navigate, token) => {
     try {
       const res = await axios.post(`${endpoint}/api/skill/add`, data, {
@@ -281,5 +267,35 @@ export const useApp = create<useAppType>(() => ({
         toast.error(errorMsg);
       }
     }
-  }
+  },
+  getItem: async (id, token) => {
+    try {
+      const res = await axios.get(`${endpoint}/api/item/get-item?id=${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch {
+      return null;
+    }
+  },
+  getSkill: async (id, token) => {
+    try {
+      const res = await axios.get(`${endpoint}/api/skill/get-skill?id=${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch {
+      return null;
+    }
+  },
 }));

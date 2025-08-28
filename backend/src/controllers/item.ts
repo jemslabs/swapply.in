@@ -61,8 +61,6 @@ export async function handleAddItem(c: Context) {
   }
 }
 
-
-
 export async function handleGetItem(c: Context) {
   const prisma = prismaClient(c);
   try {

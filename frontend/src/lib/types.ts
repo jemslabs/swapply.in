@@ -116,7 +116,6 @@ export type scheduleMeetingType = {
   type: "INPERSON" | "ONLINE";
 };
 
-
 type ExtendedItem = ItemType & { type: "item" };
 type ExtendedSkill = SkillType & { type: "skill" };
 type BrowseResult = ExtendedItem | ExtendedSkill;
@@ -160,6 +159,10 @@ export type useAppType = {
     id: number,
     token: string | null
   ) => Promise<swapRequestType | null>;
+  getSkill: (
+    id: string | undefined,
+    token: string | null
+  ) => Promise<SkillType | null>;
   scheduleMeeting: (data: scheduleMeetingType, token: string | null) => void;
   confirmMeeting: (id: number, token: string | null) => void;
   completeSwap: (id: number, token: string | null) => void;

@@ -59,27 +59,32 @@ function Navbar() {
         <Logo />
         <Link
           to="/browse"
-          className="px-3 py-2 rounded-lg text-sm font-medium  hover:text-white hover:bg-[#c084fc]/10 transition-all flex items-center gap-2"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:text-white hover:bg-[#c084fc]/10 transition-all leading-none"
         >
           <Compass size={16} className="text-white/70" />
-          Browse
+          <span>Browse</span>
         </Link>
         <Link
           to="/swap/requests"
-          className="px-3 py-2 rounded-lg text-sm font-medium hover:text-white hover:bg-[#c084fc]/10 transition-all flex items-center gap-2"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:text-white hover:bg-[#c084fc]/10 transition-all leading-none"
         >
           <RefreshCw size={16} className="text-white/70" />
-          Requests
+          <span>Requests</span>
         </Link>
       </div>
+
 
       <div className="flex items-center gap-3">
         {clerkUser && user ? (
           <>
-            <Button onClick={() => navigate("/new")}>
-              <Plus className="w-5 h-5" />
-              New
+            <Button
+              onClick={() => navigate("/new")}
+              className="flex items-center justify-center gap-2 px-4 py-2"
+            >
+              <Plus className="w-5 h-5 shrink-0" />
+              <span className="leading-none">New</span>
             </Button>
+
             <Button
               size="icon"
               variant="outline"

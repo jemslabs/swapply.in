@@ -3,7 +3,6 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import FetchUser from "./components/FetchUser";
 import MyListings from "./pages/MyListings";
-import Item from "./pages/Item";
 import ClientProtect from "./components/ClientProtect";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
@@ -12,6 +11,8 @@ import AddNew from "./pages/AddNew";
 import Browse from "./pages/Browse";
 import SwapRequests from "./pages/SwapRequests";
 import SwapPage from "./pages/SwapPage";
+import ItemPage from "./pages/itemPage";
+import SkillPage from "./pages/SkillPage";
 
 function App() {
   const location = useLocation();
@@ -32,8 +33,8 @@ function App() {
               </ClientProtect>
             }
           />
-          <Route path="/item/:id" element={<Item />} />
-
+          <Route path="/item/:id" element={<ItemPage />} />
+          <Route path="/skill/:id" element={<SkillPage />}/>  
           <Route
             path="/notifications"
             element={

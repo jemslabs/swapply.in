@@ -51,4 +51,24 @@ export async function handleAddSkill(c: Context) {
   }
 }
 
+export async function handleGetSkill(c: Context) {
+  try {
+    const prisma = prismaClient(c);
+    const id = c.req.query("id");
+    if (!id) return c.json({ msg: "Id not provided" }, 400);
+    const parsedId = parseInt(id);
 
+    const skill = await prisma.skill.findUnique({
+      where: {
+        id: parsedId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return c.json(skill, 200);
+  } catch {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}

@@ -1,47 +1,15 @@
 import { useAuth } from "@/stores/useAuth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
-
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import type { ItemType, SkillType } from "@/lib/types";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Check, ChevronRight, Loader2, X } from "lucide-react";
 import { useApp } from "@/stores/useApp";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-function MiniItem({ item }: { item: ItemType }) {
-  return (
-    <div className="flex items-center gap-3 bg-white/5 p-2 rounded-lg border border-white/10 w-fit">
-      <img
-        src={item.image}
-        alt={item.title}
-        className="w-10 h-10 rounded object-cover"
-      />
-      <div className="text-white text-sm">
-        <p className="font-medium line-clamp-1">{item.title}</p>
-        <p className="text-white/60 text-xs">₹{item.price.toLocaleString()}</p>
-      </div>
-    </div>
-  );
-}
-function MiniSkill({ skill }: { skill: SkillType }) {
-  return (
-    <div className="flex items-center gap-3 bg-white/5 p-2 rounded-lg border border-white/10 w-fit">
-      <img
-        src={skill.image}
-        alt={skill.title}
-        className="w-10 h-10 rounded object-cover"
-      />
-      <div className="text-white text-sm">
-        <p className="font-medium line-clamp-1">{skill.title}</p>
-        <p className="text-white/60 text-xs line-clamp-1 max-w-[140px]">
-          {skill.isRemote ? "Remote" : skill.location}
-        </p>
-      </div>
-    </div>
-  );
-}
+import MiniSkill from "@/components/MiniSkill";
+import MiniItem from "@/components/MiniItem";
 
 function SwapRequests() {
   const { getToken } = useClerkAuth();
@@ -49,7 +17,7 @@ function SwapRequests() {
   const { acceptSwapRequest, rejectSwapRequest } = useApp();
   const [acceptingId, setAcceptingId] = useState<number | null>(null);
   const [rejectingId, setRejectingId] = useState<number | null>(null);
-
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { data, isLoading } = useQuery({
     queryKey: ["swap-requests"],
@@ -95,6 +63,7 @@ function SwapRequests() {
     setAcceptingId(swapId);
     const token = await getToken({ template: "default" });
     await acceptSwapRequest(swapId, token);
+    queryClient.invalidateQueries({ queryKey: ["swap-requests"] });
     setAcceptingId(null);
   };
 
@@ -102,6 +71,7 @@ function SwapRequests() {
     setRejectingId(swapId);
     const token = await getToken({ template: "default" });
     await rejectSwapRequest(swapId, token);
+    queryClient.invalidateQueries({ queryKey: ["swap-requests"] });
     setRejectingId(null);
   };
 
@@ -113,10 +83,6 @@ function SwapRequests() {
         </Button>
         <h1 className="text-2xl font-bold tracking-tight">Swap Requests</h1>
       </div>
-      {receivedSwaps.length === 0 && proposedSwaps.length === 0 && (
-        <p className="text-white/60 text-sm mt-10">No swap requests yet.</p>
-      )}
-
       <Tabs className="w-full" defaultValue="received">
         <TabsList className="w-full sm:w-[300px]">
           <TabsTrigger value="received">Received</TabsTrigger>

@@ -28,7 +28,7 @@ export default function ItemSkeleton() {
 
         {/* Button */}
         <div className="px-3 pb-3">
-          <Skeleton className="h-10 w-full rounded-md" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
         </div>
       </div>
     </Card>

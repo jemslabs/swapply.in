@@ -123,7 +123,7 @@ body {
 
   --destructive: oklch(0.7 0.21 27); /* #f87171 */
   --border: oklch(0.5 0 0 / 0.3); 
-  --input: oklch(0.3 0 0 / 1); 
+  --input: oklch(41.654% 0.00005 271.152); 
   --ring: oklch(0.6 0.24 311); /* ring highlight in purple */
 
   /* Charts (same as before or optional update) */
@@ -144,64 +144,6 @@ body {
   --sidebar-ring: oklch(0.6 0.24 311); 
 }
 
-@keyframes float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes float-slow {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes float-delay {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes float-alt {
-  0% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(15px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0;

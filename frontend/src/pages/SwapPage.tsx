@@ -1,5 +1,5 @@
 import { useApp } from "@/stores/useApp";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, CalendarIcon, Loader2 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ function SwapPage() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [step, setStep] = useState(1);
-
+  const queryClient = useQueryClient();
   const swapId = id ? parseInt(id) : undefined;
 
   const [meetingData, setMeetingData] = useState<scheduleMeetingType>({
@@ -34,7 +34,7 @@ function SwapPage() {
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["swap", id],
+    queryKey: ["swap", swapId],
     queryFn: async () => {
       const token = await getToken({ template: "default" });
       if (swapId) {
@@ -132,44 +132,49 @@ function SwapPage() {
     setIsScheduling(true);
     const token = await getToken({ template: "default" });
     await scheduleMeeting(meetingData, token);
+    queryClient.invalidateQueries({ queryKey: ["swap", id] });
     setIsScheduling(false);
   };
   const handleConfirmMeeting = async (id: number) => {
     setIsConfirming(true);
     const token = await getToken({ template: "default" });
     await confirmMeeting(id, token);
+    queryClient.invalidateQueries({ queryKey: ["swap", id] });
     setIsConfirming(false);
   };
   const handleCompleteSwap = async (id: number) => {
     setIsCompleting(true);
     const token = await getToken({ template: "default" });
     await completeSwap(id, token);
+    queryClient.invalidateQueries({ queryKey: ["swap", id] });
     setIsCompleting(false);
   };
   return (
-    <div className="max-w-4xl mx-auto p-6 flex flex-col gap-8">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-10">
+
       {data.status === "COMPLETED" ? (
-        <div className="max-w-md mx-auto p-6 rounded-xl bg-muted border border-border shadow-md text-center space-y-4">
-          <div className="flex justify-center text-6xl">
-            🎉
-          </div>
+        <div className="max-w-md mx-auto p-8 rounded-2xl bg-gradient-to-b from-green-700/30 to-green-900/20 border border-green-800 shadow-lg text-center space-y-5">
+          <div className="flex justify-center text-6xl">🎉</div>
 
-          <h3 className="text-2xl font-bold text-foreground">Swap Completed</h3>
+          <h3 className="text-2xl font-bold text-white">Swap Completed</h3>
 
-          <p className="text-muted-foreground text-sm sm:text-base">
-            This swap was marked as completed. Thank you for being part of the exchange!
+          <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
+            This swap has been marked as completed.
+            Thank you for being part of the exchange!
           </p>
 
-          <div>
-            <Badge variant="secondary" className="text-green-500 bg-green-900/20 border border-green-800 px-3 py-1">
-              COMPLETED
-            </Badge>
-          </div>
+          <Badge
+            variant="secondary"
+            className="text-green-400 bg-green-900/40 border border-green-800 px-4 py-1 rounded-full"
+          >
+            COMPLETED
+          </Badge>
         </div>
-
       ) : (
         <>
-          <div className="flex justify-between items-center px-4">
+
+          {/* Stepper */}
+          <div className="flex justify-between items-center gap-2">
             {["Swap Details", "Schedule Meet", "Mark Completed"].map(
               (label, index) => {
                 const isActive = step === index + 1;
@@ -177,78 +182,71 @@ function SwapPage() {
                 return (
                   <div
                     key={index}
-                    className="flex flex-col items-center text-sm flex-1 text-center"
+                    className="flex flex-col items-center text-xs sm:text-sm flex-1"
                   >
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition
-                ${isDone
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold transition
+                  ${isDone
                           ? "bg-green-500 text-white"
                           : isActive
-                            ? "bg-[#c084fc] text-black"
-                            : "bg-muted text-muted-foreground"
+                            ? "bg-violet-400 text-black"
+                            : "bg-muted text-gray-400"
                         }`}
                     >
                       {isDone ? "✓" : index + 1}
                     </div>
-                    <span className="mt-1">{label}</span>
+                    <span className="mt-2 text-gray-300">{label}</span>
                   </div>
                 );
               }
             )}
           </div>
 
+          {/* Step 1: Swap Details */}
           {step === 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-muted/40 p-6 rounded-xl border shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-muted/30 p-5 rounded-2xl border shadow-sm">
               <div className="flex flex-col items-center gap-3">
-                <div className="flex items-center gap-3 p-2 rounded-lg shadow w-full">
+                <div className="flex items-center gap-3 p-3 rounded-xl shadow-sm w-full bg-background/60">
                   <img
                     src={data?.proposer?.image}
                     alt={data?.proposer?.name}
                     className="w-10 h-10 rounded-full object-cover border"
                   />
                   <div className="text-sm">
-                    <p className="text-muted-foreground">Proposed by</p>
+                    <p className="text-gray-400">Proposed by</p>
                     <p className="font-medium">{data?.proposer?.name}</p>
                   </div>
                 </div>
-                {data?.proposerType === "ITEM" && (
-                  <Item item={data?.proposerItem} isSwap={false} />
-                )}
-                {data?.proposerType === "SKILL" && (
-                  <Skill skill={data?.proposerSkill} isSwap={false} />
-                )}
+                {data?.proposerType === "ITEM" && <Item item={data?.proposerItem} isSwap={false} />}
+                {data?.proposerType === "SKILL" && <Skill skill={data?.proposerSkill} isSwap={false} />}
               </div>
 
               <div className="flex flex-col items-center justify-center gap-3">
-                <div className="p-3 rounded-full shadow">
-                  <RefreshCw className="h-6 w-6 text-muted-foreground" />
+                <div className="p-3 rounded-full bg-background/60 shadow-sm">
+                  <RefreshCw className="h-6 w-6 text-gray-400" />
                 </div>
                 <Badge
                   variant={getStatusVariant(swapStatus)}
-                  className="capitalize text-xs px-3"
+                  className="capitalize text-xs px-3 py-1"
                 >
                   {swapStatus?.toLowerCase()}
                 </Badge>
               </div>
 
               <div className="flex flex-col items-center gap-3">
-                <div className="flex items-center gap-3 p-2 rounded-lg shadow w-full">
+                <div className="flex items-center gap-3 p-3 rounded-xl shadow-sm w-full bg-background/60">
                   <img
                     src={data?.receiver?.image}
                     alt={data?.receiver?.name}
                     className="w-10 h-10 rounded-full object-cover border"
                   />
                   <div className="text-sm">
-                    <p className="text-muted-foreground">Received by</p>
+                    <p className="text-gray-400">Received by</p>
                     <p className="font-medium">{data?.receiver?.name}</p>
                   </div>
                 </div>
-                {data?.receiverType === "ITEM" && (
-                  <Item item={data?.receiverItem} isSwap={false} />
-                )}
-                {data?.receiverType === "SKILL" && (
-                  <Skill skill={data?.receiverSkill} isSwap={false} />
-                )}
+                {data?.receiverType === "ITEM" && <Item item={data?.receiverItem} isSwap={false} />}
+                {data?.receiverType === "SKILL" && <Skill skill={data?.receiverSkill} isSwap={false} />}
               </div>
             </div>
           )}
@@ -259,64 +257,53 @@ function SwapPage() {
             </div>
           )}
 
+          {/* Step 2: Meeting */}
           {step === 2 && (
             <>
               {data.meeting ? (
-                <div className="w-[500px] mx-auto space-y-6 border border-border rounded-2xl p-6 shadow-lg bg-muted/40 text-left">
+                <div className="w-full sm:w-[500px] mx-auto space-y-6 border border-border rounded-2xl p-6 shadow-lg bg-muted/30 text-left">
                   <div className="space-y-1">
-                    <h3 className="text-2xl font-semibold">
-                      Meeting Scheduled
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
+                    <h3 className="text-2xl font-semibold">Meeting Scheduled</h3>
+                    <p className="text-gray-400 text-sm">
                       Please review the meeting details below.
                     </p>
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        Type:
-                      </span>
+                      <span className="text-sm font-medium text-gray-400">Type:</span>
                       <span className="text-sm">
                         {data.meeting.type === "ONLINE" ? "Online" : "In-Person"}
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        Date:
-                      </span>
-                      <span className="text-sm">
-                        {formatPrettyIST(new Date(data.meeting.date))}
-                      </span>
+                      <span className="text-sm font-medium text-gray-400">Date:</span>
+                      <span className="text-sm">{formatPrettyIST(new Date(data.meeting.date))}</span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        Status:
-                      </span>
-                      <Badge className={data.meeting.status === "CONFIRMED" ? "bg-green-500 font-medium" : "bg-yellow-500"}>{data.meeting.status}</Badge>
+                      <span className="text-sm font-medium text-gray-400">Status:</span>
+                      <Badge className={data.meeting.status === "CONFIRMED" ? "bg-green-500 font-medium" : "bg-yellow-500"}>
+                        {data.meeting.status}
+                      </Badge>
                     </div>
 
                     {data.meeting.type === "ONLINE" ? (
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm font-medium text-muted-foreground">
-                          Meeting Link:
-                        </span>
+                        <span className="text-sm font-medium text-gray-400">Meeting Link:</span>
                         <a
                           href={data.meeting.meetingLink || ""}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 underline text-sm break-words"
+                          className="text-blue-500 underline text-sm break-words"
                         >
                           {data.meeting.meetingLink}
                         </a>
                       </div>
                     ) : (
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-muted-foreground">
-                          Location:
-                        </span>
+                        <span className="text-sm font-medium text-gray-400">Location:</span>
                         <span className="text-sm">{data.meeting.location}</span>
                       </div>
                     )}
@@ -325,10 +312,7 @@ function SwapPage() {
                   <div className="flex justify-end flex-wrap gap-3 pt-4">
                     {data.receiverId === user?.id &&
                       data.meeting?.status === "PENDING" && (
-                        <Button
-                          onClick={() => handleConfirmMeeting(data.id)}
-                          disabled={isConfirming}
-                        >
+                        <Button onClick={() => handleConfirmMeeting(data.id)} disabled={isConfirming}>
                           {isConfirming ? (
                             <>
                               <Loader2 className="animate-spin mr-2" size={16} />
@@ -344,25 +328,20 @@ function SwapPage() {
                       <Button onClick={() => setStep(3)}>Next</Button>
                     )}
 
-                    <Button variant="outline" onClick={() => setStep(1)}>
-                      Back
-                    </Button>
+                    <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
                   </div>
                 </div>
               ) : user?.id === data.proposerId ? (
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-xl font-semibold text-center">
-                    Schedule a Meetup
-                  </h3>
+                <div className="flex flex-col gap-4 bg-muted/30 p-6 rounded-2xl shadow-sm">
+                  <h3 className="text-xl font-semibold text-center">Schedule a Meetup</h3>
+
+                  {/* Meeting Type */}
                   <div className="space-y-2">
                     <Label className="text-sm">Meeting Type</Label>
                     <RadioGroup
                       value={meetingData.type}
                       onValueChange={(value) =>
-                        setMeetingData((prev) => ({
-                          ...prev,
-                          type: value as "INPERSON" | "ONLINE",
-                        }))
+                        setMeetingData((prev) => ({ ...prev, type: value as "INPERSON" | "ONLINE" }))
                       }
                       className="flex gap-4"
                     >
@@ -376,6 +355,8 @@ function SwapPage() {
                       </div>
                     </RadioGroup>
                   </div>
+
+                  {/* Date Picker */}
                   <div className="space-y-2">
                     <Label htmlFor="meetingDate">Meeting Date</Label>
                     <div className="relative">
@@ -384,32 +365,22 @@ function SwapPage() {
                         type="datetime-local"
                         value={formatToISTLocalString(meetingData.date)}
                         onChange={(e) =>
-                          setMeetingData((prev) => ({
-                            ...prev,
-                            date: convertISTToUTC(e.target.value),
-                          }))
+                          setMeetingData((prev) => ({ ...prev, date: convertISTToUTC(e.target.value) }))
                         }
                         className="pr-10 appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:z-10"
                       />
                       <button
                         type="button"
-                        onClick={() =>
-                          (
-                            document.getElementById(
-                              "meetingDate"
-                            ) as HTMLInputElement | null
-                          )?.showPicker?.()
-                        }
+                        onClick={() => (document.getElementById("meetingDate") as HTMLInputElement | null)?.showPicker?.()}
                         className="absolute right-3 top-1/2 -translate-y-1/2 z-20"
                       >
                         <CalendarIcon className="text-white" size={18} />
                       </button>
                     </div>
-                    <p className="text-sm text-gray-300">
-                      {formatPrettyIST(meetingData.date)}
-                    </p>
+                    <p className="text-sm text-gray-300">{formatPrettyIST(meetingData.date)}</p>
                   </div>
 
+                  {/* Online vs Location */}
                   {meetingData.type === "ONLINE" ? (
                     <div className="space-y-2">
                       <Label htmlFor="meetingLink">Meeting Link</Label>
@@ -417,12 +388,7 @@ function SwapPage() {
                         id="meetingLink"
                         placeholder="Meeting link"
                         value={meetingData.meetingLink}
-                        onChange={(e) =>
-                          setMeetingData((prev) => ({
-                            ...prev,
-                            meetingLink: e.target.value,
-                          }))
-                        }
+                        onChange={(e) => setMeetingData((prev) => ({ ...prev, meetingLink: e.target.value }))}
                       />
                     </div>
                   ) : (
@@ -432,15 +398,11 @@ function SwapPage() {
                         id="location"
                         placeholder="Meeting location"
                         value={meetingData.location}
-                        onChange={(e) =>
-                          setMeetingData((prev) => ({
-                            ...prev,
-                            location: e.target.value,
-                          }))
-                        }
+                        onChange={(e) => setMeetingData((prev) => ({ ...prev, location: e.target.value }))}
                       />
                     </div>
                   )}
+
                   <div className="flex justify-center gap-3 pt-4">
                     <Button onClick={handleScheduleMeeting} disabled={isScheduling}>
                       {isScheduling ? (
@@ -449,35 +411,32 @@ function SwapPage() {
                         "Schedule"
                       )}
                     </Button>
-                    <Button variant="outline" onClick={() => setStep(1)}>
-                      Back
-                    </Button>
+                    <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
                   </div>
                 </div>
               ) : (
-                <div className="text-center text-white text-xl bg-muted/40 p-10 border rounded-2xl">
+                <div className="text-center text-white text-lg sm:text-xl bg-muted/30 p-10 border rounded-2xl">
                   Waiting for proposer to schedule the meeting.
                   <div className="flex justify-center gap-3 mt-4">
-                    <Button variant="outline" onClick={() => setStep(1)}>
-                      Back
-                    </Button>
+                    <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
                   </div>
                 </div>
               )}
             </>
           )}
 
+          {/* Step 3: Finalize Swap */}
           {step === 3 && (
-            <div className="max-w-md mx-auto space-y-6 text-center border border-border rounded-xl p-6 shadow-sm bg-muted/40">
+            <div className="max-w-md mx-auto space-y-6 text-center border border-border rounded-2xl p-6 shadow-sm bg-muted/30">
               <h3 className="text-2xl font-bold">Finalize the Swap</h3>
 
-              <p className="text-muted-foreground text-sm sm:text-base">
+              <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
                 {user?.id === data.proposerId
-                  ? "If the swap is successfully completed in person, click the button below to mark it as completed."
+                  ? "If the swap is successfully completed in person, click below to mark it as completed."
                   : "Only the proposer can finalize the swap once it's completed."}
               </p>
 
-              <div className="flex justify-center gap-4 pt-2">
+              <div className="flex justify-center gap-4 pt-2 flex-wrap">
                 {user?.id === data.proposerId && (
                   <Button
                     className="px-6 py-2"
@@ -495,20 +454,17 @@ function SwapPage() {
                   </Button>
                 )}
 
-                <Button
-                  variant="outline"
-                  onClick={() => setStep(2)}
-                  className="px-6 py-2"
-                >
+                <Button variant="outline" onClick={() => setStep(2)} className="px-6 py-2">
                   Back
                 </Button>
               </div>
             </div>
-
-
           )}
-        </>)}
+
+        </>
+      )}
     </div>
+
 
   );
 }

@@ -9,9 +9,7 @@ export const useAuth = create<useAuthType>((set) => ({
 
   login: async (data) => {
     try {
-      await axios.post(`${endpoint}/api/auth/login`, data, {
-        withCredentials: true,
-      });
+      await axios.post(`${endpoint}/api/auth/login`, data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const errorMsg =

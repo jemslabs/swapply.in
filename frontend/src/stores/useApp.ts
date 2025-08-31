@@ -48,17 +48,11 @@ export const useApp = create<useAppType>(() => ({
       }
     }
   },
-  getBrowseItems: async (data, token) => {
+  getBrowseItems: async (data) => {
     const { query } = data;
     try {
       const res = await axios.get(
         `${endpoint}/api/browse/items?query=${query}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
       );
       if (res.status === 200) {
         return res.data;
@@ -69,17 +63,11 @@ export const useApp = create<useAppType>(() => ({
       return [];
     }
   },
-  getBrowseSkills: async (data, token) => {
+  getBrowseSkills: async (data) => {
     const { query } = data;
     try {
       const res = await axios.get(
         `${endpoint}/api/browse/skills?query=${query}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
       );
       if (res.status === 200) {
         return res.data;
@@ -91,15 +79,10 @@ export const useApp = create<useAppType>(() => ({
     }
   },
 
-  getBrowseAll: async (data, token) => {
+  getBrowseAll: async (data) => {
     const { query } = data;
     try {
-      const res = await axios.get(`${endpoint}/api/browse/all?query=${query}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
+      const res = await axios.get(`${endpoint}/api/browse/all?query=${query}`);
       if (res.status === 200) {
         return res.data;
       } else {

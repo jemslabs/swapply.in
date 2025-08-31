@@ -3,7 +3,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApp } from "@/stores/useApp";
 import { Search } from "lucide-react";
 import { useState } from "react";
-import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@/lib/useDebounce";
 import Item from "@/components/Item";
@@ -13,23 +12,20 @@ import ItemSkeleton from "@/components/ItemSkeleton";
 
 function Browse() {
   const { getBrowseAll, getBrowseItems, getBrowseSkills } = useApp();
-
   const [tab, setTab] = useState<"all" | "items" | "skills">("all");
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 500);
-  const { getToken } = useClerkAuth();
-
   const {
     data: allResults = [],
     isLoading: isLoadingAll,
   } = useQuery({
     queryKey: ["browse", "all", debouncedQuery],
     queryFn: async () => {
-      const token = await getToken({ template: "default"});
-      const res = await getBrowseAll({ query: debouncedQuery }, token);
+      const res = await getBrowseAll({ query: debouncedQuery });
       return res.results;
     },
     enabled: tab === "all",
+    staleTime: 5 * 60 * 1000
   });
 
   const {
@@ -38,11 +34,11 @@ function Browse() {
   } = useQuery({
     queryKey: ["browse", "items", debouncedQuery],
     queryFn: async () => {
-      const token = await getToken({ template: "default"});
-      const res = await getBrowseItems({ query: debouncedQuery }, token);
+      const res = await getBrowseItems({ query: debouncedQuery });
       return res.items;
     },
     enabled: tab === "items",
+    staleTime: 5 * 60 * 1000
   });
 
   const {
@@ -51,11 +47,11 @@ function Browse() {
   } = useQuery({
     queryKey: ["browse", "skills", debouncedQuery],
     queryFn: async () => {
-      const token = await getToken({ template: "default"});
-      const res = await getBrowseSkills({ query: debouncedQuery }, token);
+      const res = await getBrowseSkills({ query: debouncedQuery });
       return res.skills;
     },
     enabled: tab === "skills",
+    staleTime: 5 * 60 * 1000
   });
 
 
@@ -90,9 +86,9 @@ function Browse() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {allResults.map((r, i) =>
                   r.type === "item" ? (
-                    <Item item={r} key={i} isSwap={true}/>
+                    <Item item={r} key={i} isSwap={true} />
                   ) : (
-                    <Skill skill={r} key={i} isSwap={true}/>
+                    <Skill skill={r} key={i} isSwap={true} />
                   )
                 )}
               </div>
@@ -110,7 +106,7 @@ function Browse() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {itemResults.map((r) => (
-                  <Item key={r.id} item={r as ItemType} isSwap={true}/>
+                  <Item key={r.id} item={r as ItemType} isSwap={true} />
                 ))}
               </div>
             )}

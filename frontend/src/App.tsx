@@ -11,7 +11,7 @@ import AddNew from "./pages/AddNew";
 import Browse from "./pages/Browse";
 import SwapRequests from "./pages/SwapRequests";
 import SwapPage from "./pages/SwapPage";
-import ItemPage from "./pages/itemPage";
+import ItemPage from "./pages/ItemPage";
 import SkillPage from "./pages/SkillPage";
 
 function App() {
@@ -45,8 +45,8 @@ function App() {
           />
           <Route path="/profile/:id" element={<Profile />}/>
           <Route path="/browse" element={<Browse />}/>
-          <Route path="/swap/requests" element={<SwapRequests />}/>
-          <Route path="/swap/:id" element={<SwapPage />}/>
+          <Route path="/swap/requests" element={<ClientProtect><SwapRequests /></ClientProtect>}/>
+          <Route path="/swap/:id" element={<ClientProtect><SwapPage /></ClientProtect>}/>
         </Routes>
       </div>
       <Toaster position="top-center" />

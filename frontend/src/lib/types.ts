@@ -129,19 +129,16 @@ export type useAppType = {
     data: {
       query: string;
     },
-    token: string | null
   ) => Promise<{ items: ItemType[] } | { items: [] }>;
   getBrowseSkills: (
     data: {
       query: string;
     },
-    token: string | null
   ) => Promise<{ skills: SkillType[] } | { skills: [] }>;
   getBrowseAll: (
     data: {
       query: string;
     },
-    token: string | null
   ) => Promise<{ results: BrowseResult[] }>;
   getItem: (
     id: string | undefined,

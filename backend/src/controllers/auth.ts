@@ -48,7 +48,11 @@ export async function handleGetUser(c: Context) {
       include: {
         items: true,
         skills: true,
-        notifications: true,
+        notifications: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
     if (!user) return c.json({ msg: "User doesn't exists" }, 400);

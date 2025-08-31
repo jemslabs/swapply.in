@@ -65,36 +65,35 @@ function ItemPage() {
     setSelected(null);
   };
   return (
-    <div className="flex items-center justify-center h-screen px-6">
-      <div className="flex w-full max-w-6xl h-[85vh]  backdrop-blur-md border border-white/10 rounded-2xl shadow-xl overflow-hidden">
-        <div className="flex-1 flex flex-col p-6 space-y-6">
-          <div className="flex-1 flex">
+    <div className="flex items-center justify-center min-h-screen px-4 sm:px-6">
+      <div className="flex flex-col lg:flex-row w-full max-w-6xl h-auto lg:h-[85vh] backdrop-blur-md border border-white/10 rounded-2xl shadow-xl overflow-hidden">
+
+        <div className="flex-1 flex flex-col p-4 sm:p-6 space-y-4 lg:space-y-6 overflow-hidden">
+          <div className="flex justify-center">
             <img
               src={item.image}
               alt={item.title}
-              className="h-full max-h-[420px] w-full object-cover rounded-xl shadow-md"
+              className="h-[300px] sm:h-[350px] md:h-[420px] lg:h-[420px] w-full object-cover rounded-xl shadow-md"
             />
           </div>
 
-          <div className="space-y-3">
-            <h1 className="text-2xl font-bold text-white">{item.title}</h1>
+          <div className="space-y-2 sm:space-y-3 overflow-y-auto">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-3xl font-bold text-white">
+              {item.title}
+            </h1>
 
-            <p className="flex items-center gap-2 text-sm text-white/70">
+            <p className="flex items-center gap-2 text-xs sm:text-sm text-white/70">
               <MapPin size={14} /> {item.location}
             </p>
 
             <div>
-              <h3 className="text-sm font-medium text-white/60">Looking for</h3>
-              <p className="text-lg font-semibold">{item.lookingFor}</p>
+              <h3 className="text-xs sm:text-sm font-medium text-white/60">Looking for</h3>
+              <p className="text-sm sm:text-lg font-semibold">{item.lookingFor}</p>
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Badge variant="default" className="capitalize">
-                {item.condition.replace("_", " ").toLowerCase()}
-              </Badge>
-              <Badge variant="outline">
-                {item.hasBill ? "Has Bill" : "No Bill"}
-              </Badge>
+            <div className="flex flex-wrap gap-2 pt-1 sm:pt-2">
+              <Badge variant="default" className="capitalize">{item.condition.replace("_", " ").toLowerCase()}</Badge>
+              <Badge variant="outline">{item.hasBill ? "Has Bill" : "No Bill"}</Badge>
               {item.category && (
                 <Badge variant="default" className="flex items-center gap-1">
                   <Tag size={12} /> {item.category}
@@ -104,39 +103,38 @@ function ItemPage() {
           </div>
         </div>
 
-        <Card className="w-[340px] bg-[#2a202d]/70 border-l border-white/10 flex flex-col justify-between">
-          <CardContent className="p-6 flex flex-col gap-6">
+
+        {/* Right Column: Pricing/User Card */}
+        <Card className="w-full lg:w-[340px] bg-[#2a202d]/70 border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col justify-between">
+          <CardContent className="p-4 sm:p-6 flex flex-col gap-4 sm:gap-6">
+
             <div>
-              <p className="text-3xl font-bold ">
+              <p className="text-2xl sm:text-3xl md:text-3xl lg:text-3xl font-bold">
                 ₹{item.price.toLocaleString()}
               </p>
-              <p className="text-xs text-white/60">
-                Inclusive of all barter values
-              </p>
+              <p className="text-xs sm:text-sm text-white/60">Inclusive of all barter values</p>
             </div>
 
-            <Link className="flex items-center gap-3 hover:bg-[#2a202d]/90 p-3 rounded-xl" to={`/profile/${item.user?.id}`}>
+            <Link
+              className="flex items-center gap-2 sm:gap-3 hover:bg-[#2a202d]/90 p-2 sm:p-3 rounded-xl"
+              to={`/profile/${item.user?.id}`}
+            >
               <img
                 src={item.user?.image}
                 alt={item.user?.name}
-                className="w-12 h-12 rounded-full object-cover"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
               />
               <div>
-                <p className="text-sm font-semibold text-white">
-                  {item.user?.name}
-                </p>
-                <p className="text-xs text-white/60">{item.user?.email}</p>
+                <p className="text-sm sm:text-base font-semibold text-white">{item.user?.name}</p>
+                <p className="text-xs sm:text-sm text-white/60">{item.user?.email}</p>
               </div>
             </Link>
+
             {item.user?.id !== user?.id && (
               !item.isSwapped ? (
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
-                    <Button
-                      className="w-full font-medium"
-                      onClick={(e) => e.stopPropagation()}
-                      disabled={item.isSwapped}
-                    >
+                    <Button className="w-full font-medium" onClick={(e) => e.stopPropagation()} disabled={item.isSwapped}>
                       {item.isSwapped ? "Swapped" : "Propose Swap"}
                     </Button>
                   </DialogTrigger>
@@ -148,23 +146,17 @@ function ItemPage() {
 
                     <div className="grid gap-2 max-h-[300px] overflow-y-auto">
                       <p className="text-sm font-medium text-white/80">Your Items</p>
-                      {user?.items
-                        .filter((i) => !i.isSwapped)
-                        .map((i) => (
-                          <Button
-                            key={`item-${i.id}`}
-                            variant={selected?.id === i.id && selected?.type === "ITEM" ? "default" : "outline"}
-                            className="w-full justify-start text-left gap-2"
-                            onClick={() => setSelected({ id: i.id, type: "ITEM" })}
-                          >
-                            <img
-                              src={i.image || ""}
-                              alt={i.title}
-                              className="w-5 h-5 rounded object-cover"
-                            />
-                            {i.title}
-                          </Button>
-                        ))}
+                      {user?.items.filter((i) => !i.isSwapped).map((i) => (
+                        <Button
+                          key={`item-${i.id}`}
+                          variant={selected?.id === i.id && selected?.type === "ITEM" ? "default" : "outline"}
+                          className="w-full justify-start text-left gap-2"
+                          onClick={() => setSelected({ id: i.id, type: "ITEM" })}
+                        >
+                          <img src={i.image || ""} alt={i.title} className="w-5 h-5 rounded object-cover" />
+                          {i.title}
+                        </Button>
+                      ))}
 
                       <p className="text-sm font-medium text-white/80 pt-2">Your Skills</p>
                       {user?.skills.map((s) => (
@@ -174,23 +166,13 @@ function ItemPage() {
                           className="w-full justify-start text-left gap-2"
                           onClick={() => setSelected({ id: s.id, type: "SKILL" })}
                         >
-                          {s.image && (
-                            <img
-                              src={s.image}
-                              alt={s.title}
-                              className="w-5 h-5 rounded object-cover"
-                            />
-                          )}
+                          {s.image && <img src={s.image} alt={s.title} className="w-5 h-5 rounded object-cover" />}
                           {s.title}
                         </Button>
                       ))}
                     </div>
 
-                    <Button
-                      className="mt-3 w-full"
-                      onClick={handleSubmitSwap}
-                      disabled={!selected || isSending}
-                    >
+                    <Button className="mt-3 w-full" onClick={handleSubmitSwap} disabled={!selected || isSending}>
                       {isSending && <Loader2 className="animate-spin mr-2" size={16} />}
                       Send Swap Request
                     </Button>
@@ -204,8 +186,10 @@ function ItemPage() {
             )}
           </CardContent>
         </Card>
+
       </div>
     </div>
+
   );
 }
 

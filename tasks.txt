@@ -1,6 +1,0 @@
-1. Polish the frontend -- DONE!
-2. Test all features
-3. code landing page
-4. backend optimize - reduce api requests
-5. productionize it
-6. Plan marketing

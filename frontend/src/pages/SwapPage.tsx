@@ -1,7 +1,13 @@
 import { useApp } from "@/stores/useApp";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { RefreshCw, CalendarIcon, Loader2 } from "lucide-react";
-import { useParams } from "react-router-dom";
+import {
+  RefreshCw,
+  CalendarIcon,
+  Loader2,
+  ChevronRight,
+  Check,
+} from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import Item from "@/components/Item";
@@ -13,6 +19,9 @@ import type { scheduleMeetingType } from "@/lib/types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import MiniItem from "@/components/MiniItem";
+import MiniSkill from "@/components/MiniSkill";
+
 function SwapPage() {
   const { getSwap, scheduleMeeting, confirmMeeting, completeSwap } = useApp();
   const { id } = useParams();
@@ -24,7 +33,7 @@ function SwapPage() {
   const [step, setStep] = useState(1);
   const queryClient = useQueryClient();
   const swapId = id ? parseInt(id) : undefined;
-
+  const navigate = useNavigate();
   const [meetingData, setMeetingData] = useState<scheduleMeetingType>({
     location: "",
     meetingLink: "",
@@ -47,12 +56,13 @@ function SwapPage() {
     enabled: !!swapId,
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <div className="text-center p-4 text-muted-foreground">
-        Loading swap details...
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="animate-spin w-8 h-8 text-purple-400" />
       </div>
     );
+  }
   if (error || !data)
     return (
       <div className="text-center p-4 text-red-500">Failed to load swap</div>
@@ -150,172 +160,224 @@ function SwapPage() {
     setIsCompleting(false);
   };
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-10">
-
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 flex flex-col gap-8">
       {data.status === "COMPLETED" ? (
-        <div className="max-w-md mx-auto p-8 rounded-2xl bg-gradient-to-b from-green-700/30 to-green-900/20 border border-green-800 shadow-lg text-center space-y-5">
-          <div className="flex justify-center text-6xl">🎉</div>
+        <>
+          <div className="max-w-6xl mx-auto p-6 sm:p-10 rounded-2xl bg-[#c084fc]/20 border border-purple-500/30 text-center text-white space-y-8 sm:space-y-10">
+          
+            <div className="flex flex-col items-center gap-3">
+              <div className="text-5xl sm:text-6xl">🎉</div>
+              <h3 className="text-2xl sm:text-3xl font-bold">Swap Completed</h3>
+              <p className="text-purple-200 text-sm sm:text-base max-w-md">
+                Your swap was successfully completed! Here&apos;s what was exchanged between both parties:
+              </p>
+            </div>
 
-          <h3 className="text-2xl font-bold text-white">Swap Completed</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 items-center">
+              <div className="flex flex-col items-center gap-3">
+                {data?.proposerType === "ITEM" && <MiniItem item={data?.proposerItem} />}
+                {data?.proposerType === "SKILL" && <MiniSkill skill={data?.proposerSkill} />}
+              </div>
 
-          <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
-            This swap has been marked as completed.
-            Thank you for being part of the exchange!
-          </p>
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center border-2">
+                  <RefreshCw className="w-7 h-7 text-purple-200" />
+                </div>
+              </div>
 
-          <Badge
-            variant="secondary"
-            className="text-green-400 bg-green-900/40 border border-green-800 px-4 py-1 rounded-full"
-          >
-            COMPLETED
-          </Badge>
-        </div>
+              <div className="flex flex-col items-center gap-3">
+                {data?.receiverType === "ITEM" && <MiniItem item={data?.receiverItem} />}
+                {data?.receiverType === "SKILL" && <MiniSkill skill={data?.receiverSkill} />}
+              </div>
+            </div>
+          </div>
+
+        </>
       ) : (
         <>
-
-          {/* Stepper */}
-          <div className="flex justify-between items-center gap-2">
-            {["Swap Details", "Schedule Meet", "Mark Completed"].map(
+          <div className="flex justify-between items-center relative">
+            {["Swap Details", "Schedule Meeting", "Finalize"].map(
               (label, index) => {
                 const isActive = step === index + 1;
                 const isDone = step > index + 1;
+
                 return (
                   <div
                     key={index}
-                    className="flex flex-col items-center text-xs sm:text-sm flex-1"
+                    className="flex flex-col items-center flex-1 relative z-10"
                   >
                     <div
-                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold transition
-                  ${isDone
-                          ? "bg-green-500 text-white"
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300
+            ${isDone
+                          ? "bg-green-500 text-white shadow-lg"
                           : isActive
-                            ? "bg-violet-400 text-black"
-                            : "bg-muted text-gray-400"
+                            ? "bg-purple-600 text-white shadow-lg scale-110"
+                            : "bg-gray-700 text-gray-400"
                         }`}
                     >
-                      {isDone ? "✓" : index + 1}
+                      {isDone ? <Check /> : index + 1}
                     </div>
-                    <span className="mt-2 text-gray-300">{label}</span>
+                    <span
+                      className={`mt-2 text-xs sm:text-sm transition-colors duration-300 
+            ${isActive
+                          ? "text-white font-medium"
+                          : isDone
+                            ? "text-gray-300"
+                            : "text-gray-500"
+                        }`}
+                    >
+                      {label}
+                    </span>
                   </div>
                 );
               }
             )}
+            <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-700">
+              <div
+                className="h-0.5 bg-purple-500 transition-all duration-500"
+                style={{ width: `${((step - 1) / (3 - 1)) * 100}%` }}
+              />
+            </div>
           </div>
 
-          {/* Step 1: Swap Details */}
           {step === 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-muted/30 p-5 rounded-2xl border shadow-sm">
-              <div className="flex flex-col items-center gap-3">
-                <div className="flex items-center gap-3 p-3 rounded-xl shadow-sm w-full bg-background/60">
-                  <img
-                    src={data?.proposer?.image}
-                    alt={data?.proposer?.name}
-                    className="w-10 h-10 rounded-full object-cover border"
-                  />
-                  <div className="text-sm">
-                    <p className="text-gray-400">Proposed by</p>
-                    <p className="font-medium">{data?.proposer?.name}</p>
-                  </div>
-                </div>
-                {data?.proposerType === "ITEM" && <Item item={data?.proposerItem} isSwap={false} />}
-                {data?.proposerType === "SKILL" && <Skill skill={data?.proposerSkill} isSwap={false} />}
-              </div>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 p-6 rounded-2xl border bg-[#c084fc]/10 shadow-lg">
+    <div className="flex flex-col items-center gap-4">
+      <div className="flex items-center gap-3 p-4 rounded-xl w-full bg-[#c084fc]/15 border">
+        <img
+          src={data?.proposer?.image}
+          alt={data?.proposer?.name}
+          className="w-12 h-12 rounded-full object-cover border border-gray-600"
+        />
+        <div>
+          <p className="text-gray-400 text-xs">Proposed by</p>
+          <p className="font-medium text-white">{data?.proposer?.name}</p>
+        </div>
+      </div>
+      {data?.proposerType === "ITEM" && <Item item={data?.proposerItem} isSwap={false} />}
+      {data?.proposerType === "SKILL" && <Skill skill={data?.proposerSkill} isSwap={false} />}
+    </div>
 
-              <div className="flex flex-col items-center justify-center gap-3">
-                <div className="p-3 rounded-full bg-background/60 shadow-sm">
-                  <RefreshCw className="h-6 w-6 text-gray-400" />
-                </div>
-                <Badge
-                  variant={getStatusVariant(swapStatus)}
-                  className="capitalize text-xs px-3 py-1"
-                >
-                  {swapStatus?.toLowerCase()}
-                </Badge>
-              </div>
+    <div className="flex flex-col items-center justify-center gap-3">
+      <div className="p-4 rounded-full bg-[#c084fc]/15 border">
+        <RefreshCw className="h-7 w-7 text-gray-400" />
+      </div>
+      <Badge variant={getStatusVariant(swapStatus)} className="capitalize text-xs px-3 py-1.5">
+        {swapStatus?.toLowerCase()}
+      </Badge>
+    </div>
 
-              <div className="flex flex-col items-center gap-3">
-                <div className="flex items-center gap-3 p-3 rounded-xl shadow-sm w-full bg-background/60">
-                  <img
-                    src={data?.receiver?.image}
-                    alt={data?.receiver?.name}
-                    className="w-10 h-10 rounded-full object-cover border"
-                  />
-                  <div className="text-sm">
-                    <p className="text-gray-400">Received by</p>
-                    <p className="font-medium">{data?.receiver?.name}</p>
-                  </div>
-                </div>
-                {data?.receiverType === "ITEM" && <Item item={data?.receiverItem} isSwap={false} />}
-                {data?.receiverType === "SKILL" && <Skill skill={data?.receiverSkill} isSwap={false} />}
-              </div>
-            </div>
-          )}
+    <div className="flex flex-col items-center gap-4">
+      <div className="flex items-center gap-3 p-4 rounded-xl w-full bg-[#c084fc]/15 border">
+        <img
+          src={data?.receiver?.image}
+          alt={data?.receiver?.name}
+          className="w-12 h-12 rounded-full object-cover border border-gray-600"
+        />
+        <div>
+          <p className="text-gray-400 text-xs">Received by</p>
+          <p className="font-medium text-white">{data?.receiver?.name}</p>
+        </div>
+      </div>
+      {data?.receiverType === "ITEM" && <Item item={data?.receiverItem} isSwap={false} />}
+      {data?.receiverType === "SKILL" && <Skill skill={data?.receiverSkill} isSwap={false} />}
+    </div>
+  </div>
+)}
+
+
 
           {step === 1 && swapStatus === "ACCEPTED" && (
-            <div className="text-center">
-              <Button onClick={() => setStep(2)}>Next: Schedule Meet</Button>
+            <div className="flex gap-3 justify-center items-center">
+              <Button variant="outline" onClick={() => navigate(-1)} size="lg">
+                Back
+              </Button>
+              <Button size="lg" onClick={() => setStep(2)}>
+                Schedule Meeting <ChevronRight />
+              </Button>
             </div>
           )}
 
-          {/* Step 2: Meeting */}
           {step === 2 && (
             <>
               {data.meeting ? (
-                <div className="w-full sm:w-[500px] mx-auto space-y-6 border border-border rounded-2xl p-6 shadow-lg bg-muted/30 text-left">
+                <div className="w-full sm:w-[500px] mx-auto space-y-6 border rounded-2xl p-6 bg-[#c084fc]/15 shadow-lg">
                   <div className="space-y-1">
-                    <h3 className="text-2xl font-semibold">Meeting Scheduled</h3>
+                    <h3 className="text-2xl font-semibold text-white">
+                      Meeting Scheduled
+                    </h3>
                     <p className="text-gray-400 text-sm">
                       Please review the meeting details below.
                     </p>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-400">Type:</span>
-                      <span className="text-sm">
-                        {data.meeting.type === "ONLINE" ? "Online" : "In-Person"}
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-gray-400">Type:</span>
+                      <span>
+                        {data.meeting.type === "ONLINE"
+                          ? "Online"
+                          : "In-Person"}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-400">Date:</span>
-                      <span className="text-sm">{formatPrettyIST(new Date(data.meeting.date))}</span>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-gray-400">Date:</span>
+                      <span>
+                        {formatPrettyIST(new Date(data.meeting.date))}
+                      </span>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-400">Status:</span>
-                      <Badge className={data.meeting.status === "CONFIRMED" ? "bg-green-500 font-medium" : "bg-yellow-500"}>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-gray-400">Status:</span>
+                      <Badge
+                        className={
+                          data.meeting.status === "CONFIRMED"
+                            ? "bg-green-500"
+                            : "bg-yellow-500"
+                        }
+                      >
                         {data.meeting.status}
                       </Badge>
                     </div>
 
                     {data.meeting.type === "ONLINE" ? (
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm font-medium text-gray-400">Meeting Link:</span>
+                        <span className="text-sm font-medium text-gray-400">
+                          Meeting Link:
+                        </span>
                         <a
                           href={data.meeting.meetingLink || ""}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-500 underline text-sm break-words"
+                          className="text-blue-400 underline text-sm break-words"
                         >
                           {data.meeting.meetingLink}
                         </a>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-400">Location:</span>
-                        <span className="text-sm">{data.meeting.location}</span>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium text-gray-400">
+                          Location:
+                        </span>
+                        <span>{data.meeting.location}</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex justify-end flex-wrap gap-3 pt-4">
+                  <div className="flex justify-end gap-3 pt-4 flex-wrap">
                     {data.receiverId === user?.id &&
                       data.meeting?.status === "PENDING" && (
-                        <Button onClick={() => handleConfirmMeeting(data.id)} disabled={isConfirming}>
+                        <Button
+                          onClick={() => handleConfirmMeeting(data.id)}
+                          disabled={isConfirming}
+                        >
                           {isConfirming ? (
                             <>
-                              <Loader2 className="animate-spin mr-2" size={16} />
+                              <Loader2
+                                className="animate-spin mr-2"
+                                size={16}
+                              />{" "}
                               Confirming...
                             </>
                           ) : (
@@ -323,27 +385,36 @@ function SwapPage() {
                           )}
                         </Button>
                       )}
+                    <Button variant="outline" onClick={() => setStep(1)}>
+                      Back
+                    </Button>
 
                     {data.meeting.status === "CONFIRMED" && (
-                      <Button onClick={() => setStep(3)}>Next</Button>
+                      <Button onClick={() => setStep(3)}>
+                        Next <ChevronRight />
+                      </Button>
                     )}
-
-                    <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
                   </div>
                 </div>
               ) : user?.id === data.proposerId ? (
-                <div className="flex flex-col gap-4 bg-muted/30 p-6 rounded-2xl shadow-sm">
-                  <h3 className="text-xl font-semibold text-center">Schedule a Meetup</h3>
+                <div className="flex flex-col gap-4 bg-[#c084fc]/15 p-6 rounded-2xl shadow-lg border border-gray-700">
+                  <h3 className="text-xl font-semibold text-center text-white">
+                    Schedule a Meeting
+                  </h3>
 
-                  {/* Meeting Type */}
                   <div className="space-y-2">
-                    <Label className="text-sm">Meeting Type</Label>
+                    <Label className="text-sm text-gray-300">
+                      Meeting Type
+                    </Label>
                     <RadioGroup
                       value={meetingData.type}
-                      onValueChange={(value) =>
-                        setMeetingData((prev) => ({ ...prev, type: value as "INPERSON" | "ONLINE" }))
+                      onValueChange={(v) =>
+                        setMeetingData((prev) => ({
+                          ...prev,
+                          type: v as "INPERSON" | "ONLINE",
+                        }))
                       }
-                      className="flex gap-4"
+                      className="flex gap-6"
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="INPERSON" id="inperson" />
@@ -355,88 +426,125 @@ function SwapPage() {
                       </div>
                     </RadioGroup>
                   </div>
-
-                  {/* Date Picker */}
                   <div className="space-y-2">
-                    <Label htmlFor="meetingDate">Meeting Date</Label>
+                    <Label htmlFor="meetingDate" className="text-gray-300">
+                      Meeting Date
+                    </Label>
                     <div className="relative">
                       <Input
                         id="meetingDate"
                         type="datetime-local"
                         value={formatToISTLocalString(meetingData.date)}
                         onChange={(e) =>
-                          setMeetingData((prev) => ({ ...prev, date: convertISTToUTC(e.target.value) }))
+                          setMeetingData((prev) => ({
+                            ...prev,
+                            date: convertISTToUTC(e.target.value),
+                          }))
                         }
-                        className="pr-10 appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:z-10"
+                        className="pr-10"
                       />
                       <button
                         type="button"
-                        onClick={() => (document.getElementById("meetingDate") as HTMLInputElement | null)?.showPicker?.()}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 z-20"
+                        onClick={() =>
+                          (
+                            document.getElementById(
+                              "meetingDate"
+                            ) as HTMLInputElement
+                          )?.showPicker?.()
+                        }
+                        className="absolute right-3 top-1/2 -translate-y-1/2"
                       >
-                        <CalendarIcon className="text-white" size={18} />
+                        <CalendarIcon className="text-gray-300" size={18} />
                       </button>
                     </div>
-                    <p className="text-sm text-gray-300">{formatPrettyIST(meetingData.date)}</p>
+                    <p className="text-sm text-gray-400">
+                      {formatPrettyIST(meetingData.date)}
+                    </p>
                   </div>
 
-                  {/* Online vs Location */}
                   {meetingData.type === "ONLINE" ? (
                     <div className="space-y-2">
-                      <Label htmlFor="meetingLink">Meeting Link</Label>
+                      <Label htmlFor="meetingLink" className="text-gray-300">
+                        Meeting Link
+                      </Label>
                       <Input
                         id="meetingLink"
                         placeholder="Meeting link"
                         value={meetingData.meetingLink}
-                        onChange={(e) => setMeetingData((prev) => ({ ...prev, meetingLink: e.target.value }))}
+                        onChange={(e) =>
+                          setMeetingData((prev) => ({
+                            ...prev,
+                            meetingLink: e.target.value,
+                          }))
+                        }
                       />
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
+                      <Label htmlFor="location" className="text-gray-300">
+                        Location
+                      </Label>
                       <Input
                         id="location"
                         placeholder="Meeting location"
                         value={meetingData.location}
-                        onChange={(e) => setMeetingData((prev) => ({ ...prev, location: e.target.value }))}
+                        onChange={(e) =>
+                          setMeetingData((prev) => ({
+                            ...prev,
+                            location: e.target.value,
+                          }))
+                        }
                       />
                     </div>
                   )}
 
                   <div className="flex justify-center gap-3 pt-4">
-                    <Button onClick={handleScheduleMeeting} disabled={isScheduling}>
+                    <Button variant="outline" onClick={() => setStep(1)}>
+                      Back
+                    </Button>
+                    <Button
+                      onClick={handleScheduleMeeting}
+                      disabled={isScheduling}
+                    >
                       {isScheduling ? (
                         <Loader2 className="animate-spin mr-2" size={16} />
                       ) : (
                         "Schedule"
                       )}
                     </Button>
-                    <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
                   </div>
                 </div>
               ) : (
-                <div className="text-center text-white text-lg sm:text-xl bg-muted/30 p-10 border rounded-2xl">
+                <div className="text-center text-gray-300 text-lg bg-gray-900/40 p-10 border border-gray-700 rounded-2xl shadow-lg">
                   Waiting for proposer to schedule the meeting.
                   <div className="flex justify-center gap-3 mt-4">
-                    <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
+                    <Button variant="outline" onClick={() => setStep(1)}>
+                      Back
+                    </Button>
                   </div>
                 </div>
               )}
             </>
           )}
-
-          {/* Step 3: Finalize Swap */}
           {step === 3 && (
-            <div className="max-w-md mx-auto space-y-6 text-center border border-border rounded-2xl p-6 shadow-sm bg-muted/30">
-              <h3 className="text-2xl font-bold">Finalize the Swap</h3>
-
-              <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
+            <div className="max-w-md mx-auto space-y-6 text-center border rounded-2xl p-6 bg-[#c084fc]/15 shadow-lg">
+              <h3 className="text-2xl font-bold text-white">
+                Finalize the Swap
+              </h3>
+              <p className="text-gray-400 text-sm sm:text-base">
                 {user?.id === data.proposerId
                   ? "If the swap is successfully completed in person, click below to mark it as completed."
                   : "Only the proposer can finalize the swap once it's completed."}
               </p>
 
               <div className="flex justify-center gap-4 pt-2 flex-wrap">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep(2)}
+                  className="px-6 py-2"
+                >
+                  Back
+                </Button>
                 {user?.id === data.proposerId && (
                   <Button
                     className="px-6 py-2"
@@ -445,7 +553,7 @@ function SwapPage() {
                   >
                     {isCompleting ? (
                       <>
-                        <Loader2 className="animate-spin mr-2" size={16} />
+                        <Loader2 className="animate-spin mr-2" size={16} />{" "}
                         Completing...
                       </>
                     ) : (
@@ -453,19 +561,12 @@ function SwapPage() {
                     )}
                   </Button>
                 )}
-
-                <Button variant="outline" onClick={() => setStep(2)} className="px-6 py-2">
-                  Back
-                </Button>
               </div>
             </div>
           )}
-
         </>
       )}
     </div>
-
-
   );
 }
 

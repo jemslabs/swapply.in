@@ -9,9 +9,7 @@ export const useAuth = create<useAuthType>((set) => ({
 
   login: async (data) => {
     try {
-      await axios.post(`${endpoint}/api/auth/login`, data, {
-        withCredentials: true,
-      });
+      await axios.post(`${endpoint}/api/auth/login`, data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const errorMsg =
@@ -24,7 +22,6 @@ export const useAuth = create<useAuthType>((set) => ({
 
   fetchUser: async (token) => {
     try {
-
       const res = await axios.get(`${endpoint}/api/auth/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -42,22 +39,34 @@ export const useAuth = create<useAuthType>((set) => ({
 
   fetchPublicUser: async (id, token) => {
     try {
-
-      const res = await axios.get(
-        `${endpoint}/api/auth/get-user?id=${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get(`${endpoint}/api/auth/get-user?id=${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
 
       if (res.status === 200) {
         return res.data;
       }
     } catch {
       return null;
+    }
+  },
+  getSwapRequests: async (token) => {
+    try {
+      const res = await axios.get(`${endpoint}/api/auth/swap-requests`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      if (res.status === 200) {
+        return res.data || [];
+      }
+    } catch (error) {
+      return [];
     }
   },
 }));

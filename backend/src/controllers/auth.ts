@@ -46,34 +46,13 @@ export async function handleGetUser(c: Context) {
         id,
       },
       include: {
-        items: {
-          include: {
-            boostedItem: true,
+        items: true,
+        skills: true,
+        notifications: {
+          orderBy: {
+            createdAt: "desc",
           },
         },
-        proposedSwaps: {
-          include: {
-            receiver: true,
-            proposer: true,
-            proposedItem: true,
-            receiverItem: true,
-          },
-        },
-        receivedSwaps: {
-          include: {
-            receiver: true,
-            proposer: true,
-            proposedItem: true,
-            receiverItem: true,
-          },
-        },
-        circles: {
-          include: {
-            circle: true,
-          },
-        },
-        plan: true,
-        notifications: true,
       },
     });
     if (!user) return c.json({ msg: "User doesn't exists" }, 400);
@@ -93,25 +72,8 @@ export async function handleGetPublicUser(c: Context) {
         id: parseInt(id),
       },
       include: {
-        items: {
-          include: {
-            boostedItem: true,
-          },
-        },
-        circles: {
-          where: {
-            role: "ADMIN",
-          },
-
-          include: {
-            circle: {
-              include: {
-                members: true,
-              },
-            },
-          },
-        },
-        plan: true,
+        items: true,
+        skills: true,
       },
     });
     if (!user) {
@@ -123,49 +85,50 @@ export async function handleGetPublicUser(c: Context) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
-
-export async function handleUpgradeUserPlan(c: Context) {
-  const { event, payload } = await c.req.json();
+export async function handleGetSwapRequests(c: Context) {
   const prisma = prismaClient(c);
-
+  const { id } = c.get("user");
   try {
+    if (!id) {
+      return c.json({ msg: "Unauthorised" }, 400);
+    }
     const user = await prisma.user.findUnique({
       where: {
-        email: payload?.payment?.entity?.email,
+        id,
       },
     });
+    if (!user) {
+      return c.json({ msg: "User not found" }, 400);
+    }
 
-    if (!user) return c.json({ msg: "User not found" }, 404);
-
-    const isPlanActive = await prisma.proPlan.findUnique({
+    const receivedSwaps = await prisma.swapRequest.findMany({
       where: {
-        userId: user.id,
+        receiverId: user.id,
+      },
+      include: {
+        proposer: true,
+        proposerItem: true,
+        receiverItem: true,
+        receiverSkill: true,
+        proposerSkill: true,
       },
     });
 
-    if (isPlanActive) {
-      return c.json({ msg: "Pro plan is already active" }, 400);
-    }
+    const proposedSwaps = await prisma.swapRequest.findMany({
+      where: {
+        proposerId: user.id,
+      },
+      include: {
+        receiver: true,
+        proposerItem: true,
+        receiverItem: true,
+        receiverSkill: true,
+        proposerSkill: true,
+      },
+    });
 
-    if (event.payment.captured) {
-      const now = new Date();
-      now.setMonth(now.getMonth() + 1);
-      await prisma.proPlan.create({
-        data: {
-          userId: user.id,
-          expiresAt: now,
-        },
-      });
-
-      return c.json({ msg: "Pro plan activated" }, 200);
-    }
-
-    if (event.payment.failed) {
-      return c.json({ msg: "Payment Failed" }, 500);
-    }
-
-    return c.json({ msg: "Unexpected event got triggered" }, 500);
+    return c.json({ receivedSwaps, proposedSwaps }, 200);
   } catch (error) {
-    return c.json({ msg: "Internal Server Error" }, 500);
+    return c.json({ msg: "Internal Sevrer Error" }, 500);
   }
 }

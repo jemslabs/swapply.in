@@ -1,5 +1,4 @@
 import Logo from "@/components/Logo";
-import PricingPlans from "@/components/PricingPlans";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -12,177 +11,157 @@ import {
   Users,
   Shield,
   Sparkles,
-  Rocket,
-  BadgeCheck,
-  BadgePercent,
-  ChevronRight,
-  Github
+  Github,
+  Bell,
 } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaYoutube } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import clsx from "clsx";
 function Home() {
   return (
-
-    <div className="pb-10 w-full">
-
-      <div className="relative min-h-screen overflow-hidden text-white">
-        <div className="absolute inset-0 z-10 pointer-events-none perspective-[800px] overflow-hidden">
+    <div className="pb-10 w-full bg-[#0d0d0d]">
+      <div className="relative min-h-screen bg-[#0d0d0d] text-white overflow-hidden pt-20 pb-10">
+        <div className="absolute inset-0">
+          <div className="absolute top-[25%] left-1/2 -translate-x-1/2 w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px] bg-purple-500/30 blur-[120px] sm:blur-[150px] md:blur-[180px] rounded-full"></div>
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] sm:w-[700px] sm:h-[700px] md:w-[900px] md:h-[900px] bg-fuchsia-600/20 blur-[180px] sm:blur-[220px] md:blur-[250px] rounded-full"></div>
+        </div>
+        <div className="absolute inset-0 z-0 pointer-events-none perspective-[800px] overflow-hidden">
           <div
-            className="w-full h-full"
-            style={{
-              transform: "rotateX(35deg) scale(1.1) translateY(-40px)",
-              transformOrigin: "top",
-              backgroundColor: "#0d0d0d",
-              backgroundImage: `
-          linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-        `,
-              backgroundSize: "60px 60px",
-            }}
-          />
-          <div
-            className="absolute top-0 left-0 w-full h-full"
+            className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(ellipse at top right, rgba(192, 132, 252, 0.25), transparent 100%)",
-              transform: "translateZ(0)",
+                "linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)",
+              backgroundSize: "60px 60px",
+              transform: "rotateX(35deg) scale(1.2) translateY(-60px)",
+              transformOrigin: "top",
             }}
           />
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "linear-gradient(to top, #0d0d0d 15%, transparent 60%)",
-            }}
-          />
-
         </div>
 
-
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 text-center max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#d0a2fd]/20  text-xs sm:text-sm text-white mb-4 animate-fade-in">
-            <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4" />
-            A P2P bartering platform
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight bg-gradient-to-r from-white via-purple-200 to-[#d0a2fd] bg-clip-text text-transparent break-words text-balance max-w-2xl sm:max-w-3xl animate-fade-in-up">
-            Swap Your Unused Stuff for What You Love
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center max-w-6xl mx-auto">
+          <h1 className="mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-snug font-semibold tracking-tight  relative">
+            <span className="bg-gradient-to-r from-white via-purple-200 to-[#d0a2fd] bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+              Swap Your Stuff
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-purple-300 to-purple-500 bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+              For What You Love
+            </span>
           </h1>
 
-          <p className="mt-5 text-sm sm:text-base md:text-lg text-white/80 max-w-md sm:max-w-xl animate-fade-in-up delay-200">
-            Turn unused items into value. List, browse, and swap with your local community - quick and easy.
+          <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg lg:text-xl text-white/80 max-w-2xl animate-fade-in-up delay-150 leading-relaxed">
+            Turn unused items or skills into real value. Swap or trade without
+            spending money. Simple, sustainable, and surprisingly fun.
           </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up delay-400">
-            <Button variant={"default"} className="w-full sm:w-40 p-5" asChild>
-              <Link to={"/browse/items"}>
-                <span className="font-bold flex items-center justify-center gap-2">
-                  Get Started <ChevronRight />
-                </span>
-              </Link>
-            </Button>
+          <div className="mt-6 sm:mt-8">
+            <Link to={"/browse"}>
+              <Button
+                size="lg"
+                className="transition-all rounded-xl flex items-center justify-center gap-x-2 px-5 sm:px-6 py-2 sm:py-3 w-[150px] sm:w-[180px] h-[45px] sm:h-[50px] text-sm sm:text-base font-medium"
+              >
+                Get Started <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5" />
+              </Button>
+            </Link>
           </div>
 
-          <div className="mt-16 flex md:flex-row items-center justify-center gap-6 animate-fade-in-up delay-500 max-w-4xl mx-auto text-center">
-            {[
-              { icon: Package, label: "List Item" },
-              { icon: Search, label: "Browse" },
-              { icon: RefreshCw, label: "Swap" },
-            ].map(({ icon: Icon, label }, idx) => (
-              <>
-                <div className="flex flex-col items-center gap-3 group">
-                  <div className="p-4 rounded-2xl bg-gradient-to-br from-[#c084fc]/20 to-purple-600/10 border border-[#c084fc]/30 shadow-lg shadow-[#c084fc]/25 transition-all duration-300">
-                    <Icon className="w-7 h-7 text-[#c084fc]" />
-                  </div>
-                  <span className="text-sm text-white font-medium break-words max-w-[80px]">{label}</span>
-                </div>
-                {idx < 2 && (
-                  <div className="hidden md:flex items-center">
+          {/* Preview Image */}
+          <div className="mt-12 sm:mt-20 w-full max-w-3xl sm:max-w-6xl mx-auto animate-fade-in-up delay-500">
+            <div className="relative group">
+              <div className="absolute -inset-1 rounded-3xl border-2 border-white/10 shadow-[0_0_40px_rgba(168,85,247,0.5)] sm:shadow-[0_0_80px_rgba(168,85,247,0.5)]"></div>
 
-                    <div className="w-16 h-px bg-gradient-to-r from-[#c084fc]/50 to-transparent mx-2" />
-                    <ArrowRight className="w-6 h-6 text-[#c084fc] opacity-70 animate-pulse" />
-                  </div>
-                )}
-              </>
-            ))}
+              <img
+                src="/swapply_browse.png"
+                alt="Browse Page Preview"
+                className="relative rounded-3xl transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              />
+
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20 blur-2xl sm:blur-3xl opacity-50 sm:opacity-60 group-hover:opacity-80 transition-opacity" />
+            </div>
           </div>
-
         </div>
-
       </div>
 
+      <section className="relative py-20 sm:py-28 text-white w-full bg-[#0d0d0d] overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-36 sm:top-40 left-1/2 -translate-x-1/2 w-72 sm:w-[700px] h-72 sm:h-[700px] bg-purple-600/20 blur-[120px] sm:blur-[200px] rounded-full"></div>
+          <div className="absolute bottom-0 left-1/3 w-60 sm:w-[500px] h-60 sm:h-[500px] bg-fuchsia-500/10 blur-[100px] sm:blur-[180px] rounded-full"></div>
+        </div>
 
-
-
-      <section className="py-20 bg-[#0d0d0d] text-white w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-[#c084fc]/10 text-[#c084fc] border-[#c084fc]/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-16 sm:mb-20 relative">
+            <Badge className="mb-4 bg-[#c084fc]/10 text-[#c084fc] border-[#c084fc]/30 backdrop-blur-md">
               <Target className="w-4 h-4" />
               Process
             </Badge>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4">
-              How It Works
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 relative">
+              Swap Smarter, Not Harder
             </h2>
-            <p className="text-base sm:text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
-              Start swapping in just three simple steps
+            <p className="text-sm sm:text-base md:text-lg text-white/70 max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
+              Just three simple steps to turn unused things into new value.
             </p>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-center items-center gap-8 flex-wrap">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 relative">
             {[
               {
                 icon: Package,
                 step: "Step 1",
-                title: "List Your Item",
+                title: "List",
                 description:
-                  "Add your unused items with a short description and pictures to attract matches.",
+                  "Add your unused items or skills. Upload a clear photo, write a short description, and let others know what you can offer.",
               },
               {
                 icon: Search,
                 step: "Step 2",
-                title: "Browse & Match",
+                title: "Browse",
                 description:
-                  "Find items you want, view detailed listings, and request a swap with just a click.",
+                  "Explore a wide range of items and skills shared by others—books, gadgets, fashion, or even services.",
               },
               {
                 icon: RefreshCw,
                 step: "Step 3",
-                title: "Swap & Enjoy",
+                title: "Swap",
                 description:
-                  "Seal the deal, track your swap, and enjoy what you got in return.",
+                  "Connect, chat, and finalize the exchange. Swapply makes swaps simple, safe, and rupee-free.",
               },
             ].map(({ icon: Icon, step, title, description }, index, arr) => (
-              <div key={step} className="flex items-center gap-4">
-                <div
-                  className="relative group w-full sm:w-[300px] min-h-[270px] rounded-2xl p-[1px] bg-gradient-to-br from-[#c084fc]/40 to-[#c084fc]/50 shadow-2xl hover:shadow-purple-500/40 transition-all duration-500"
-                >
-                  <div className="relative z-10 rounded-2xl p-6 bg-[#0d0d0d]/80 backdrop-blur-xl flex flex-col justify-between gap-5 h-full overflow-hidden min-h-[300px]">
-
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl bg-gradient-to-br from-[#c084fc]/10 to-transparent z-0 pointer-events-none" />
-
-                    <div className="relative w-fit p-3 rounded-xl bg-[#c084fc]/10 shadow-lg shadow-[#c084fc]/15 z-10">
-                      <Icon className="w-6 h-6 text-[#c084fc]" />
-                    </div>
-                    <div className="w-fit text-xs font-semibold px-3 py-1 rounded-full bg-gradient-to-r from-[#c084fc]/20 to-[#a855f7]/20 text-[#c084fc] shadow-sm shadow-[#c084fc]/10 z-10">
-                      {step}
-                    </div>
-
-                    <h3 className="text-2xl font-semibold text-white z-10">{title}</h3>
-                    <p className="text-white/70 text-sm leading-relaxed z-10">{description}</p>
-                    <div className="mt-auto z-10 h-[1.5px] w-[80%] self-center bg-gradient-to-r from-transparent via-[#c084fc]/50 to-transparent blur-sm opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+              <div key={step} className="relative flex flex-col items-center">
+                <div className="flex flex-col rounded-2xl p-6 sm:p-8 min-h-[300px] sm:min-h-[360px] bg-[#1a1a1a]/80 border border-[#c084fc]/20 shadow-[0_0_20px_rgba(192,132,252,0.15)] hover:shadow-[0_0_40px_rgba(192,132,252,0.35)] transition-all duration-500 w-full backdrop-blur-md">
+                  <div className="mb-4 sm:mb-5 w-fit p-3 sm:p-4 rounded-2xl bg-[#c084fc]/10 border border-[#c084fc]/30">
+                    <Icon className="w-6 sm:w-7 h-6 sm:h-7 text-[#c084fc]" />
                   </div>
+
+                  <div className="w-fit text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-[#c084fc]/10 text-[#c084fc] border border-[#c084fc]/30 mb-2 sm:mb-3">
+                    {step}
+                  </div>
+
+                  <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">
+                    {title}
+                  </h3>
+                  <p className="text-sm sm:text-base text-white/70 leading-relaxed">
+                    {description}
+                  </p>
                 </div>
 
-
-
-
-
                 {index < arr.length - 1 && (
-                  <div className="hidden md:flex items-center">
-                    <div className="w-16 h-px bg-gradient-to-r from-[#c084fc]/50 to-transparent mx-2" />
-                    <ArrowRight className="w-6 h-6 text-[#c084fc] opacity-70 animate-pulse" />
+                  <div className="hidden lg:block absolute top-1/2 right-[-60px]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-24 h-8 text-[#c084fc]/70 drop-shadow-[0_0_10px_rgba(192,132,252,0.5)]"
+                      fill="none"
+                      viewBox="0 0 100 50"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeDasharray="6,6"
+                    >
+                      <path
+                        d="M10,25 C40,0 60,50 90,25"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                   </div>
                 )}
               </div>
@@ -190,71 +169,82 @@ function Home() {
           </div>
         </div>
       </section>
+      <section className="py-16 sm:py-24 bg-[#0d0d0d] relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-20 sm:top-24 left-1/2 -translate-x-1/2 w-72 sm:w-[700px] h-72 sm:h-[700px] bg-purple-600/20 blur-[120px] sm:blur-[200px] rounded-full"></div>
+          <div className="absolute bottom-0 right-1/3 w-60 sm:w-[500px] h-60 sm:h-[500px] bg-fuchsia-500/10 blur-[100px] sm:blur-[180px] rounded-full"></div>
+        </div>
 
-      <section className="py-24 bg-[#0d0d0d] relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <Badge className="mb-6 bg-[#c084fc]/10 text-[#c084fc] border-[#c084fc]/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center relative z-10">
+          <Badge className="mb-6 bg-[#c084fc]/10 text-[#c084fc] border-[#c084fc]/30 backdrop-blur-md">
             <Sparkles className="w-4 h-4" />
             Features
           </Badge>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 bg-gradient-to-r from-white via-purple-200 to-[#d0a2fd] bg-clip-text">
+
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
             Why Choose Swapply?
           </h2>
-          <p className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto mb-16">
-            Experience the future of peer-to-peer trading with our innovative platform
+
+          <p className="text-sm sm:text-base md:text-lg text-white/70 max-w-xl sm:max-w-2xl mx-auto mb-12 sm:mb-16 leading-relaxed">
+            From item listings to skill sharing, Swapply offers everything you
+            need to trade smarter, safer, and simpler.
           </p>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
-                icon: <Users className="w-5 h-5 text-[#c084fc]" />,
-                title: "Circles",
+                icon: <Users className="w-6 h-6 text-[#c084fc]" />,
+                title: "Built for Everyone",
                 content:
-                  "Create or join communities based on interests, location, or item categories. Connect with like-minded users to share, swap, and discuss items.",
+                  "Swapply is crafted for individuals, communities, and creators who believe in value beyond money. Trade items or skills with ease.",
                 span: "lg:col-span-2",
               },
               {
-                icon: <RefreshCw className="w-5 h-5 text-[#c084fc]" />,
+                icon: <Package className="w-6 h-6 text-[#c084fc]" />,
+                title: "Item & Skill Listings",
+                content:
+                  "List unused items with photos, condition, category, and even bills — or offer your skills like tech, music, art, tutoring, or fitness.",
+              },
+              {
+                icon: <RefreshCw className="w-6 h-6 text-[#c084fc]" />,
                 title: "Smart Swapping",
                 content:
-                  "Browse a wide range of items and send personalized swap proposals.",
+                  "Swap items for items, skills for skills, or mix both. Guitar lessons for a phone? Books for furniture? Done.",
               },
               {
-                icon: <Rocket className="w-5 h-5 text-[#c084fc]" />,
-                title: "Boost Items",
+                icon: <Shield className="w-6 h-6 text-[#c084fc]" />,
+                title: "Safe Meetings",
                 content:
-                  "Increase the visibility of your listings using our premium boosting tools.",
+                  "Finalize swaps with scheduled meetings — online with links or in-person at chosen locations.",
               },
               {
-                icon: <Shield className="w-5 h-5 text-[#c084fc]" />,
-                title: "Item Score",
+                icon: <Bell className="w-6 h-6 text-[#c084fc]" />,
+                title: "Real-Time Notifications",
                 content:
-                  "Get insights into quality based on age, bill, and condition of items.",
-                span: "lg:col-span-2",
+                  "Stay updated on swaps, requests, and meetings with instant notifications.",
               },
               {
-                icon: <BadgeCheck className="w-5 h-5 text-[#c084fc]" />,
-                title: "Verified Badge",
+                icon: <Sparkles className="w-6 h-6 text-[#c084fc]" />,
+                title: "And Much More",
                 content:
-                  "Build trust with badges that indicate verified, trustworthy users.",
+                  "We’re always adding new features to make swapping simple, sustainable, and fun.",
                 span: "lg:col-span-3",
               },
             ].map(({ icon, title, content, span }, idx) => (
               <div
                 key={idx}
-                className={clsx(
-                  "relative p-[1px] rounded-2xl bg-gradient-to-br from-[#c084fc]/40 to-[#c084fc]/50 transition-all duration-500 hover:scale-[1.02] shadow-2xl hover:shadow-purple-500/40",
-                  span
-                )}
+                className={`flex flex-col rounded-3xl p-6 sm:p-8 h-full bg-[#1a1a1a]/80 border border-[#c084fc]/20 shadow-[0_0_20px_rgba(192,132,252,0.15)] hover:shadow-[0_0_40px_rgba(192,132,252,0.35)] transition-all duration-500 backdrop-blur-md ${
+                  span || ""
+                }`}
               >
-                <div className="bg-[#0d0d0d]/90 backdrop-blur-xl rounded-2xl p-6 h-full flex flex-col gap-4 text-left">
-                  <div className="w-10 h-10 p-2 rounded-md bg-[#c084fc]/10 border border-[#c084fc]/30">
+                <div className="flex flex-col gap-4 sm:gap-5 text-left h-full">
+                  <div className="w-fit p-3 sm:p-4 rounded-2xl bg-[#c084fc]/10 border border-[#c084fc]/30">
                     {icon}
                   </div>
                   <h3 className="text-xl sm:text-2xl font-semibold text-white">
                     {title}
                   </h3>
-                  <p className="text-sm sm:text-base text-white/70 leading-relaxed">
+                  <p className="text-sm sm:text-base md:text-lg text-white/70 leading-relaxed flex-grow">
                     {content}
                   </p>
                 </div>
@@ -264,30 +254,10 @@ function Home() {
         </div>
       </section>
 
-
-      <section className="py-40 bg-[#0d0d0d]">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-[#c084fc]/10 text-[#c084fc] border-[#c084fc]/30">
-              <BadgePercent className="w-4 h-4" />
-              Pricing
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-semibold mb-4 text-white">Choose Your Plan</h2>
-            <p className="text-base sm:text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
-              Get started for free. Upgrade to Pro for full access and premium benefits.
-            </p>
-
-          </div>
-          <div className="w-full">
-            <PricingPlans />
-          </div>
-        </div>
-      </section>
-
       <div className="bg-[#0d0d0d]">
-        <section className="py-20 bg-[rgb(100,42,154)] text-white mx-4 md:mx-20 rounded-2xl relative overflow-hidden">
+        <section className="py-20 bg-purple-500/40 text-white mx-4 md:mx-20 rounded-2xl relative overflow-hidden">
           <div
-            className="absolute inset-0 pointer-events-none opacity-20"
+            className="absolute inset-0 pointer-events-none opacity-15"
             style={{
               backgroundImage: "radial-gradient(white 1px, transparent 0)",
               backgroundSize: "10px 10px",
@@ -300,14 +270,17 @@ function Home() {
               Ready to Start Swapping?
             </h2>
             <p className="text-lg md:text-xl text-white/80 max-w-3xl mb-10">
-              Discover unique items, build meaningful connections, and embrace a
-              sustainable lifestyle through swapping.
+              Discover unique items and skills, build meaningful connections,
+              and embrace a sustainable lifestyle through swapping.
             </p>
-            <Button variant="secondary" className="w-40 p-5">
-              <Link to="/login" className="flex items-center gap-2">
-                Get Started <ChevronRight className="w-5 h-5" />
-              </Link>
-            </Button>
+            <Link to={"/browse"}>
+              <Button
+                size="lg"
+                className="transition-all rounded-xl flex items-center justify-center gap-x-2 px-6 py-3 w-[180px] h-[50px] text-base font-medium"
+              >
+                Get Started <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
           </div>
         </section>
 
@@ -316,8 +289,10 @@ function Home() {
             <div>
               <Logo />
               <p className="mt-4 text-white/80 text-sm leading-relaxed max-w-md">
-                Swapply is a P2P bartering platform. Trade items directly with others — sneakers, gadgets, books, and more.
-                List, browse, and swap easily within a trusted community.
+                Swapply is a bartering platform. Trade items and skills directly
+                with others — sneakers, gadgets, books, art, tutoring sessions,
+                and more. List, browse, and swap effortlessly within a trusted
+                community.
               </p>
             </div>
 
@@ -357,7 +332,7 @@ function Home() {
           </div>
 
           <div className="text-center text-white/70 text-sm pb-4">
-            © {new Date().getFullYear()} Swapply. A product by{' '}
+            © {new Date().getFullYear()} Swapply. A product by{" "}
             <a
               href="https://jemslabs.xyz"
               target="_blank"
@@ -366,7 +341,7 @@ function Home() {
             >
               Jems Labs
             </a>
-            . Developed by{' '}
+            . Developed by{" "}
             <a
               href="https://x.com/isonikrish"
               target="_blank"
@@ -376,12 +351,9 @@ function Home() {
               Krish Soni
             </a>
           </div>
-
         </footer>
       </div>
-
     </div>
-
   );
 }
 

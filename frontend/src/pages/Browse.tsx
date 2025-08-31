@@ -77,13 +77,13 @@ function Browse() {
 
           <TabsContent value="all" className="pt-4">
             {isLoadingAll ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 10 }).map((_, i) => (
                   <ItemSkeleton key={i} />
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {allResults.map((r, i) =>
                   r.type === "item" ? (
                     <Item item={r} key={i} isSwap={true} />
@@ -98,29 +98,30 @@ function Browse() {
 
           <TabsContent value="items" className="pt-4">
             {isLoadingItems ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+             <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 10 }).map((_, i) => (
                   <ItemSkeleton key={i} />
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+             <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {itemResults.map((r) => (
                   <Item key={r.id} item={r as ItemType} isSwap={true} />
                 ))}
               </div>
+
             )}
           </TabsContent>
 
           <TabsContent value="skills" className="pt-4">
             {isLoadingSkills ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+             <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 10 }).map((_, i) => (
                   <ItemSkeleton key={i} />
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {skillResults.map((r) => (
                   <Skill key={r.id} skill={r as SkillType} isSwap={true} />
                 ))}

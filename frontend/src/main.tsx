@@ -10,7 +10,11 @@ import { dark } from '@clerk/themes'
 
 
 
-const PUBLISHABLE_KEY = import.meta.env.IS_PRODUCTION ? import.meta.env.VITE_CLERK_PUBLISHABLE_KEY : import.meta.env.VITE_CLERK_TEST_PUBLISHABLE_KEY
+const isProduction = import.meta.env.VITE_IS_PRODUCTION === "true";
+const PUBLISHABLE_KEY = isProduction
+  ? import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+  : import.meta.env.VITE_CLERK_TEST_PUBLISHABLE_KEY;
+
 
 if (!PUBLISHABLE_KEY) {
   throw new Error('Missing Publishable Key')

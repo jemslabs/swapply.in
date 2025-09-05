@@ -68,7 +68,7 @@ function Browse() {
           />
         </div>
 
-        <Tabs value={tab} onValueChange={(val) => setTab(val as any)} className="w-full">
+        <Tabs value={tab} onValueChange={(val) => setTab(val as any)} className="w-full mx-auto ">
           <TabsList className="w-full sm:w-[300px] bg-[#2a202d]/70">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="items">Items</TabsTrigger>
@@ -77,13 +77,14 @@ function Browse() {
 
           <TabsContent value="all" className="pt-4">
             {isLoadingAll ? (
+              
               <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 10 }).map((_, i) => (
                   <ItemSkeleton key={i} />
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="flex flex-col items-center gap-4 sm:grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 sm:gap-4">
                 {allResults.map((r, i) =>
                   r.type === "item" ? (
                     <Item item={r} key={i} isSwap={true} />
@@ -104,7 +105,7 @@ function Browse() {
                 ))}
               </div>
             ) : (
-             <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+             <div className="flex flex-col items-center gap-4 sm:grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 sm:gap-4">
                 {itemResults.map((r) => (
                   <Item key={r.id} item={r as ItemType} isSwap={true} />
                 ))}
@@ -121,7 +122,7 @@ function Browse() {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+               <div className="flex flex-col items-center gap-4 sm:grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 sm:gap-4">
                 {skillResults.map((r) => (
                   <Skill key={r.id} skill={r as SkillType} isSwap={true} />
                 ))}

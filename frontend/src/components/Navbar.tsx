@@ -64,14 +64,14 @@ function Navbar() {
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:text-white hover:bg-[#c084fc]/10 transition-all leading-none"
       >
         <Compass size={16} className="text-white/70" />
-        <span>Browse</span>
+        <span className="text-sm">Browse</span>
       </Link>
       <Link
         to="/swap/requests"
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:text-white hover:bg-[#c084fc]/10 transition-all leading-none"
       >
         <RefreshCw size={16} className="text-white/70" />
-        <span>Requests</span>
+         <span className="text-sm">Requests</span>
       </Link>
     </>
   );

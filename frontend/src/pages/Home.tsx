@@ -20,11 +20,13 @@ import { Link } from "react-router-dom";
 function Home() {
   return (
     <div className="pb-10 w-full bg-[#0d0d0d]">
-      <div className="relative min-h-screen bg-[#0d0d0d] text-white overflow-hidden pt-20 pb-10">
+      <div className="relative  bg-[#0d0d0d] text-white overflow-hidden pt-20 pb-10">
         <div className="absolute inset-0">
           <div className="absolute top-[25%] left-1/2 -translate-x-1/2 w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px] bg-purple-500/30 blur-[120px] sm:blur-[150px] md:blur-[180px] rounded-full"></div>
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] sm:w-[700px] sm:h-[700px] md:w-[900px] md:h-[900px] bg-fuchsia-600/20 blur-[180px] sm:blur-[220px] md:blur-[250px] rounded-full"></div>
         </div>
+
+
         <div className="absolute inset-0 z-0 pointer-events-none perspective-[800px] overflow-hidden">
           <div
             className="absolute inset-0"
@@ -38,49 +40,49 @@ function Home() {
           />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center max-w-6xl mx-auto">
-          <h1 className="mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-snug font-semibold tracking-tight  relative">
-            <span className="bg-gradient-to-r from-white via-purple-200 to-[#d0a2fd] bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+        <div className="relative z-10 flex flex-col items-center justify-center px-4 py-12 sm:py-20 text-center max-w-6xl mx-auto">
+          <h1 className="text-3xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] sm:leading-[1.15]">
+            <span className="block bg-gradient-to-r from-white via-purple-200 to-[#d0a2fd] bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
               Swap Your Stuff
             </span>
-            <br />
-            <span className="bg-gradient-to-r from-purple-300 to-purple-500 bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+            <span className="block mt-0.5 sm:mt-1 bg-gradient-to-r from-purple-300 to-purple-500 bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
               For What You Love
             </span>
           </h1>
 
-          <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg lg:text-xl text-white/80 max-w-2xl animate-fade-in-up delay-150 leading-relaxed">
-            Turn unused items or skills into real value. Swap or trade without
-            spending money. Simple, sustainable, and surprisingly fun.
+
+          <p className="mt-3 sm:mt-5 text-xs sm:text-base md:text-lg lg:text-xl text-white/80 max-w-xs sm:max-w-2xl animate-fade-in-up delay-150 leading-relaxed">
+            Swap unused items or skills into real value. Trade without money — simple, sustainable, fun.
           </p>
 
-          <div className="mt-6 sm:mt-8">
+
+          <div className="mt-5 sm:mt-8">
             <Link to={"/browse"}>
               <Button
                 size="lg"
-                className="transition-all rounded-xl flex items-center justify-center gap-x-2 px-5 sm:px-6 py-2 sm:py-3 w-[150px] sm:w-[180px] h-[45px] sm:h-[50px] text-sm sm:text-base font-medium"
+                className="transition-all rounded-xl flex items-center justify-center gap-x-2 px-5 sm:px-6 py-2 sm:py-3 w-[140px] sm:w-[180px] h-[42px] sm:h-[50px] text-sm sm:text-base font-medium"
               >
                 Get Started <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5" />
               </Button>
             </Link>
           </div>
 
-          {/* Preview Image */}
-          <div className="mt-12 sm:mt-20 w-full max-w-3xl sm:max-w-6xl mx-auto animate-fade-in-up delay-500">
+          <div className="mt-10 sm:mt-20 w-full max-w-md sm:max-w-3xl lg:max-w-6xl mx-auto animate-fade-in-up delay-500 px-2">
             <div className="relative group">
-              <div className="absolute -inset-1 rounded-3xl border-2 border-white/10 shadow-[0_0_40px_rgba(168,85,247,0.5)] sm:shadow-[0_0_80px_rgba(168,85,247,0.5)]"></div>
+              <div className="absolute -inset-1 rounded-2xl sm:rounded-3xl border border-white/10 shadow-[0_0_25px_rgba(168,85,247,0.5)] sm:shadow-[0_0_80px_rgba(168,85,247,0.5)]"></div>
 
               <img
                 src="/swapply_browse.png"
                 alt="Browse Page Preview"
-                className="relative rounded-3xl transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                className="relative rounded-2xl sm:rounded-3xl transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />
 
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20 blur-2xl sm:blur-3xl opacity-50 sm:opacity-60 group-hover:opacity-80 transition-opacity" />
+              <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20 blur-xl sm:blur-3xl opacity-50 sm:opacity-60 group-hover:opacity-80 transition-opacity" />
             </div>
           </div>
         </div>
       </div>
+
 
       <section className="relative py-20 sm:py-28 text-white w-full bg-[#0d0d0d] overflow-hidden">
         <div className="absolute inset-0">
@@ -233,9 +235,8 @@ function Home() {
             ].map(({ icon, title, content, span }, idx) => (
               <div
                 key={idx}
-                className={`flex flex-col rounded-3xl p-6 sm:p-8 h-full bg-[#1a1a1a]/80 border border-[#c084fc]/20 shadow-[0_0_20px_rgba(192,132,252,0.15)] hover:shadow-[0_0_40px_rgba(192,132,252,0.35)] transition-all duration-500 backdrop-blur-md ${
-                  span || ""
-                }`}
+                className={`flex flex-col rounded-3xl p-6 sm:p-8 h-full bg-[#1a1a1a]/80 border border-[#c084fc]/20 shadow-[0_0_20px_rgba(192,132,252,0.15)] hover:shadow-[0_0_40px_rgba(192,132,252,0.35)] transition-all duration-500 backdrop-blur-md ${span || ""
+                  }`}
               >
                 <div className="flex flex-col gap-4 sm:gap-5 text-left h-full">
                   <div className="w-fit p-3 sm:p-4 rounded-2xl bg-[#c084fc]/10 border border-[#c084fc]/30">

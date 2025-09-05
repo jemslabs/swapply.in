@@ -66,9 +66,9 @@ function ItemPage() {
   };
   return (
     <div className="flex items-center justify-center min-h-screen px-4 sm:px-6">
-      <div className="flex flex-col lg:flex-row w-full max-w-6xl h-auto lg:h-[85vh] backdrop-blur-md border border-white/10 rounded-2xl shadow-xl overflow-hidden">
+     <div className="flex flex-col lg:flex-row w-full max-w-6xl backdrop-blur-md border border-white/10 rounded-2xl shadow-xl">
 
-        <div className="flex-1 flex flex-col p-4 sm:p-6 space-y-4 lg:space-y-6 overflow-hidden">
+        <div className="flex-1 flex flex-col p-4 sm:p-6 space-y-4 lg:space-y-6">
           <div className="flex justify-center">
             <img
               src={item.image}

@@ -20,6 +20,9 @@ import { CalendarDays, Copy } from "lucide-react";
 import Item from "@/components/Item";
 import Skill from "@/components/Skill";
 import ItemSkeleton from "@/components/ItemSkeleton";
+import TopSwapperBadge from "@/components/TopSwapperBadge";
+import type { BadgeType } from "@/lib/types";
+import type { JSX } from "react";
 
 function Profile() {
   const { id } = useParams();
@@ -39,23 +42,42 @@ function Profile() {
   return (
     <div className="max-w-6xl mx-auto min-h-screen px-4 py-5">
       <Card className="flex flex-col md:flex-row items-center md:items-start gap-6 p-6 md:p-8 shadow-xl bg-[#2a202d]/70 backdrop-blur-md border border-white/10 rounded-2xl">
-        {isLoading ? (
-          <Skeleton className="w-24 h-24 rounded-full bg-zinc-600" />
-        ) : (
-          <Avatar className="w-24 h-24 shadow-lg ring-2 ring-white/10">
-            <AvatarImage src={data?.image} alt={data?.name} />
-            <AvatarFallback className="text-3xl">{data?.name?.[0]}</AvatarFallback>
-          </Avatar>
-        )}
+        <div className="flex flex-col items-center gap-3">
+          {isLoading ? (
+            <Skeleton className="w-24 h-24 rounded-full bg-zinc-600" />
+          ) : (
+            <Avatar className="w-24 h-24 shadow-lg ring-2 ring-white/10">
+              <AvatarImage src={data?.image} alt={data?.name} />
+              <AvatarFallback className="text-3xl">{data?.name?.[0]}</AvatarFallback>
+            </Avatar>
+          )}
+        </div>
 
-        <div className="text-center md:text-left flex-1 space-y-2">
-          <div className="flex items-center justify-center md:justify-start gap-2 flex-wrap">
+        <div className="flex-1 flex flex-col space-y-2 text-center md:text-left">
+          <div
+            className={`flex flex-wrap items-center justify-center md:justify-start gap-2 ${data && data?.badges?.length > 0 ? "flex-col md:flex-row" : ""
+              }`}
+          >
             {isLoading ? (
               <Skeleton className="h-6 w-40 rounded-md" />
             ) : (
-              <CardTitle className="text-3xl font-semibold tracking-tight text-white">
-                {data?.name}
-              </CardTitle>
+              <>
+                <CardTitle className="text-3xl font-semibold tracking-tight text-white">
+                  {data?.name}
+                </CardTitle>
+
+                {data && data?.badges?.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {data.badges.map((badge: BadgeType, i: number) => {
+                      const badgeComponents: Record<string, JSX.Element> = {
+                        TOP_SWAPPER: <TopSwapperBadge key={i} />,
+                        // Add other badge types here
+                      };
+                      return badgeComponents[badge.type] || null;
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -98,7 +120,9 @@ function Profile() {
             </div>
           ) : null}
         </div>
+
       </Card>
+
 
       <Tabs defaultValue="items" className="mt-10 w-full">
         <TabsList className="bg-[#1c1c24] mb-6 sm:w-[300px] w-full rounded-xl flex justify-center">
@@ -109,8 +133,8 @@ function Profile() {
         <TabsContent value="items">
           {isLoading ? (
             <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-4">
-              {Array.from({ length: 4 }).map((_) => (
-                <ItemSkeleton />
+              {Array.from({ length: 4 }).map((_, i) => (
+                <ItemSkeleton key={i} />
               ))}
             </div>
           ) : data?.items?.length ? (
@@ -133,8 +157,8 @@ function Profile() {
         <TabsContent value="skills">
           {isLoading ? (
             <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-4">
-              {Array.from({ length: 4 }).map((_) => (
-                <ItemSkeleton />
+              {Array.from({ length: 4 }).map((_, i) => (
+                <ItemSkeleton key={i} />
               ))}
             </div>
           ) : data?.skills?.length ? (

@@ -53,6 +53,7 @@ export async function handleGetUser(c: Context) {
             createdAt: "desc",
           },
         },
+        badges: true
       },
     });
     if (!user) return c.json({ msg: "User doesn't exists" }, 400);
@@ -74,6 +75,7 @@ export async function handleGetPublicUser(c: Context) {
       include: {
         items: true,
         skills: true,
+        badges: true
       },
     });
     if (!user) {

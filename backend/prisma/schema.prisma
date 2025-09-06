@@ -22,6 +22,7 @@ model User {
 
   proposedSwaps SwapRequest[] @relation("ProposedSwaps")
   receivedSwaps SwapRequest[] @relation("ReceivedSwaps")
+  badges Badge[]
 }
 
 model Item {
@@ -109,6 +110,16 @@ model Notification {
   category  NotificationCategory?
 }
 
+model Badge {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  type BadgeType
+  awardedAt DateTime @default(now())
+
+  @@unique([userId, type]) 
+}
+
 enum NotificationCategory {
   SWAP
   MEETING
@@ -170,4 +181,7 @@ enum SwapStatus {
   REJECTED
   CANCELLED
   COMPLETED
+}
+enum BadgeType {
+  TOP_SWAPPER
 }

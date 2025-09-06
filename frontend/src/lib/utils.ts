@@ -5,8 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const isProduction = true;
-
+const isProduction = import.meta.env.VITE_IS_PRODUCTION === "true";
 export const endpoint = isProduction ? "https://swapply-backend.isonikrish.workers.dev" : "http://localhost:8787";
 
 export const categories = [

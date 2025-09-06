@@ -10,6 +10,7 @@ export type user = {
   items: ItemType[];
   skills: SkillType[];
   notifications: notification[];
+  badges: BadgeType[]
   clerkId: string;
 };
 
@@ -115,6 +116,13 @@ export type scheduleMeetingType = {
   date: Date;
   type: "INPERSON" | "ONLINE";
 };
+export type BadgeType = {
+  id: number;
+  userId: number;
+  user: user;
+  type: "TOP_SWAPPER";
+  awardedAt: Date;
+}
 
 type ExtendedItem = ItemType & { type: "item" };
 type ExtendedSkill = SkillType & { type: "skill" };

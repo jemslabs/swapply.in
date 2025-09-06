@@ -167,6 +167,20 @@ export async function handleAcceptSwap(c: Context) {
         })
       );
     }
+
+    const users = await prisma.user.count();
+    if (users < 100) {
+      operations.push(
+        prisma.badge.createMany({
+          data: [
+            { userId: swap.proposerId, type: "TOP_SWAPPER" },
+            { userId: swap.receiverId, type: "TOP_SWAPPER" },
+          ],
+          skipDuplicates: true,
+        })
+      );
+    }
+
     operations.push(
       prisma.notification.create({
         data: {
@@ -265,7 +279,7 @@ export async function handleGetSwap(c: Context) {
         proposerSkill: true,
         receiverItem: true,
         receiverSkill: true,
-        meeting: true
+        meeting: true,
       },
     });
 
@@ -409,8 +423,8 @@ export async function handleCompleteSwap(c: Context) {
     const swap = await prisma.swapRequest.findUnique({
       where: { id: swapId },
       include: {
-        meeting: true
-      }
+        meeting: true,
+      },
     });
 
     if (!swap) {
@@ -424,7 +438,6 @@ export async function handleCompleteSwap(c: Context) {
     if (swap.status !== "ACCEPTED") {
       return c.json({ msg: "Swap request is not accepted" }, 400);
     }
-
 
     if (!swap.meeting || swap.meeting.status !== "CONFIRMED") {
       return c.json({ msg: "Meeting not confirmed yet" }, 400);

@@ -52,7 +52,7 @@ export const useApp = create<useAppType>(() => ({
     const { query } = data;
     try {
       const res = await axios.get(
-        `${endpoint}/api/browse/items?query=${query}`,
+        `${endpoint}/api/browse/items?query=${query}`
       );
       if (res.status === 200) {
         return res.data;
@@ -67,7 +67,7 @@ export const useApp = create<useAppType>(() => ({
     const { query } = data;
     try {
       const res = await axios.get(
-        `${endpoint}/api/browse/skills?query=${query}`,
+        `${endpoint}/api/browse/skills?query=${query}`
       );
       if (res.status === 200) {
         return res.data;
@@ -175,82 +175,7 @@ export const useApp = create<useAppType>(() => ({
       return null;
     }
   },
-  scheduleMeeting: async (data, token) => {
-    try {
-      const res = await axios.post(
-        `${endpoint}/api/swap/schedule-meeting`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
 
-      if (res.status === 200) {
-        toast.success(res.data.msg);
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMsg =
-          error.response?.data?.msg ||
-          "Something went wrong. Please try again.";
-        toast.error(errorMsg);
-      }
-    }
-  },
-  confirmMeeting: async (id, token) => {
-    try {
-      const res = await axios.put(
-        `${endpoint}/api/swap/confirm-meeting/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-
-      if (res.status === 200) {
-        toast.success(res.data.msg);
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMsg =
-          error.response?.data?.msg ||
-          "Something went wrong. Please try again.";
-        toast.error(errorMsg);
-      }
-    }
-  },
-
-  completeSwap: async (id, token) => {
-    try {
-      const res = await axios.put(
-        `${endpoint}/api/swap/complete/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-
-      if (res.status === 200) {
-        toast.success(res.data.msg);
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMsg =
-          error.response?.data?.msg ||
-          "Something went wrong. Please try again.";
-        toast.error(errorMsg);
-      }
-    }
-  },
   getItem: async (id, token) => {
     try {
       const res = await axios.get(`${endpoint}/api/item/get-item?id=${id}`, {
@@ -281,4 +206,102 @@ export const useApp = create<useAppType>(() => ({
       return null;
     }
   },
+  completeSwap: async (id, token) => {
+    try {
+      const res = await axios.put(
+        `${endpoint}/api/swap/mark-as-completed/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
+  addPhoneNumber: async (data, token) => {
+    try {
+      const res = await axios.put(
+        `${endpoint}/api/swap/add-phone-number`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
+  verifyProposerCode: async (data, token) => {
+    try {
+      const res = await axios.put(
+        `${endpoint}/api/swap/verify-proposer-code`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
+  verifyReceiverCode: async (data, token) => {
+    try {
+      const res = await axios.put(
+        `${endpoint}/api/swap/verify-receiver-code`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg =
+          error.response?.data?.msg ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMsg);
+      }
+    }
+  },
+
 }));

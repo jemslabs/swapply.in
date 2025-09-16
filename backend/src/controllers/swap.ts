@@ -1,7 +1,7 @@
 import { Context } from "hono";
-import { meetingSchema, swapSchema } from "../lib/zod";
+import { addPhoneNumberSchema, swapSchema, verifyCodeSchema } from "../lib/zod";
 import { prismaClient } from "../lib/prisma";
-
+import { customAlphabet } from "nanoid";
 export async function handleSwap(c: Context) {
   const prisma = prismaClient(c);
   const data = await c.req.json();
@@ -102,6 +102,7 @@ export async function handleSwap(c: Context) {
 export async function handleAcceptSwap(c: Context) {
   const prisma = prismaClient(c);
   const { id } = c.get("user");
+  const nanoid = customAlphabet("0123456789", 4);
   try {
     const swapId = parseInt(c.req.param("id"));
     if (!id) {
@@ -169,14 +170,74 @@ export async function handleAcceptSwap(c: Context) {
     }
 
     const users = await prisma.user.count();
+
     if (users < 100) {
+      // Find badges that already exist for these users
+      const existing = await prisma.badge.findMany({
+        where: {
+          userId: { in: [swap.proposerId, swap.receiverId] },
+          type: "TOP_SWAPPER",
+        },
+        select: { userId: true },
+      });
+
+      const existingIds = existing.map((b: any) => b.userId);
+
+      // Create arrays for new badges and notifications
+      const newBadges = [];
+      const newNotifications = [];
+
+      if (!existingIds.includes(swap.proposerId)) {
+        newBadges.push({ userId: swap.proposerId, type: "TOP_SWAPPER" });
+        newNotifications.push({
+          userId: swap.proposerId,
+          title: "Badge Unlocked",
+          body: "You earned the TOP_SWAPPER badge",
+          type: "badge.unlocked",
+          category: "BADGE",
+          link: `/profile/${swap.proposerId}`,
+        });
+      }
+
+      if (!existingIds.includes(swap.receiverId)) {
+        newBadges.push({ userId: swap.receiverId, type: "TOP_SWAPPER" });
+        newNotifications.push({
+          userId: swap.receiverId,
+          title: "Badge Unlocked",
+          body: "You earned the TOP_SWAPPER badge",
+          type: "badge.unlocked",
+          category: "BADGE",
+          link: `/profile/${swap.receiverId}`,
+        });
+      }
+
+      // Only push if there are new ones
+      if (newBadges.length > 0) {
+        operations.push(prisma.badge.createMany({ data: newBadges }));
+        operations.push(
+          prisma.notification.createMany({ data: newNotifications })
+        );
+      }
+    }
+
+    const existingProcess = await prisma.swapProcess.findUnique({
+      where: { swapRequestId: swap.id },
+    });
+
+    if (!existingProcess) {
+      const proposerCode = nanoid();
+      let receiverCode;
+      do {
+        receiverCode = nanoid();
+      } while (receiverCode === proposerCode);
+
       operations.push(
-        prisma.badge.createMany({
-          data: [
-            { userId: swap.proposerId, type: "TOP_SWAPPER" },
-            { userId: swap.receiverId, type: "TOP_SWAPPER" },
-          ],
-          skipDuplicates: true,
+        prisma.swapProcess.create({
+          data: {
+            swapRequestId: swap.id,
+            proposerSwapCode: proposerCode,
+            receiverSwapCode: receiverCode,
+          },
         })
       );
     }
@@ -279,7 +340,7 @@ export async function handleGetSwap(c: Context) {
         proposerSkill: true,
         receiverItem: true,
         receiverSkill: true,
-        meeting: true,
+        process: true,
       },
     });
 
@@ -297,157 +358,211 @@ export async function handleGetSwap(c: Context) {
   }
 }
 
-export async function handleScheduleMeeting(c: Context) {
+export async function handleAddPhoneNumber(c: Context) {
   const prisma = prismaClient(c);
   const { id } = c.get("user");
-  const data = await c.req.json();
+
   try {
-    if (!id) {
-      return c.json({ msg: "Unauthorised" }, 400);
-    }
-    const validatedData = meetingSchema.safeParse(data);
+    const data = await c.req.json();
+    const validatedData = addPhoneNumberSchema.safeParse(data);
     if (!validatedData.success) {
       return c.json({ msg: "Invalid Input" }, 400);
     }
 
-    const { swapId, date, location, type, meetingLink } = validatedData.data;
+    const { number, swapRequestId } = validatedData.data;
 
-    const swap = await prisma.swapRequest.findUnique({
+    // Find swap request and ensure it's accepted
+    const swapRequest = await prisma.swapRequest.findUnique({
+      where: { id: swapRequestId },
+    });
+    if (!swapRequest || swapRequest.status !== "ACCEPTED") {
+      return c.json({ msg: "Swap Request is not accepted" }, 400);
+    }
+
+    const swapProcess = await prisma.swapProcess.findUnique({
       where: {
-        id: swapId,
+        swapRequestId: swapRequest.id,
       },
     });
-    if (!swap) {
-      return c.json({ msg: "Swap request doesn't exist" }, 404);
+    if (!swapProcess) {
+      return c.json({ msg: "You can't continue as you are unauthorized" }, 400);
+    }
+    if (
+      (id === swapRequest.proposerId && swapProcess.proposerPhoneNumber) ||
+      (id === swapRequest.receiverId && swapProcess.receiverPhoneNumber)
+    ) {
+      return c.json({ msg: "You already added your phone number" }, 400);
     }
 
-    if (id !== swap.proposerId) {
-      return c.json({ msg: "Unauthorised" }, 400);
-    }
-    const existingMeeting = await prisma.swapMeeting.findUnique({
-      where: { swapId: swap.id },
-    });
-    if (existingMeeting) {
-      return c.json({ msg: "Meeting already scheduled" }, 400);
-    }
-    const meeting = await prisma.swapMeeting.create({
-      data: {
-        swapId: swap.id,
-        date,
-        location: type === "INPERSON" ? location : null,
-        meetingLink: type === "ONLINE" ? meetingLink : null,
-        type,
-      },
-    });
-    if (!meeting) {
-      return c.json({ msg: "Failed to schedule meeting" }, 400);
+    // Determine user role and update only their phone number
+    const updateData =
+      id === swapRequest.proposerId
+        ? { proposerPhoneNumber: number }
+        : id === swapRequest.receiverId
+        ? { receiverPhoneNumber: number }
+        : null;
+
+    if (!updateData) {
+      return c.json({ msg: "Unauthorized" }, 403);
     }
 
-    await prisma.notification.create({
-      data: {
-        userId: swap.receiverId,
-        title: "Meeting Scheduled",
-        body: `A meeting for your swap has been scheduled`,
-        type: "meeting.scheduled",
-        category: "MEETING",
-        link: `/swap/${swap?.id}`,
-      },
+    await prisma.swapProcess.update({
+      where: { swapRequestId: swapRequest.id },
+      data: updateData,
     });
-    return c.json({ msg: "Meeting Scheduled" }, 200);
+
+    return c.json({ msg: "Phone number added successfully" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
 
-export async function handleConfirmMeeting(c: Context) {
+export async function handleProposerVerifyCode(c: Context) {
   const prisma = prismaClient(c);
   const { id } = c.get("user");
-  const swapId = parseInt(c.req.param("swapId"));
+
   try {
-    if (!id) {
-      return c.json({ msg: "Unauthorised" }, 400);
-    }
-    const swap = await prisma.swapRequest.findUnique({
-      where: {
-        id: swapId,
-      },
-    });
-    if (!swap) {
-      return c.json({ msg: "Swap request doesn't exist" }, 404);
+    const data = await c.req.json();
+    const validatedData = verifyCodeSchema.safeParse(data);
+    if (!validatedData.success) {
+      return c.json({ msg: "Invalid Input" }, 400);
     }
 
-    if (id !== swap.receiverId) {
-      return c.json({ msg: "Unauthorised" }, 400);
-    }
-    const existingMeeting = await prisma.swapMeeting.findUnique({
-      where: { swapId: swap.id },
+    const { code, swapProcessId } = validatedData.data;
+
+    const swapProcess = await prisma.swapProcess.findUnique({
+      where: { id: swapProcessId },
     });
-    if (!existingMeeting) {
+    if (!swapProcess) {
       return c.json(
-        {
-          msg: "Meeting is not scheduled. Wait for proposer to schedule this meeting",
-        },
+        { msg: "You can't continue further as swap request is not accepted" },
         400
       );
     }
 
-    await prisma.swapMeeting.update({
-      where: {
-        id: existingMeeting.id,
-      },
-      data: {
-        status: "CONFIRMED",
-      },
+    if (swapProcess.isProposerCodeVerified) {
+      return c.json({ msg: "Proposer code is already verified" }, 400);
+    }
+
+    const swapRequest = await prisma.swapRequest.findUnique({
+      where: { id: swapProcess.swapRequestId },
+    });
+    if (!swapRequest || id !== swapRequest.receiverId) {
+      return c.json({ msg: "Unauthorized" }, 403);
+    }
+
+    if (code !== swapProcess.proposerSwapCode) {
+      return c.json({ msg: "Swap Code is invalid" }, 400);
+    }
+
+    await prisma.swapProcess.update({
+      where: { id: swapProcess.id },
+      data: { isProposerCodeVerified: true },
     });
 
-    return c.json({ msg: "Meeting Confirmed" }, 200);
+    return c.json({ msg: "Proposer code verified" }, 200);
+  } catch (error) {
+    return c.json({ msg: "Internal Server Error" }, 500);
+  }
+}
+export async function handleReceiverVerifyCode(c: Context) {
+  const prisma = prismaClient(c);
+  const { id } = c.get("user");
+
+  try {
+    const data = await c.req.json();
+    const validatedData = verifyCodeSchema.safeParse(data);
+    if (!validatedData.success) {
+      return c.json({ msg: "Invalid Input" }, 400);
+    }
+
+    const { code, swapProcessId } = validatedData.data;
+
+    const swapProcess = await prisma.swapProcess.findUnique({
+      where: { id: swapProcessId },
+    });
+    if (!swapProcess) {
+      return c.json(
+        { msg: "You can't continue further as swap request is not accepted" },
+        400
+      );
+    }
+
+    if (swapProcess.isReceiverCodeVerified) {
+      return c.json({ msg: "Receiver code is already verified" }, 400);
+    }
+
+    const swapRequest = await prisma.swapRequest.findUnique({
+      where: { id: swapProcess.swapRequestId },
+    });
+    if (!swapRequest || id !== swapRequest.proposerId) {
+      return c.json({ msg: "Unauthorized" }, 403);
+    }
+
+    if (code !== swapProcess.receiverSwapCode) {
+      return c.json({ msg: "Swap Code is invalid" }, 400);
+    }
+
+    await prisma.swapProcess.update({
+      where: { id: swapProcess.id },
+      data: { isReceiverCodeVerified: true },
+    });
+
+    return c.json({ msg: "Receiver code verified" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }
 }
 
-export async function handleCompleteSwap(c: Context) {
+export async function handleMarkAsCompleted(c: Context) {
   const prisma = prismaClient(c);
   const { id } = c.get("user");
-  const swapId = Number(c.req.param("id"));
-
-  if (!id) {
-    return c.json({ msg: "Unauthorised" }, 400);
-  }
-
-  if (isNaN(swapId)) {
-    return c.json({ msg: "Invalid swap ID" }, 400);
-  }
-
+  const swapRequestId = parseInt(c.req.param("id"));
   try {
-    const swap = await prisma.swapRequest.findUnique({
-      where: { id: swapId },
-      include: {
-        meeting: true,
+    const swapRequest = await prisma.swapRequest.findUnique({
+      where: {
+        id: swapRequestId,
       },
     });
-
-    if (!swap) {
-      return c.json({ msg: "Swap request doesn't exist" }, 404);
+    if (!swapRequest) {
+      return c.json({ msg: "Swap request not found" }, 404);
     }
-
-    if (id !== swap.proposerId) {
-      return c.json({ msg: "Unauthorised" }, 400);
+    if (swapRequest.status === "COMPLETED") {
+      return c.json({ msg: "Swap request already completed" }, 200);
     }
-
-    if (swap.status !== "ACCEPTED") {
-      return c.json({ msg: "Swap request is not accepted" }, 400);
+    if (swapRequest.status !== "ACCEPTED") {
+      return c.json({ msg: "This swap request is not accepted" }, 400);
     }
-
-    if (!swap.meeting || swap.meeting.status !== "CONFIRMED") {
-      return c.json({ msg: "Meeting not confirmed yet" }, 400);
+    if (id !== swapRequest.proposerId) {
+      return c.json(
+        {
+          msg: "Unauthorized: Only proposer of this request can Mark as complete",
+        },
+        400
+      );
+    }
+    const swapProcess = await prisma.swapProcess.findUnique({
+      where: {
+        swapRequestId: swapRequest.id,
+      },
+    });
+    if (!swapProcess.isProposerCodeVerified) {
+      return c.json({ msg: "Proposer code is not verified" }, 400);
+    }
+    if (!swapProcess.isReceiverCodeVerified) {
+      return c.json({ msg: "Receiver code is not verified" }, 400);
     }
 
     await prisma.swapRequest.update({
-      where: { id: swap.id },
-      data: { status: "COMPLETED" },
+      where: {
+        id: swapRequest.id,
+      },
+      data: {
+        status: "COMPLETED",
+      },
     });
-    return c.json({ msg: "Swapped!" }, 200);
+
+    return c.json({ msg: "Swap request marked as completed" }, 200);
   } catch (error) {
     return c.json({ msg: "Internal Server Error" }, 500);
   }

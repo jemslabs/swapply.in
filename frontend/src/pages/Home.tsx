@@ -188,8 +188,7 @@ function Home() {
           </h2>
 
           <p className="text-sm sm:text-base md:text-lg text-white/70 max-w-xl sm:max-w-2xl mx-auto mb-12 sm:mb-16 leading-relaxed">
-            From item listings to skill sharing, Swapply offers everything you
-            need to trade smarter, safer, and simpler.
+            From item listings to skill sharing, Swapply offers everything you need to trade smarter, safer, and simpler.
           </p>
 
           <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -215,22 +214,15 @@ function Home() {
               },
               {
                 icon: <Shield className="w-6 h-6 text-[#c084fc]" />,
-                title: "Safe Meetings",
+                title: "Secure Swapping",
                 content:
-                  "Finalize swaps with scheduled meetings — online with links or in-person at chosen locations.",
+                  "All swaps are secured with unique verification codes, ensuring both parties confirm the exchange before completion.",
               },
               {
                 icon: <Bell className="w-6 h-6 text-[#c084fc]" />,
                 title: "Real-Time Notifications",
                 content:
-                  "Stay updated on swaps, requests, and meetings with instant notifications.",
-              },
-              {
-                icon: <Sparkles className="w-6 h-6 text-[#c084fc]" />,
-                title: "And Much More",
-                content:
-                  "We’re always adding new features to make swapping simple, sustainable, and fun.",
-                span: "lg:col-span-3",
+                  "Stay updated on swaps, requests, and verifications with instant notifications.",
               },
             ].map(({ icon, title, content, span }, idx) => (
               <div
@@ -242,18 +234,15 @@ function Home() {
                   <div className="w-fit p-3 sm:p-4 rounded-2xl bg-[#c084fc]/10 border border-[#c084fc]/30">
                     {icon}
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-semibold text-white">
-                    {title}
-                  </h3>
-                  <p className="text-sm sm:text-base md:text-lg text-white/70 leading-relaxed flex-grow">
-                    {content}
-                  </p>
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white">{title}</h3>
+                  <p className="text-sm sm:text-base md:text-lg text-white/70 leading-relaxed flex-grow">{content}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </section>
+
 
       <div className="bg-[#0d0d0d]">
         <section className="py-20 bg-purple-500/40 text-white mx-4 md:mx-20 rounded-2xl relative overflow-hidden">

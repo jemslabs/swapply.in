@@ -10,7 +10,7 @@ export type user = {
   items: ItemType[];
   skills: SkillType[];
   notifications: notification[];
-  badges: BadgeType[]
+  badges: BadgeType[];
   clerkId: string;
 };
 
@@ -66,7 +66,7 @@ export type notification = {
   createdAt: string;
   link: string;
   type: string;
-  category: "SWAP" | "MEETING" | string;
+  category: "SWAP" | "BADGE" | string;
 };
 
 export type sendSwapRequestType = {
@@ -94,60 +94,62 @@ export type swapRequestType = {
   receiverSkill: SkillType;
   receiverType: "ITEM" | "SKILL";
   status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED" | "COMPLETED";
-  meeting: swapMeetingType | null;
-};
-export type swapMeetingType = {
-  id: number;
-  swapId: number;
-  swap: swapRequestType;
-  location?: string | null;
-  meetingLink?: string | null;
-  date: Date;
-  type: "INPERSON" | "ONLINE";
-  createdAt: Date;
-  updatedAt: Date | null;
-  status: "CONFIRMED" | "PENDING";
+  process: swapProcessType | null;
 };
 
-export type scheduleMeetingType = {
-  swapId: number | null;
-  location?: string;
-  meetingLink?: string;
-  date: Date;
-  type: "INPERSON" | "ONLINE";
+export type swapProcessType = {
+  id: number;
+  swapRequestId: number;
+  proposerPhoneNumber?: string;
+  receiverPhoneNumber?: string;
+  proposerSwapCode: string;
+  receiverSwapCode: string;
+  isProposerCodeVerified: boolean;
+  isReceiverCodeVerified: boolean;
+  createdAt: Date;
 };
+
 export type BadgeType = {
   id: number;
   userId: number;
   user: user;
   type: "TOP_SWAPPER";
   awardedAt: Date;
-}
+};
+export type addPhoneNumberType = {
+  number: string;
+  swapRequestId: number;
+};
+export type verifyProposerCodeType = {
+  code: string;
+  swapProcessId: number;
+};
+export type verifyReceiverCodeType = {
+  code: string;
+  swapProcessId: number;
+};
 
 type ExtendedItem = ItemType & { type: "item" };
 type ExtendedSkill = SkillType & { type: "skill" };
 type BrowseResult = ExtendedItem | ExtendedSkill;
+
+
+// Use App Store Type
 export type useAppType = {
   addItem: (
     data: FormData,
     navigate: NavigateFunction,
     token: string | null
   ) => void;
-  getBrowseItems: (
-    data: {
-      query: string;
-    },
-  ) => Promise<{ items: ItemType[] } | { items: [] }>;
-  getBrowseSkills: (
-    data: {
-      query: string;
-    },
-  ) => Promise<{ skills: SkillType[] } | { skills: [] }>;
-  getBrowseAll: (
-    data: {
-      query: string;
-    },
-  ) => Promise<{ results: BrowseResult[] }>;
+  getBrowseItems: (data: {
+    query: string;
+  }) => Promise<{ items: ItemType[] } | { items: [] }>;
+  getBrowseSkills: (data: {
+    query: string;
+  }) => Promise<{ skills: SkillType[] } | { skills: [] }>;
+  getBrowseAll: (data: {
+    query: string;
+  }) => Promise<{ results: BrowseResult[] }>;
   getItem: (
     id: string | undefined,
     token: string | null
@@ -168,10 +170,16 @@ export type useAppType = {
     id: string | undefined,
     token: string | null
   ) => Promise<SkillType | null>;
-  scheduleMeeting: (data: scheduleMeetingType, token: string | null) => void;
-  confirmMeeting: (id: number, token: string | null) => void;
+
   completeSwap: (id: number, token: string | null) => void;
+  addPhoneNumber: (data: addPhoneNumberType, token: string | null) => void;
+  verifyProposerCode: (data: verifyProposerCodeType, token: string | null) => void;
+  verifyReceiverCode: (data: verifyReceiverCodeType, token: string | null) => void;
 };
+
+
+
+// Use Auth Store Type
 export type useAuthType = {
   user: user | null;
   login: (data: loginData) => void;

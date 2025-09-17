@@ -32,27 +32,32 @@ function SwapRequests() {
   if (isLoading) {
     return (
       <div className="p-4 sm:p-6 space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className="border border-white/10 bg-white/5 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-start animate-pulse"
-          >
-            <div className="w-12 h-12 rounded-full bg-white/10 flex-shrink-0" />
-            <div className="flex-1 flex flex-col gap-3 w-full">
-              <div className="h-4 w-1/2 bg-white/10 rounded" />
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
-                <div className="flex-1 space-y-2">
-                  <div className="h-3 w-24 bg-white/10 rounded" />
-                  <div className="h-10 w-full bg-white/10 rounded" />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <div className="h-3 w-24 bg-white/10 rounded" />
-                  <div className="h-10 w-full bg-white/10 rounded" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="border border-white/10 bg-white/5 rounded-xl p-4 flex flex-col gap-4 animate-pulse"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white/10 flex-shrink-0" />
+                <div className="flex-1">
+                  <div className="h-4 w-1/2 bg-white/10 rounded mb-2" />
+                  <div className="h-3 w-1/3 bg-white/10 rounded" />
                 </div>
               </div>
+              <div className="flex flex-col gap-3 mt-2">
+                <div className="h-3 w-24 bg-white/10 rounded" />
+                <div className="h-10 w-full bg-white/10 rounded" />
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <div className="h-3 w-24 bg-white/10 rounded" />
+                <div className="h-10 w-full bg-white/10 rounded" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
       </div>
     );
   }
@@ -118,12 +123,12 @@ function SwapRequests() {
                     <div className="flex gap-2 flex-wrap">
                       {(swap.status === "ACCEPTED" ||
                         swap.status === "COMPLETED") && (
-                        <Link to={`/swap/${swap.id}`}>
-                          <Button size="sm">
-                            Continue <ChevronRight />
-                          </Button>
-                        </Link>
-                      )}
+                          <Link to={`/swap/${swap.id}`}>
+                            <Button size="sm">
+                              Continue <ChevronRight />
+                            </Button>
+                          </Link>
+                        )}
                       {swap.status === "REJECTED" && (
                         <Button variant="ghost" className="text-red-400">
                           Rejected
@@ -207,12 +212,12 @@ function SwapRequests() {
                     </p>
                     {(swap.status === "ACCEPTED" ||
                       swap.status === "COMPLETED") && (
-                      <Link to={`/swap/${swap.id}`}>
-                        <Button size="sm">
-                          Continue <ChevronRight />
-                        </Button>
-                      </Link>
-                    )}
+                        <Link to={`/swap/${swap.id}`}>
+                          <Button size="sm">
+                            Continue <ChevronRight />
+                          </Button>
+                        </Link>
+                      )}
                     {swap.status === "REJECTED" && (
                       <Button variant="ghost" className="text-red-400">
                         Rejected

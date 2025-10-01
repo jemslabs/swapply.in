@@ -2,6 +2,7 @@ import { Context } from "hono";
 import { addPhoneNumberSchema, swapSchema, verifyCodeSchema } from "../lib/zod";
 import { prismaClient } from "../lib/prisma";
 import { customAlphabet } from "nanoid";
+import { generateMeterScore } from "../lib/generateSwapMeterScore";
 export async function handleSwap(c: Context) {
   const prisma = prismaClient(c);
   const data = await c.req.json();
@@ -24,13 +25,49 @@ export async function handleSwap(c: Context) {
 
     const proposedThing =
       proposerType === "ITEM"
-        ? await prisma.item.findUnique({ where: { id: proposedId } })
-        : await prisma.skill.findUnique({ where: { id: proposedId } });
+        ? await prisma.item.findUnique({
+            where: { id: proposedId },
+            include: {
+              user: {
+                include: {
+                  badges: true
+                }
+              },
+            },
+          })
+        : await prisma.skill.findUnique({
+            where: { id: proposedId },
+            include: {
+              user:  {
+                include: {
+                  badges: true
+                }
+              },
+            },
+          });
 
     const receivedThing =
       receiverType === "ITEM"
-        ? await prisma.item.findUnique({ where: { id: receivedId } })
-        : await prisma.skill.findUnique({ where: { id: receivedId } });
+        ? await prisma.item.findUnique({
+            where: { id: receivedId },
+            include: {
+              user:  {
+                include: {
+                  badges: true
+                }
+              },
+            },
+          })
+        : await prisma.skill.findUnique({
+            where: { id: receivedId },
+            include: {
+              user:  {
+                include: {
+                  badges: true
+                }
+              },
+            },
+          });
 
     if (!proposedThing || proposedThing.userId !== id) {
       return c.json({ msg: "You do not own the proposed asset." }, 403);
@@ -69,6 +106,12 @@ export async function handleSwap(c: Context) {
     if (existingSwap) {
       return c.json({ msg: "You already have a swap request for this." }, 409);
     }
+    const { score } = generateMeterScore({
+      proposedThing,
+      receivedThing,
+      proposerType,
+      receiverType,
+    });
     const swap = await prisma.swapRequest.create({
       data: {
         proposerId: id,
@@ -80,6 +123,7 @@ export async function handleSwap(c: Context) {
         receiverItemId: receiverType === "ITEM" ? receivedId : null,
         receiverSkillId: receiverType === "SKILL" ? receivedId : null,
         status: "PENDING",
+        swapMeterScore: score ? score : 0,
       },
     });
 

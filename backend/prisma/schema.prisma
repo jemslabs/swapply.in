@@ -84,6 +84,8 @@ model SwapRequest {
   status          SwapStatus   @default(PENDING)
   process         SwapProcess?
   
+  swapMeterScore Int?
+
 }
 
 model SwapProcess {

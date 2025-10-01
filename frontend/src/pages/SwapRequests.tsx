@@ -107,85 +107,133 @@ function SwapRequests() {
           {receivedSwaps.length === 0 ? (
             <p className="text-white/60 text-sm">No received swaps.</p>
           ) : (
-            receivedSwaps.map((swap) => (
-              <div
-                key={swap.id}
-                className="border border-white/10 bg-white/5 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-start"
-              >
-                <img
-                  src={swap.proposer.image}
-                  alt={swap.proposer.name}
-                  className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                />
-                <div className="flex-1 flex flex-col gap-2 w-full">
-                  <div className="flex justify-between items-start sm:items-center flex-wrap gap-2">
-                    <p className="text-white font-medium">{swap.proposer.name}</p>
-                    <div className="flex gap-2 flex-wrap">
-                      {(swap.status === "ACCEPTED" ||
-                        swap.status === "COMPLETED") && (
+            receivedSwaps.map((swap) => {
+              const meterColor =
+                swap.swapMeterScore > 70
+                  ? "text-green-400"
+                  : swap.swapMeterScore > 40
+                    ? "text-yellow-400"
+                    : "text-red-400";
+
+              return (
+                <div
+                  key={swap.id}
+                  className="border border-white/10 bg-white/5 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-start relative"
+                >
+  
+                  <div className="flex flex-row sm:flex-col items-center gap-2 flex-shrink-0">
+                    <img
+                      src={swap.proposer.image}
+                      alt={swap.proposer.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="relative w-12 h-12">
+                      <svg className="w-12 h-12">
+                        <circle
+                          className="text-white/10"
+                          strokeWidth="4"
+                          stroke="currentColor"
+                          fill="transparent"
+                          r="18"
+                          cx="24"
+                          cy="24"
+                        />
+                        <circle
+                          className={meterColor}
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          stroke="currentColor"
+                          fill="transparent"
+                          r="18"
+                          cx="24"
+                          cy="24"
+                          transform="rotate(-90 24 24)"
+                          strokeDasharray={2 * Math.PI * 18}
+                          strokeDashoffset={2 * Math.PI * 18 * (1 - swap.swapMeterScore / 100)}
+                        />
+                      </svg>
+                      <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
+                        {swap.swapMeterScore}%
+                      </span>
+                    </div>
+
+                    <p className="text-white/70 text-xs text-center mt-1">Swap Meter</p>
+                  </div>
+                  <div className="flex-1 flex flex-col gap-2 w-full">
+                    <div className="flex justify-between items-start sm:items-center flex-wrap gap-2">
+                      <p className="text-white font-medium">{swap.proposer.name}</p>
+
+                      <div className="flex gap-2 flex-wrap items-center">
+                        {(swap.status === "ACCEPTED" || swap.status === "COMPLETED") && (
                           <Link to={`/swap/${swap.id}`}>
                             <Button size="sm">
                               Continue <ChevronRight />
                             </Button>
                           </Link>
                         )}
-                      {swap.status === "REJECTED" && (
-                        <Button variant="ghost" className="text-red-400">
-                          Rejected
-                        </Button>
-                      )}
-                      {swap.status === "PENDING" && (
-                        <>
-                          <Button
-                            variant="ghost"
-                            className="text-green-400 hover:text-green-300 transition rounded-full bg-green-500/10"
-                            onClick={() => handleAcceptSwapRequest(swap.id)}
-                            disabled={acceptingId === swap.id}
-                          >
-                            {acceptingId === swap.id ? (
-                              <Loader2 className="animate-spin mr-2" size={16} />
-                            ) : (
-                              <Check className="w-5 h-5" />
-                            )}
+                        {swap.status === "REJECTED" && (
+                          <Button variant="ghost" className="text-red-400">
+                            Rejected
                           </Button>
-                          <Button
-                            variant="ghost"
-                            className="text-red-400 hover:text-red-300 transition rounded-full bg-red-500/10"
-                            onClick={() => handleRejectSwapRequest(swap.id)}
-                            disabled={rejectingId === swap.id}
-                          >
-                            {rejectingId === swap.id ? (
-                              <Loader2 className="animate-spin mr-2" size={16} />
-                            ) : (
-                              <X className="w-5 h-5" />
-                            )}
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mt-2">
-                    <div className="flex-1">
-                      <p className="text-white/70 text-sm mb-1">Wants to swap:</p>
-                      <div className="space-y-2 mt-1">
-                        {swap.proposerSkill && <MiniSkill skill={swap.proposerSkill} />}
-                        {swap.proposerItem && <MiniItem item={swap.proposerItem} />}
+                        )}
+                        {swap.status === "PENDING" && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              className="text-green-400 hover:text-green-300 transition rounded-full bg-green-500/10"
+                              onClick={() => handleAcceptSwapRequest(swap.id)}
+                              disabled={acceptingId === swap.id}
+                            >
+                              {acceptingId === swap.id ? (
+                                <Loader2 className="animate-spin mr-2" size={16} />
+                              ) : (
+                                <Check className="w-5 h-5" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              className="text-red-400 hover:text-red-300 transition rounded-full bg-red-500/10"
+                              onClick={() => handleRejectSwapRequest(swap.id)}
+                              disabled={rejectingId === swap.id}
+                            >
+                              {rejectingId === swap.id ? (
+                                <Loader2 className="animate-spin mr-2" size={16} />
+                              ) : (
+                                <X className="w-5 h-5" />
+                              )}
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
-                    <div className="flex-1 mt-4 sm:mt-0">
-                      <p className="text-white/70 text-sm mb-1">For your:</p>
-                      <div className="space-y-2 mt-1">
-                        {swap.receiverItem && <MiniItem item={swap.receiverItem} />}
-                        {swap.receiverSkill && <MiniSkill skill={swap.receiverSkill} />}
+
+                    {/* Swap Items */}
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mt-2">
+                      <div className="flex-1">
+                        <p className="text-white/70 text-sm mb-1">Wants to swap:</p>
+                        <div className="space-y-2 mt-1">
+                          {swap.proposerSkill && <MiniSkill skill={swap.proposerSkill} />}
+                          {swap.proposerItem && <MiniItem item={swap.proposerItem} />}
+                        </div>
+                      </div>
+
+                      <div className="flex-1 mt-4 sm:mt-0">
+                        <p className="text-white/70 text-sm mb-1">For your:</p>
+                        <div className="space-y-2 mt-1">
+                          {swap.receiverItem && <MiniItem item={swap.receiverItem} />}
+                          {swap.receiverSkill && <MiniSkill skill={swap.receiverSkill} />}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </TabsContent>
+
+
+
 
         {/* Sent Swaps */}
         <TabsContent
@@ -195,60 +243,104 @@ function SwapRequests() {
           {proposedSwaps.length === 0 ? (
             <p className="text-white/60 text-sm">No sent swaps.</p>
           ) : (
-            proposedSwaps.map((swap) => (
-              <div
-                key={swap.id}
-                className="border border-white/10 bg-white/5 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-start"
-              >
-                <img
-                  src={swap.receiver.image}
-                  alt={swap.receiver.name}
-                  className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                />
-                <div className="flex-1 flex flex-col gap-2 w-full">
-                  <div className="flex justify-between items-start sm:items-center flex-wrap gap-2">
-                    <p className="text-white font-medium">
-                      Swap proposed to {swap.receiver.name}
-                    </p>
-                    {(swap.status === "ACCEPTED" ||
-                      swap.status === "COMPLETED") && (
+            proposedSwaps.map((swap) => {
+              const meterColor =
+                swap.swapMeterScore > 70
+                  ? "text-green-400"
+                  : swap.swapMeterScore > 40
+                    ? "text-yellow-400"
+                    : "text-red-400";
+
+              return (
+                <div
+                  key={swap.id}
+                  className="border border-white/10 bg-white/5 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-start relative"
+                >
+                  <div className="flex flex-row sm:flex-col items-center gap-2 flex-shrink-0">
+                    <img
+                      src={swap.receiver.image}
+                      alt={swap.receiver.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="relative w-12 h-12">
+                      <svg className="w-12 h-12">
+                        <circle
+                          className="text-white/10"
+                          strokeWidth="4"
+                          stroke="currentColor"
+                          fill="transparent"
+                          r="18"
+                          cx="24"
+                          cy="24"
+                        />
+                        <circle
+                          className={meterColor}
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          stroke="currentColor"
+                          fill="transparent"
+                          r="18"
+                          cx="24"
+                          cy="24"
+                          transform="rotate(-90 24 24)"
+                          strokeDasharray={2 * Math.PI * 18}
+                          strokeDashoffset={2 * Math.PI * 18 * (1 - swap.swapMeterScore / 100)}
+                        />
+                      </svg>
+                      <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
+                        {swap.swapMeterScore}%
+                      </span>
+                    </div>
+
+                    <p className="text-white/70 text-xs text-center mt-1">Swap Meter</p>
+                  </div>
+
+                  <div className="flex-1 flex flex-col gap-2 w-full">
+                    <div className="flex justify-between items-start sm:items-center flex-wrap gap-2">
+                      <p className="text-white font-medium">
+                        Swap proposed to {swap.receiver.name}
+                      </p>
+                      {(swap.status === "ACCEPTED" || swap.status === "COMPLETED") && (
                         <Link to={`/swap/${swap.id}`}>
                           <Button size="sm">
                             Continue <ChevronRight />
                           </Button>
                         </Link>
                       )}
-                    {swap.status === "REJECTED" && (
-                      <Button variant="ghost" className="text-red-400">
-                        Rejected
-                      </Button>
-                    )}
-                    {swap.status === "PENDING" && (
-                      <Badge className="bg-yellow-500 text-white">Pending</Badge>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mt-2">
-                    <div className="flex-1">
-                      <p className="text-white/70 text-sm mb-1">You offered:</p>
-                      <div className="space-y-2 mt-1">
-                        {swap.proposerSkill && <MiniSkill skill={swap.proposerSkill} />}
-                        {swap.proposerItem && <MiniItem item={swap.proposerItem} />}
-                      </div>
+                      {swap.status === "REJECTED" && (
+                        <Button variant="ghost" className="text-red-400">
+                          Rejected
+                        </Button>
+                      )}
+                      {swap.status === "PENDING" && (
+                        <Badge className="bg-yellow-500 text-white">Pending</Badge>
+                      )}
                     </div>
-                    <div className="flex-1 mt-4 sm:mt-0">
-                      <p className="text-white/70 text-sm mb-1">In exchange for:</p>
-                      <div className="space-y-2 mt-1">
-                        {swap.receiverItem && <MiniItem item={swap.receiverItem} />}
-                        {swap.receiverSkill && <MiniSkill skill={swap.receiverSkill} />}
+
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mt-2">
+                      <div className="flex-1">
+                        <p className="text-white/70 text-sm mb-1">You offered:</p>
+                        <div className="space-y-2 mt-1">
+                          {swap.proposerSkill && <MiniSkill skill={swap.proposerSkill} />}
+                          {swap.proposerItem && <MiniItem item={swap.proposerItem} />}
+                        </div>
+                      </div>
+
+                      <div className="flex-1 mt-4 sm:mt-0">
+                        <p className="text-white/70 text-sm mb-1">In exchange for:</p>
+                        <div className="space-y-2 mt-1">
+                          {swap.receiverItem && <MiniItem item={swap.receiverItem} />}
+                          {swap.receiverSkill && <MiniSkill skill={swap.receiverSkill} />}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </TabsContent>
+
       </Tabs>
     </div>
   );

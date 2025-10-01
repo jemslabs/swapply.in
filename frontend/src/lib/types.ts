@@ -95,6 +95,7 @@ export type swapRequestType = {
   receiverType: "ITEM" | "SKILL";
   status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED" | "COMPLETED";
   process: swapProcessType | null;
+  swapMeterScore: number;
 };
 
 export type swapProcessType = {
